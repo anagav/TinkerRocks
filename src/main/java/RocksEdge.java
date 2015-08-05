@@ -1,4 +1,5 @@
 import org.apache.tinkerpop.gremlin.structure.*;
+import org.apache.tinkerpop.gremlin.util.iterator.IteratorUtils;
 
 import java.util.Iterator;
 import java.util.Set;
@@ -19,7 +20,14 @@ public class RocksEdge extends RocksElement implements Edge {
 
     @Override
     public Iterator<Vertex> vertices(Direction direction) {
-        return null;
+        switch (direction) {
+            case OUT:
+                return IteratorUtils.of(this.outVertex);
+            case IN:
+                return IteratorUtils.of(this.inVertex);
+            default:
+                return IteratorUtils.of(this.outVertex, this.inVertex);
+        }
     }
 
     @Override
@@ -29,7 +37,7 @@ public class RocksEdge extends RocksElement implements Edge {
 
     @Override
     public Graph graph() {
-        return null;
+        return this.inVertex.graph();
     }
 
     @Override
