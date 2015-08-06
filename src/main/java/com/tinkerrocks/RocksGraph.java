@@ -1,60 +1,84 @@
+package com.tinkerrocks;
+
 import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.process.computer.GraphComputer;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Transaction;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
+import org.rocksdb.RocksDBException;
+import storage.StorageHandler;
 
 import java.io.Closeable;
 import java.util.Iterator;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Created by ashishn on 8/4/15.
  */
 public final class RocksGraph implements Graph {
 
-    protected AtomicLong currentId = new AtomicLong(-1l);
+    private final Configuration configuration;
+    private final StorageHandler storageHandler;
 
+    public RocksGraph(Configuration configuration) throws InstantiationException {
+        configuration.setProperty(Graph.GRAPH, RocksGraph.class.getName());
+        this.configuration = configuration;
+        try {
+            this.storageHandler = new StorageHandler();
+        } catch (RocksDBException e) {
+            throw new InstantiationException(e.getLocalizedMessage());
+        }
+    }
+
+    public StorageHandler getStorageHandler() {
+        return storageHandler;
+    }
 
     @Override
-    public Vertex addVertex(Object... objects) {
-        return null;
+    public Vertex addVertex(Object... keyValues) {
+        ElementHelper.legalPropertyKeyValueArray(keyValues);
+        Object idValue = ElementHelper.getIdValue(keyValues).orElse(null);
+        final String label = ElementHelper.getLabelValue(keyValues).orElse(Vertex.DEFAULT_LABEL);
+        return storageHandler.getVertexDB().addVertex(idValue, label, keyValues);
     }
 
     @Override
     public <C extends GraphComputer> C compute(Class<C> aClass) throws IllegalArgumentException {
-        return null;
+        throw Exceptions.graphComputerNotSupported();
     }
 
     @Override
     public GraphComputer compute() throws IllegalArgumentException {
-        return null;
+        throw Exceptions.graphComputerNotSupported();
     }
 
     @Override
-    public Iterator<Vertex> vertices(Object... objects) {
-        return null;
+    public Iterator<Vertex> vertices(Object... vertexIds) {
+        if (vertexIds.length > 1 && !vertexIds[0].getClass().equals(vertexIds[1].getClass()))
+            throw Graph.Exceptions.idArgsMustBeEitherIdOrElement();
+
+        return storageHandler.getVertexDB().vertices((Vertex[]) vertexIds);
     }
 
     @Override
-    public Iterator<Edge> edges(Object... objects) {
-        return null;
+    public Iterator<Edge> edges(Object... edgeIds) {
+        return storageHandler.getEdgeDB().edges(edgeIds);
     }
 
     @Override
     public Transaction tx() {
-        return null;
+        throw Exceptions.transactionsNotSupported();
     }
 
     @Override
     public Variables variables() {
-        return null;
+        throw Exceptions.variablesNotSupported();
     }
 
     @Override
     public Configuration configuration() {
-        return null;
+        return this.configuration;
     }
 
     /**
@@ -104,6 +128,6 @@ public final class RocksGraph implements Graph {
      */
     @Override
     public void close() throws Exception {
-
+        storageHandler.close();
     }
 }
