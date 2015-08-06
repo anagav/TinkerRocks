@@ -3,21 +3,21 @@ package storage;
 import com.tinkerrocks.ByteUtil;
 import com.tinkerrocks.RocksElement;
 import com.tinkerrocks.RocksProperty;
+import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Property;
-import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.rocksdb.*;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+
 /**
  * Created by ashishn on 8/5/15.
  */
 
 
-public class VertexDB {
-    public static final String PROPERTY_SEPERATOR = "#";
+public class EdgeDB {
 
 
     public void close() {
@@ -26,17 +26,17 @@ public class VertexDB {
 
     public <V> void setProperty(String id, String key, V value) {
         try {
-            this.rocksDB.put(getColumn(VERTEX_COLUMNS.PROPERTIES), (id + key).getBytes(), String.valueOf(value).getBytes());
+            this.rocksDB.put(getColumn(EDGE_COLUMNS.PROPERTIES), (id + key).getBytes(), String.valueOf(value).getBytes());
         } catch (RocksDBException e) {
             e.printStackTrace();
         }
     }
 
     public <V> Iterator<Property<V>> getPropertiesIterator(RocksElement rocksElement, String id, String[] propertyKeys) {
-        RocksIterator rocksIterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.PROPERTIES));
+        RocksIterator rocksIterator = this.rocksDB.newIterator(getColumn(EDGE_COLUMNS.PROPERTIES));
         List<Property<V>> results = new ArrayList<>(100);
         for (String property : propertyKeys) {
-            rocksIterator.seek((id + PROPERTY_SEPERATOR + property).getBytes());
+            rocksIterator.seek((id + VertexDB.PROPERTY_SEPERATOR + property).getBytes());
             if (rocksIterator.isValid() && ByteUtil.startsWith(rocksIterator.key(), 0, property.getBytes())) {
                 results.add(new RocksProperty<V>(rocksElement, property, (V) new String(rocksIterator.value())));
             }
@@ -45,19 +45,14 @@ public class VertexDB {
     }
 
 
-    public void addEdge(String id, ) throws RocksDBException {
-
-        return;
-    }
-
-    public static enum VERTEX_COLUMNS {
-        PROPERTIES("properties"),
-        OUT_EDGES("in_edges"),
-        IN_EDGES("out_edges");
+    public static enum EDGE_COLUMNS {
+        PROPERTIES("PROPERTIES"),
+        IN_VERTICES("IN_VERTICES"),
+        OUT_VERTICES("OUT_VERTICES");
 
         String value;
 
-        VERTEX_COLUMNS(String value) {
+        EDGE_COLUMNS(String value) {
             this.value = value;
         }
 
@@ -66,34 +61,30 @@ public class VertexDB {
         }
     }
 
+
     RocksDB rocksDB;
     List<ColumnFamilyHandle> columnFamilyHandleList;
     List<ColumnFamilyDescriptor> columnFamilyDescriptors;
 
-    public VertexDB() throws RocksDBException {
-        columnFamilyDescriptors = new ArrayList<>(VERTEX_COLUMNS.values().length);
-        columnFamilyHandleList = new ArrayList<>(VERTEX_COLUMNS.values().length);
-        for (VERTEX_COLUMNS vertex_columns : VERTEX_COLUMNS.values()) {
+    public EdgeDB() throws RocksDBException {
+        columnFamilyDescriptors = new ArrayList<>(EDGE_COLUMNS.values().length);
+        columnFamilyHandleList = new ArrayList<>(EDGE_COLUMNS.values().length);
+        for (EDGE_COLUMNS vertex_columns : EDGE_COLUMNS.values()) {
             columnFamilyDescriptors.add(new ColumnFamilyDescriptor(RocksDB.DEFAULT_COLUMN_FAMILY));
             columnFamilyDescriptors.add(new ColumnFamilyDescriptor(vertex_columns.getValue().getBytes(),
                     new ColumnFamilyOptions()));
         }
-        this.rocksDB = RocksDB.open(new DBOptions(), "/tmp/vertices", columnFamilyDescriptors, columnFamilyHandleList);
+        this.rocksDB = RocksDB.open(new DBOptions(), "/tmp/edges", columnFamilyDescriptors, columnFamilyHandleList);
     }
 
 
-    public ColumnFamilyHandle getColumn(VERTEX_COLUMNS vertex_column) {
-        return columnFamilyHandleList.get(vertex_column.ordinal());
+    public ColumnFamilyHandle getColumn(EDGE_COLUMNS edge_column) {
+        return columnFamilyHandleList.get(edge_column.ordinal());
     }
 
-    public Vertex addVertex(Object idValue, String label, Object[] keyValues) {
+
+    public Iterator<Edge> edges(Object[] edgeIds) {
         return null;
     }
-
-
-    public Iterator<Vertex> vertices(Vertex[] vertexIds) {
-        return null;
-    }
-
 
 }

@@ -66,8 +66,12 @@ public abstract class RocksElement implements Element {
      * @param propertyKeys
      */
     @Override
-    public <V> Iterator<? extends Property<V>> properties(String... propertyKeys) {
-        return null;
+    public <V> Iterator<Property<V>> properties(String... propertyKeys) {
+        if (this instanceof Vertex) {
+            return storageHandler.getVertexDB().getPropertiesIterator(this, id, propertyKeys);
+        } else {
+            return storageHandler.getEdgeDB().getPropertiesIterator(this, id, propertyKeys);
+        }
     }
 
     @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")

@@ -1,6 +1,7 @@
 package com.tinkerrocks;
 
 import org.apache.tinkerpop.gremlin.structure.*;
+import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 import storage.StorageHandler;
 
 import java.util.Iterator;
@@ -27,7 +28,15 @@ public class RocksVertex extends RocksElement implements Vertex {
      */
     @Override
     public Edge addEdge(String label, Vertex inVertex, Object... keyValues) {
-        return null;
+        if (null == inVertex) throw Graph.Exceptions.argumentCanNotBeNull("vertex");
+        if (this.removed) throw Element.Exceptions.elementAlreadyRemoved(Vertex.class, this.id());
+        ElementHelper.validateLabel(label);
+        ElementHelper.legalPropertyKeyValueArray(keyValues);
+//        if (ElementHelper.getIdValue(keyValues).isPresent())
+//            throw Edge.Exceptions.userSuppliedIdsNotSupported();
+
+
+        return storageHandler.getVertexDB().addEdge(id, label, this, inVertex, keyValues);
     }
 
     /**
