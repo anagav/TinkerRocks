@@ -45,9 +45,9 @@ public class VertexDB {
     }
 
 
-    public void addEdge(String id, ) throws RocksDBException {
-
-        return;
+    public void addEdge(String vertexId, String edgeId, String inVertexID) throws RocksDBException {
+        this.rocksDB.put(getColumn(VERTEX_COLUMNS.OUT_EDGES),
+                (vertexId + PROPERTY_SEPERATOR + edgeId).getBytes(), inVertexID.getBytes());
     }
 
     public static enum VERTEX_COLUMNS {

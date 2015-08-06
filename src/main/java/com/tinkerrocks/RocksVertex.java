@@ -34,9 +34,10 @@ public class RocksVertex extends RocksElement implements Vertex {
         ElementHelper.legalPropertyKeyValueArray(keyValues);
 //        if (ElementHelper.getIdValue(keyValues).isPresent())
 //            throw Edge.Exceptions.userSuppliedIdsNotSupported();
+        ElementHelper.getIdValue(keyValues);
+        storageHandler.getVertexDB().addEdge(this.id, );
 
-
-        return storageHandler.getVertexDB().addEdge(id, label, this, inVertex, keyValues);
+        //return storageHandler.getVertexDB().addEdge(id, label, this, inVertex, keyValues);
     }
 
     /**
