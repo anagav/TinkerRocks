@@ -1,12 +1,11 @@
 package storage;
 
-import com.tinkerrocks.RocksVertex;
+import com.tinkerrocks.ByteUtil;
+import com.tinkerrocks.RocksElement;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.rocksdb.*;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by ashishn on 8/5/15.
@@ -35,20 +34,32 @@ public class VertexDB {
                 (vertexId + PROPERTY_SEPERATOR + edgeId).getBytes(), inVertexID.getBytes());
     }
 
-    public List<byte[]> getProperties(RocksVertex rocksVertex, String[] propertyKeys) throws RocksDBException {
-        List<byte[]> results = new ArrayList<>();
+    public Map<String, byte[]> getProperties(RocksElement rocksVertex, String[] propertyKeys) throws RocksDBException {
+        Map<String, byte[]> results = new HashMap<>();
+
+        if (propertyKeys == null || propertyKeys.length == 0) {
+            RocksIterator rocksIterator = this.rocksDB.newIterator();
+            byte[] seek_key = (rocksVertex.id() + PROPERTY_SEPERATOR).getBytes();
+            for (rocksIterator.seek(seek_key); rocksIterator.isValid() && ByteUtil.startsWith(rocksIterator.key(), 0, seek_key);
+                 rocksIterator.next()) {
+                results.put(new String(ByteUtil.slice(rocksIterator.key(), seek_key.length, rocksIterator.key().length)),
+                        rocksIterator.value());
+            }
+            return results;
+        }
+
         for (String property : propertyKeys) {
             byte[] val = rocksDB.get((rocksVertex.id() + PROPERTY_SEPERATOR + property).getBytes());
             if (val != null)
-                results.add(val);
+                results.put(property, val);
         }
         return results;
     }
 
     public static enum VERTEX_COLUMNS {
-        PROPERTIES("properties"),
-        OUT_EDGES("in_edges"),
-        IN_EDGES("out_edges");
+        PROPERTIES("PROPERTIES"),
+        OUT_EDGES("OUT_EDGES"),
+        IN_EDGES("IN_EDGES");
 
         String value;
 

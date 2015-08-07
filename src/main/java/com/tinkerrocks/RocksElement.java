@@ -6,6 +6,7 @@ import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Property;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
+import org.rocksdb.RocksDBException;
 import storage.StorageHandler;
 
 import java.util.Iterator;
@@ -61,6 +62,11 @@ public abstract class RocksElement implements Element {
         return new RocksProperty<>(this, key, value);
     }
 
+
+    protected void checkRemoved() {
+        if (this.removed) throw Element.Exceptions.elementAlreadyRemoved(Vertex.class, this.id);
+    }
+
     /**
      * Get an {@link Iterator} of properties.
      *
@@ -68,10 +74,14 @@ public abstract class RocksElement implements Element {
      */
     @Override
     public <V> Iterator<? extends Property<V>> properties(String... propertyKeys) {
-        if (this instanceof Vertex) {
-            return storageHandler.getVertexDB().getPropertiesIterator(this, id, propertyKeys);
-        } else {
-            return storageHandler.getEdgeDB().getPropertiesIterator(this, id, propertyKeys);
+        try {
+            if (this instanceof Vertex) {
+                return storageHandler.getVertexDB().getProperties(this, propertyKeys);
+            } else {
+                return storageHandler.getEdgeDB().getPropertiesIterator(this, id, propertyKeys);
+            }
+        } catch (RocksDBException ex) {
+
         }
     }
 

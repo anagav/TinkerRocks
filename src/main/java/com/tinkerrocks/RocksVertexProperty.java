@@ -1,5 +1,6 @@
 package com.tinkerrocks;
 
+import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Property;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
@@ -11,6 +12,18 @@ import java.util.NoSuchElementException;
  * Created by ashishn on 8/5/15.
  */
 public class RocksVertexProperty<V> implements VertexProperty<V> {
+
+    protected final Element element;
+    protected final String key;
+    protected V value;
+
+    public RocksVertexProperty(final Element element, final String key, final V value) {
+        this.element = element;
+        this.key = key;
+        this.value = value;
+    }
+
+
     /**
      * The key of the property.
      *

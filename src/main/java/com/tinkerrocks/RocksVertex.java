@@ -1,11 +1,14 @@
 package com.tinkerrocks;
 
 import org.apache.tinkerpop.gremlin.structure.*;
+import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 import org.rocksdb.RocksDBException;
 import storage.StorageHandler;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by ashishn on 8/5/15.
@@ -19,23 +22,45 @@ public class RocksVertex extends RocksElement implements Vertex {
 
     @Override
     public <V> Iterator<VertexProperty<V>> properties(String... propertyKeys) {
-        List<byte[]> results;
+        Map<String, byte[]> results;
+        List<VertexProperty<V>> props = new ArrayList<>();
         try {
             results = storageHandler.getVertexDB().getProperties(this, propertyKeys);
         } catch (RocksDBException e) {
             e.printStackTrace();
+            return null;
         }
+        results.forEach((s, bytes) -> {
+            props.add(new RocksVertexProperty<>(this, s, (V) new String(bytes)));
+        });
+
+        return props.iterator();
 
     }
 
     @Override
     public <V> VertexProperty<V> property(final String key, final V value) {
-        return null;
+        storageHandler.getVertexDB().setProperty(this.id, key, value);
+        return new RocksVertexProperty<>(this, key, value);
     }
 
     @Override
     public Edge addEdge(String label, Vertex inVertex, Object... keyValues) {
-        return null;
+        if (null == inVertex) throw Graph.Exceptions.argumentCanNotBeNull("vertex");
+
+        ElementHelper.legalPropertyKeyValueArray(keyValues);
+        checkRemoved();
+
+        Object edge_id = ElementHelper.getIdValue(keyValues);
+
+
+        try {
+            this.storageHandler.getEdgeDB().addEdge(edge_id, label, this, inVertex, keyValues);
+        } catch (RocksDBException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return new RocksEdge((String) edge_id, label, storageHandler, this.rocksGraph, this, inVertex);
     }
 
     @Override
