@@ -1,9 +1,6 @@
 package storage;
 
-import com.tinkerrocks.ByteUtil;
-import com.tinkerrocks.RocksElement;
-import com.tinkerrocks.RocksProperty;
-import org.apache.tinkerpop.gremlin.structure.Property;
+import com.tinkerrocks.RocksVertex;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.rocksdb.*;
 
@@ -32,22 +29,20 @@ public class VertexDB {
         }
     }
 
-    public <V> Iterator<Property<V>> getPropertiesIterator(RocksElement rocksElement, String id, String[] propertyKeys) {
-        RocksIterator rocksIterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.PROPERTIES));
-        List<Property<V>> results = new ArrayList<>(100);
-        for (String property : propertyKeys) {
-            rocksIterator.seek((id + PROPERTY_SEPERATOR + property).getBytes());
-            if (rocksIterator.isValid() && ByteUtil.startsWith(rocksIterator.key(), 0, property.getBytes())) {
-                results.add(new RocksProperty<V>(rocksElement, property, (V) new String(rocksIterator.value())));
-            }
-        }
-        return results.iterator();
-    }
-
 
     public void addEdge(String vertexId, String edgeId, String inVertexID) throws RocksDBException {
         this.rocksDB.put(getColumn(VERTEX_COLUMNS.OUT_EDGES),
                 (vertexId + PROPERTY_SEPERATOR + edgeId).getBytes(), inVertexID.getBytes());
+    }
+
+    public List<byte[]> getProperties(RocksVertex rocksVertex, String[] propertyKeys) throws RocksDBException {
+        List<byte[]> results = new ArrayList<>();
+        for (String property : propertyKeys) {
+            byte[] val = rocksDB.get((rocksVertex.id() + PROPERTY_SEPERATOR + property).getBytes());
+            if (val != null)
+                results.add(val);
+        }
+        return results;
     }
 
     public static enum VERTEX_COLUMNS {

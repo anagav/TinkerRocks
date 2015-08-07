@@ -15,6 +15,7 @@ public abstract class RocksElement implements Element {
     protected final String id;
     protected final String label;
 
+
     protected final StorageHandler storageHandler;
     protected final RocksGraph rocksGraph;
     protected boolean removed = false;
@@ -66,7 +67,7 @@ public abstract class RocksElement implements Element {
      * @param propertyKeys
      */
     @Override
-    public <V> Iterator<Property<V>> properties(String... propertyKeys) {
+    public <V> Iterator<? extends Property<V>> properties(String... propertyKeys) {
         if (this instanceof Vertex) {
             return storageHandler.getVertexDB().getPropertiesIterator(this, id, propertyKeys);
         } else {

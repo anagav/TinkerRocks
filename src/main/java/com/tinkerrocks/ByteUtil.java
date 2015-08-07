@@ -1,5 +1,7 @@
 package com.tinkerrocks;
 
+import java.util.Arrays;
+
 /**
  * Created by ashishn on 8/5/15.
  */
@@ -17,5 +19,10 @@ public class ByteUtil {
             }
         }
         return true;
+    }
+
+
+    public static byte[] slice(byte[] arr, int start, int end) {
+        return Arrays.copyOfRange(arr, start, end);
     }
 }

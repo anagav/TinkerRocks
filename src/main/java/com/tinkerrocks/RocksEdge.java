@@ -77,7 +77,7 @@ public class RocksEdge extends RocksElement implements Edge {
      */
     @Override
     public <V> Iterator<Property<V>> properties(String... propertyKeys) {
-        return super.properties(propertyKeys);
+        return (Iterator<Property<V>>) super.properties(propertyKeys);
     }
 
     protected void checkRemoved() {
