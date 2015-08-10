@@ -2,6 +2,7 @@ package storage;
 
 import com.tinkerrocks.ByteUtil;
 import com.tinkerrocks.RocksElement;
+import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.rocksdb.*;
 
@@ -54,6 +55,38 @@ public class VertexDB {
                 results.put(property, val);
         }
         return results;
+    }
+
+    public void addProperty(String id, String key, String value) throws RocksDBException {
+        this.rocksDB.put((id + PROPERTY_SEPERATOR + key).getBytes(), value.getBytes());
+    }
+
+    public List<byte[]> getEdgeIDs(String id, Direction direction, String[] edgeLabels) {
+        List<byte[]> edgeIds = new ArrayList<>(50);
+        RocksIterator iterator = null;
+        byte[] seek_key = (id + PROPERTY_SEPERATOR).getBytes();
+
+        try {
+            if (direction == Direction.BOTH || direction == Direction.IN) {
+                iterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.IN_EDGES));
+                for (iterator.seek((id + PROPERTY_SEPERATOR).getBytes(); iterator.isValid() &&
+                        ByteUtil.startsWith(iterator.key(), 0, seek_key); iterator.next()) {
+                    edgeIds.add(iterator.value());
+                }
+            }
+            if (direction == Direction.BOTH || direction == Direction.OUT) {
+                iterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.OUT_EDGES));
+                for (iterator.seek((id + PROPERTY_SEPERATOR).getBytes(); iterator.isValid() &&
+                        ByteUtil.startsWith(iterator.key(), 0, seek_key); iterator.next()) {
+                    edgeIds.add(iterator.value());
+                }
+            }
+        } finally {
+            if (iterator != null) {
+                iterator.dispose();
+            }
+        }
+        return edgeIds;
     }
 
     public static enum VERTEX_COLUMNS {

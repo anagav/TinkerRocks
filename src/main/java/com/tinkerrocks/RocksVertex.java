@@ -53,7 +53,6 @@ public class RocksVertex extends RocksElement implements Vertex {
 
         Object edge_id = ElementHelper.getIdValue(keyValues);
 
-
         try {
             this.storageHandler.getEdgeDB().addEdge(edge_id, label, this, inVertex, keyValues);
         } catch (RocksDBException e) {
@@ -65,16 +64,23 @@ public class RocksVertex extends RocksElement implements Vertex {
 
     @Override
     public <V> VertexProperty<V> property(String key, V value, Object... keyValues) {
-        return null;
+        ElementHelper.legalPropertyKeyValueArray(keyValues);
+        try {
+            this.storageHandler.getVertexDB().addProperty(ElementHelper.getIdValue(keyValues).toString(), key, (String) value);
+        } catch (RocksDBException e) {
+            e.printStackTrace();
+        }
+        return new RocksVertexProperty<>(this, key, value);
     }
 
     @Override
     public <V> VertexProperty<V> property(VertexProperty.Cardinality cardinality, String key, V value, Object... keyValues) {
-        return null;
+        throw VertexProperty.Exceptions.metaPropertiesNotSupported();
     }
 
     @Override
     public Iterator<Edge> edges(Direction direction, String... edgeLabels) {
+        List<String> edgeIds = this.storageHandler.getVertexDB().getEdgeIDs(direction, edgeLabels);
         return null;
     }
 
