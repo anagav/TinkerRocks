@@ -9,7 +9,8 @@ import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 import org.rocksdb.RocksDBException;
 import storage.StorageHandler;
 
-import java.util.Iterator;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public abstract class RocksElement implements Element {
 
@@ -74,15 +75,22 @@ public abstract class RocksElement implements Element {
      */
     @Override
     public <V> Iterator<? extends Property<V>> properties(String... propertyKeys) {
+        Map<String, byte[]> properties = new HashMap<>(30);
         try {
             if (this instanceof Vertex) {
-                return storageHandler.getVertexDB().getProperties(this, propertyKeys);
+                properties = storageHandler.getVertexDB().getProperties(this, propertyKeys);
             } else {
-                return storageHandler.getEdgeDB().getPropertiesIterator(this, id, propertyKeys);
+                properties = storageHandler.getEdgeDB().getProperties(this, propertyKeys);
             }
         } catch (RocksDBException ex) {
-
+            ex.printStackTrace();
         }
+        List<RocksProperty<V>> propertiesList = new ArrayList<>(properties.size());
+        propertiesList.addAll(properties.entrySet().stream()
+                .map(property -> new RocksProperty<>(this,
+                        property.getKey(), (V) property.getValue())).collect(Collectors.toList()));
+
+        return propertiesList.iterator();
     }
 
     @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")

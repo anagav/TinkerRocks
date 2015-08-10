@@ -80,22 +80,35 @@ public class RocksVertex extends RocksElement implements Vertex {
 
     @Override
     public Iterator<Edge> edges(Direction direction, String... edgeLabels) {
-        List<String> edgeIds = this.storageHandler.getVertexDB().getEdgeIDs(direction, edgeLabels);
-        return null;
+        List<byte[]> edgeIds = this.storageHandler.getVertexDB().getEdgeIDs(this.id, direction, edgeLabels);
+        return this.storageHandler.getEdgeDB().edges(edgeIds).iterator();
     }
 
+    /**
+     * Gets an {@link Iterator} of adjacent vertices.
+     *
+     * @param direction  The adjacency direction of the vertices to retrieve off this vertex
+     * @param edgeLabels The labels of the edges associated with the vertices to retrieve. If no labels are provided, then get all edges.
+     * @return An iterator of vertices meeting the provided specification
+     */
     @Override
     public Iterator<Vertex> vertices(Direction direction, String... edgeLabels) {
-        return null;
+        List<byte[]> edgeIds = this.storageHandler.getVertexDB().getEdgeIDs(this.id, direction, edgeLabels);
+        List<byte[]> vertexIds = new ArrayList<>(100);
+        for (byte[] edgeId : edgeIds) {
+            vertexIds.addAll(this.storageHandler.getEdgeDB().getVertexIDs(edgeId, direction));
+        }
+        return this.storageHandler.getVertexDB().vertices(vertexIds).iterator();
     }
 
     @Override
     public Graph graph() {
-        return null;
+        return this.rocksGraph;
     }
 
     @Override
     public void remove() {
-
+        this.removed = true;
+        //todo:delete vertex;
     }
 }

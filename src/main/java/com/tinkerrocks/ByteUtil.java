@@ -1,5 +1,7 @@
 package com.tinkerrocks;
 
+import org.apache.commons.lang.ArrayUtils;
+
 import java.util.Arrays;
 
 /**
@@ -25,4 +27,14 @@ public class ByteUtil {
     public static byte[] slice(byte[] arr, int start, int end) {
         return Arrays.copyOfRange(arr, start, end);
     }
+
+    public static byte[] slice(byte[] arr, int start) {
+        return Arrays.copyOfRange(arr, start, arr.length);
+    }
+
+    public static byte[] merge(byte[] arr1, byte[] arr2) {
+        return ArrayUtils.addAll(arr1, arr2);
+    }
+
+
 }

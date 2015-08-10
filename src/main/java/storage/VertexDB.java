@@ -3,10 +3,14 @@ package storage;
 import com.tinkerrocks.ByteUtil;
 import com.tinkerrocks.RocksElement;
 import org.apache.tinkerpop.gremlin.structure.Direction;
+import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.rocksdb.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by ashishn on 8/5/15.
@@ -30,16 +34,16 @@ public class VertexDB {
     }
 
 
-    public void addEdge(String vertexId, String edgeId, String inVertexID) throws RocksDBException {
+    public void addEdge(String vertexId, Edge edge, Vertex inVertex) throws RocksDBException {
         this.rocksDB.put(getColumn(VERTEX_COLUMNS.OUT_EDGES),
-                (vertexId + PROPERTY_SEPERATOR + edgeId).getBytes(), inVertexID.getBytes());
+                (vertexId + PROPERTY_SEPERATOR + edge.id()).getBytes(), String.valueOf(inVertex.id()).getBytes());
     }
 
     public Map<String, byte[]> getProperties(RocksElement rocksVertex, String[] propertyKeys) throws RocksDBException {
         Map<String, byte[]> results = new HashMap<>();
 
         if (propertyKeys == null || propertyKeys.length == 0) {
-            RocksIterator rocksIterator = this.rocksDB.newIterator();
+            RocksIterator rocksIterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.PROPERTIES));
             byte[] seek_key = (rocksVertex.id() + PROPERTY_SEPERATOR).getBytes();
             for (rocksIterator.seek(seek_key); rocksIterator.isValid() && ByteUtil.startsWith(rocksIterator.key(), 0, seek_key);
                  rocksIterator.next()) {
@@ -69,14 +73,14 @@ public class VertexDB {
         try {
             if (direction == Direction.BOTH || direction == Direction.IN) {
                 iterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.IN_EDGES));
-                for (iterator.seek((id + PROPERTY_SEPERATOR).getBytes(); iterator.isValid() &&
+                for (iterator.seek((id + PROPERTY_SEPERATOR).getBytes()); iterator.isValid() &&
                         ByteUtil.startsWith(iterator.key(), 0, seek_key); iterator.next()) {
                     edgeIds.add(iterator.value());
                 }
             }
             if (direction == Direction.BOTH || direction == Direction.OUT) {
                 iterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.OUT_EDGES));
-                for (iterator.seek((id + PROPERTY_SEPERATOR).getBytes(); iterator.isValid() &&
+                for (iterator.seek((id + PROPERTY_SEPERATOR).getBytes()); iterator.isValid() &&
                         ByteUtil.startsWith(iterator.key(), 0, seek_key); iterator.next()) {
                     edgeIds.add(iterator.value());
                 }
@@ -130,7 +134,7 @@ public class VertexDB {
     }
 
 
-    public Iterator<Vertex> vertices(Vertex[] vertexIds) {
+    public List<Vertex> vertices(List<byte[]> vertexIds) {
         return null;
     }
 
