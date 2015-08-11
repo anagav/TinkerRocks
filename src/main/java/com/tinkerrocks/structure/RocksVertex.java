@@ -30,7 +30,6 @@ public class RocksVertex extends RocksElement implements Vertex {
         }
 
 
-
         results.forEach((s, bytes) -> {
             props.add(new RocksVertexProperty<>(this, s, (V) new String(bytes)));
         });
@@ -71,7 +70,8 @@ public class RocksVertex extends RocksElement implements Vertex {
     public <V> VertexProperty<V> property(String key, V value, Object... keyValues) {
         ElementHelper.legalPropertyKeyValueArray(keyValues);
         try {
-            this.rocksGraph.getStorageHandler().getVertexDB().addProperty(ElementHelper.getIdValue(keyValues).toString(), key, (String) value);
+            this.rocksGraph.getStorageHandler().getVertexDB()
+                    .addProperty(String.valueOf(ElementHelper.getIdValue(keyValues)).getBytes(), key, (String) value);
         } catch (RocksDBException e) {
             e.printStackTrace();
         }
