@@ -31,7 +31,7 @@ public class RocksVertexProperty<V> implements VertexProperty<V> {
      */
     @Override
     public String key() {
-        return null;
+        return this.key;
     }
 
     /**
@@ -42,7 +42,7 @@ public class RocksVertexProperty<V> implements VertexProperty<V> {
      */
     @Override
     public V value() throws NoSuchElementException {
-        return null;
+        return this.value;
     }
 
     /**
@@ -52,7 +52,7 @@ public class RocksVertexProperty<V> implements VertexProperty<V> {
      */
     @Override
     public boolean isPresent() {
-        return false;
+        return value != null;
     }
 
     /**
@@ -60,7 +60,7 @@ public class RocksVertexProperty<V> implements VertexProperty<V> {
      */
     @Override
     public Vertex element() {
-        return null;
+        return (Vertex) this.element;
     }
 
     /**
@@ -68,7 +68,7 @@ public class RocksVertexProperty<V> implements VertexProperty<V> {
      */
     @Override
     public void remove() {
-
+        //todo add remove capability
     }
 
     /**
@@ -78,7 +78,7 @@ public class RocksVertexProperty<V> implements VertexProperty<V> {
      */
     @Override
     public Object id() {
-        return null;
+        return this.element.id();
     }
 
     /**

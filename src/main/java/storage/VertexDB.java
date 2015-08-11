@@ -46,10 +46,10 @@ public class VertexDB {
 
         if (propertyKeys == null || propertyKeys.length == 0) {
             RocksIterator rocksIterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.PROPERTIES));
-            byte[] seek_key = (rocksVertex.id() + PROPERTY_SEPERATOR).getBytes();
+            byte[] seek_key = ByteUtil.merge((byte[]) rocksVertex.id(), PROPERTY_SEPERATOR.getBytes());
             for (rocksIterator.seek(seek_key); rocksIterator.isValid() && ByteUtil.startsWith(rocksIterator.key(), 0, seek_key);
                  rocksIterator.next()) {
-
+                System.out.println("adding key" + new String(ByteUtil.slice(rocksIterator.key(), seek_key.length, rocksIterator.key().length)));
                 results.put(new String(ByteUtil.slice(rocksIterator.key(), seek_key.length, rocksIterator.key().length)),
                         rocksIterator.value());
             }
@@ -57,7 +57,7 @@ public class VertexDB {
         }
 
         for (String property : propertyKeys) {
-            byte[] val = rocksDB.get((rocksVertex.id() + PROPERTY_SEPERATOR + property).getBytes());
+            byte[] val = rocksDB.get(ByteUtil.merge((byte[]) rocksVertex.id(), PROPERTY_SEPERATOR.getBytes(), property.getBytes()));
             if (val != null)
                 results.put(property, val);
         }
