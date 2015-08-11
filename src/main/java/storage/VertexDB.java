@@ -2,6 +2,7 @@ package storage;
 
 import com.tinkerrocks.ByteUtil;
 import com.tinkerrocks.RocksElement;
+import com.tinkerrocks.RocksGraph;
 import com.tinkerrocks.RocksVertex;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Edge;
@@ -67,22 +68,22 @@ public class VertexDB {
         this.rocksDB.put((id + PROPERTY_SEPERATOR + key).getBytes(), value.getBytes());
     }
 
-    public List<byte[]> getEdgeIDs(String id, Direction direction, String[] edgeLabels) {
+    public List<byte[]> getEdgeIDs(byte[] id, Direction direction, String[] edgeLabels) {
         List<byte[]> edgeIds = new ArrayList<>(50);
         RocksIterator iterator = null;
-        byte[] seek_key = (id + PROPERTY_SEPERATOR).getBytes();
+        byte[] seek_key = ByteUtil.merge(id, PROPERTY_SEPERATOR.getBytes());
 
         try {
             if (direction == Direction.BOTH || direction == Direction.IN) {
                 iterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.IN_EDGES));
-                for (iterator.seek((id + PROPERTY_SEPERATOR).getBytes()); iterator.isValid() &&
+                for (iterator.seek(seek_key); iterator.isValid() &&
                         ByteUtil.startsWith(iterator.key(), 0, seek_key); iterator.next()) {
                     edgeIds.add(iterator.value());
                 }
             }
             if (direction == Direction.BOTH || direction == Direction.OUT) {
                 iterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.OUT_EDGES));
-                for (iterator.seek((id + PROPERTY_SEPERATOR).getBytes()); iterator.isValid() &&
+                for (iterator.seek(seek_key); iterator.isValid() &&
                         ByteUtil.startsWith(iterator.key(), 0, seek_key); iterator.next()) {
                     edgeIds.add(iterator.value());
                 }
@@ -95,12 +96,12 @@ public class VertexDB {
         return edgeIds;
     }
 
-    public RocksVertex vertex(byte[] id) {
+    public RocksVertex vertex(byte[] id, RocksGraph rocksGraph) throws RocksDBException {
         return (RocksVertex) vertices(new ArrayList<byte[]>() {
             {
                 add(id);
             }
-        }).get(0);
+        }, rocksGraph).get(0);
     }
 
 
@@ -152,8 +153,17 @@ public class VertexDB {
     }
 
 
-    public List<Vertex> vertices(List<byte[]> vertexIds) {
-        return null;
+    public List<Vertex> vertices(List<byte[]> vertexIds, RocksGraph rocksGraph) throws RocksDBException {
+        List<Vertex> vertices = new ArrayList<>(vertexIds.size());
+        for (byte[] vertexid : vertexIds) {
+            vertices.add(new RocksVertex(vertexid, getLabel(vertexid), rocksGraph));
+        }
+
+        return vertices;
+    }
+
+    private String getLabel(byte[] vertexid) throws RocksDBException {
+        return new String(this.rocksDB.get(vertexid));
     }
 
 

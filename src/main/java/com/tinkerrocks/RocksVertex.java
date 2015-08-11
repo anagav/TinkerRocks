@@ -4,10 +4,7 @@ import org.apache.tinkerpop.gremlin.structure.*;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 import org.rocksdb.RocksDBException;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by ashishn on 8/5/15.
@@ -51,7 +48,7 @@ public class RocksVertex extends RocksElement implements Vertex {
         ElementHelper.legalPropertyKeyValueArray(keyValues);
         checkRemoved();
 
-        Object edge_id = ElementHelper.getIdValue(keyValues);
+        byte[] edge_id = UUID.randomUUID().toString().getBytes();
 
         try {
             this.rocksGraph.getStorageHandler().getEdgeDB().addEdge(edge_id, label, this, inVertex, keyValues);
@@ -59,7 +56,7 @@ public class RocksVertex extends RocksElement implements Vertex {
             e.printStackTrace();
             return null;
         }
-        return new RocksEdge((String) edge_id, label, this.rocksGraph, this, inVertex);
+        return new RocksEdge(edge_id, label, this.rocksGraph, this, inVertex);
     }
 
     @Override
@@ -81,7 +78,12 @@ public class RocksVertex extends RocksElement implements Vertex {
     @Override
     public Iterator<Edge> edges(Direction direction, String... edgeLabels) {
         List<byte[]> edgeIds = this.rocksGraph.getStorageHandler().getVertexDB().getEdgeIDs(this.id, direction, edgeLabels);
-        return this.rocksGraph.getStorageHandler().getEdgeDB().edges(edgeIds).iterator();
+        try {
+            return this.rocksGraph.getStorageHandler().getEdgeDB().edges(edgeIds, this.rocksGraph).iterator();
+        } catch (RocksDBException e) {
+            e.printStackTrace();
+        }
+        return new ArrayList<Edge>().iterator();
     }
 
     /**

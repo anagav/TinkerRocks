@@ -7,7 +7,6 @@ import org.apache.tinkerpop.gremlin.structure.Property;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 import org.rocksdb.RocksDBException;
-import storage.StorageHandler;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -54,9 +53,9 @@ public abstract class RocksElement implements Element {
         ElementHelper.validateProperty(key, value);
 
         if (this instanceof Vertex) {
-            this.rocksGraph.getStorageHandler().getVertexDB().setProperty(this.id(), key, value);
+            this.rocksGraph.getStorageHandler().getVertexDB().setProperty((byte[]) this.id(), key, value);
         } else {
-            storageHandler.getEdgeDB().setProperty((String) this.id(), key, value);
+            this.rocksGraph.getStorageHandler().getEdgeDB().setProperty((String) this.id(), key, value);
         }
         return new RocksProperty<>(this, key, value);
     }
@@ -76,9 +75,9 @@ public abstract class RocksElement implements Element {
         Map<String, byte[]> properties = new HashMap<>(30);
         try {
             if (this instanceof Vertex) {
-                properties = storageHandler.getVertexDB().getProperties(this, propertyKeys);
+                properties = this.rocksGraph.getStorageHandler().getVertexDB().getProperties(this, propertyKeys);
             } else {
-                properties = storageHandler.getEdgeDB().getProperties(this, propertyKeys);
+                properties = this.rocksGraph.getStorageHandler().getEdgeDB().getProperties(this, propertyKeys);
             }
         } catch (RocksDBException ex) {
             ex.printStackTrace();

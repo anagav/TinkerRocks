@@ -71,7 +71,12 @@ public final class RocksGraph implements Graph {
         for (Object vertexId : vertexIds) {
             ids.add(String.valueOf(vertexId).getBytes());
         }
-        return storageHandler.getVertexDB().vertices(ids).iterator();
+        try {
+            return storageHandler.getVertexDB().vertices(ids, this).iterator();
+        } catch (RocksDBException e) {
+            e.printStackTrace();
+        }
+        return new ArrayList<Vertex>().iterator();
     }
 
     @Override
