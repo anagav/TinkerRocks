@@ -5,7 +5,6 @@ import com.tinkerrocks.structure.RocksElement;
 import com.tinkerrocks.structure.RocksGraph;
 import com.tinkerrocks.structure.RocksVertex;
 import org.apache.tinkerpop.gremlin.structure.Direction;
-import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 import org.rocksdb.*;
@@ -37,9 +36,9 @@ public class VertexDB {
     }
 
 
-    public void addEdge(String vertexId, Edge edge, Vertex inVertex) throws RocksDBException {
-        this.rocksDB.put(getColumn(VERTEX_COLUMNS.OUT_EDGES),
-                (vertexId + PROPERTY_SEPERATOR + edge.id()).getBytes(), String.valueOf(inVertex.id()).getBytes());
+    public void addEdge(byte[] vertexId, byte[] edgeId, Vertex inVertex) throws RocksDBException {
+        this.rocksDB.put(getColumn(VERTEX_COLUMNS.OUT_EDGES), ByteUtil.merge(vertexId, PROPERTY_SEPERATOR.getBytes(), edgeId), (byte[]) inVertex.id());
+        this.rocksDB.put(getColumn(VERTEX_COLUMNS.IN_EDGES), ByteUtil.merge((byte[]) inVertex.id(), PROPERTY_SEPERATOR.getBytes(), edgeId), vertexId);
     }
 
     public Map<String, byte[]> getProperties(RocksElement rocksVertex, String[] propertyKeys) throws RocksDBException {
@@ -50,6 +49,7 @@ public class VertexDB {
             byte[] seek_key = (rocksVertex.id() + PROPERTY_SEPERATOR).getBytes();
             for (rocksIterator.seek(seek_key); rocksIterator.isValid() && ByteUtil.startsWith(rocksIterator.key(), 0, seek_key);
                  rocksIterator.next()) {
+
                 results.put(new String(ByteUtil.slice(rocksIterator.key(), seek_key.length, rocksIterator.key().length)),
                         rocksIterator.value());
             }
@@ -78,14 +78,17 @@ public class VertexDB {
                 iterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.IN_EDGES));
                 for (iterator.seek(seek_key); iterator.isValid() &&
                         ByteUtil.startsWith(iterator.key(), 0, seek_key); iterator.next()) {
-                    edgeIds.add(iterator.value());
+                    System.out.println("IN seeked:" + new String(iterator.key()) + "  value:" + new String(iterator.value()));
+
+                    edgeIds.add(ByteUtil.slice(iterator.key(), seek_key.length));
                 }
             }
             if (direction == Direction.BOTH || direction == Direction.OUT) {
                 iterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.OUT_EDGES));
                 for (iterator.seek(seek_key); iterator.isValid() &&
                         ByteUtil.startsWith(iterator.key(), 0, seek_key); iterator.next()) {
-                    edgeIds.add(iterator.value());
+                    System.out.println("OUT seeked:" + new String(iterator.key()) + "  value:" + new String(iterator.value()));
+                    edgeIds.add(ByteUtil.slice(iterator.key(), seek_key.length));
                 }
             }
         } finally {
@@ -97,6 +100,7 @@ public class VertexDB {
     }
 
     public RocksVertex vertex(byte[] id, RocksGraph rocksGraph) throws RocksDBException {
+        System.out.println("trying to created vertex from id:" + new String(id));
         return (RocksVertex) vertices(new ArrayList<byte[]>() {
             {
                 add(id);
@@ -128,8 +132,8 @@ public class VertexDB {
     public VertexDB() throws RocksDBException {
         columnFamilyDescriptors = new ArrayList<>(VERTEX_COLUMNS.values().length);
         columnFamilyHandleList = new ArrayList<>(VERTEX_COLUMNS.values().length);
+        columnFamilyDescriptors.add(new ColumnFamilyDescriptor(RocksDB.DEFAULT_COLUMN_FAMILY));
         for (VERTEX_COLUMNS vertex_columns : VERTEX_COLUMNS.values()) {
-            columnFamilyDescriptors.add(new ColumnFamilyDescriptor(RocksDB.DEFAULT_COLUMN_FAMILY));
             columnFamilyDescriptors.add(new ColumnFamilyDescriptor(vertex_columns.getValue().getBytes(),
                     new ColumnFamilyOptions()));
         }
@@ -138,7 +142,7 @@ public class VertexDB {
 
 
     public ColumnFamilyHandle getColumn(VERTEX_COLUMNS vertex_column) {
-        return columnFamilyHandleList.get(vertex_column.ordinal());
+        return columnFamilyHandleList.get(vertex_column.ordinal() + 1);
     }
 
     public void addVertex(byte[] idValue, String label, Object[] keyValues) throws RocksDBException {

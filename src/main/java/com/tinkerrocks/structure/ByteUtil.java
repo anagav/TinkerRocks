@@ -40,6 +40,11 @@ public class ByteUtil {
         return ArrayUtils.addAll(arr1, arr2);
     }
 
+
+    public static byte[] merge(byte[] arr1, byte[] arr2, byte[] arr3) {
+        return ArrayUtils.addAll(ArrayUtils.addAll(arr1, arr2), arr3);
+    }
+
     public static String toString(Object object) {
         return gson.toJson(object);
     }

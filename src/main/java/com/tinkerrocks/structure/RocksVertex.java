@@ -54,6 +54,8 @@ public class RocksVertex extends RocksElement implements Vertex {
 
         try {
             this.rocksGraph.getStorageHandler().getEdgeDB().addEdge(edge_id, label, this, inVertex, keyValues);
+            System.out.println("adding Edge with id:" + new String(edge_id));
+            this.rocksGraph.getStorageHandler().getVertexDB().addEdge(this.id, edge_id, inVertex);
         } catch (RocksDBException e) {
             e.printStackTrace();
             return null;
@@ -81,7 +83,11 @@ public class RocksVertex extends RocksElement implements Vertex {
     public Iterator<Edge> edges(Direction direction, String... edgeLabels) {
         List<byte[]> edgeIds = this.rocksGraph.getStorageHandler().getVertexDB().getEdgeIDs(this.id, direction, edgeLabels);
         try {
-            return this.rocksGraph.getStorageHandler().getEdgeDB().edges(edgeIds, this.rocksGraph).iterator();
+            List<Edge> edges = this.rocksGraph.getStorageHandler().getEdgeDB().edges(edgeIds, this.rocksGraph);
+            for (Edge edge : edges) {
+                System.out.println("edge: " + edge);
+            }
+
         } catch (RocksDBException e) {
             e.printStackTrace();
         }
@@ -144,6 +150,6 @@ public class RocksVertex extends RocksElement implements Vertex {
      */
     @Override
     public String toString() {
-        return ByteUtil.toString(this);
+        return "Vertex: \n id:" + new String(id) + "edges:" + edges(Direction.BOTH, "");
     }
 }
