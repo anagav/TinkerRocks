@@ -100,7 +100,12 @@ public class RocksVertex extends RocksElement implements Vertex {
         for (byte[] edgeId : edgeIds) {
             vertexIds.addAll(this.rocksGraph.getStorageHandler().getEdgeDB().getVertexIDs(edgeId, direction));
         }
-        return this.rocksGraph.getStorageHandler().getVertexDB().vertices(vertexIds).iterator();
+        try {
+            return this.rocksGraph.getStorageHandler().getVertexDB().vertices(vertexIds, this.rocksGraph).iterator();
+        } catch (RocksDBException e) {
+            e.printStackTrace();
+        }
+        return new ArrayList<Vertex>().iterator();
     }
 
     @Override
