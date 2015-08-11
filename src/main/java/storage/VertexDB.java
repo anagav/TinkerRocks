@@ -133,7 +133,7 @@ public class VertexDB {
             columnFamilyDescriptors.add(new ColumnFamilyDescriptor(vertex_columns.getValue().getBytes(),
                     new ColumnFamilyOptions()));
         }
-        this.rocksDB = RocksDB.open(new DBOptions(), "/tmp/vertices", columnFamilyDescriptors, columnFamilyHandleList);
+        this.rocksDB = RocksDB.open(new DBOptions().setCreateIfMissing(true).setCreateMissingColumnFamilies(true), "/tmp/vertices", columnFamilyDescriptors, columnFamilyHandleList);
     }
 
 
@@ -141,12 +141,11 @@ public class VertexDB {
         return columnFamilyHandleList.get(vertex_column.ordinal());
     }
 
-    public void addVertex(Object idValue, String label, Object[] keyValues) throws RocksDBException {
+    public void addVertex(byte[] idValue, String label, Object[] keyValues) throws RocksDBException {
 
-
-        this.rocksDB.put(String.valueOf(idValue).getBytes(), label.getBytes());
+        this.rocksDB.put(idValue, label.getBytes());
         Map<String, Object> properties = ElementHelper.asMap(keyValues);
-        byte[] id = ByteUtil.merge(String.valueOf(idValue).getBytes(), PROPERTY_SEPERATOR.getBytes());
+        byte[] id = ByteUtil.merge(idValue, PROPERTY_SEPERATOR.getBytes());
         for (Map.Entry<String, Object> property : properties.entrySet()) {
             this.rocksDB.put(ByteUtil.merge(id, property.getKey().getBytes()), String.valueOf(property.getValue()).getBytes());
         }
@@ -163,6 +162,7 @@ public class VertexDB {
     }
 
     private String getLabel(byte[] vertexid) throws RocksDBException {
+        System.out.println("looking for id:" + new String(vertexid));
         return new String(this.rocksDB.get(vertexid));
     }
 

@@ -1,5 +1,7 @@
 package com.tinkerrocks.structure;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.apache.commons.lang.ArrayUtils;
 
 import java.util.Arrays;
@@ -8,6 +10,8 @@ import java.util.Arrays;
  * Created by ashishn on 8/5/15.
  */
 public class ByteUtil {
+
+    static Gson gson = new GsonBuilder().create();
 
     public static boolean startsWith(byte[] source, int offset, byte[] match) {
 
@@ -34,6 +38,10 @@ public class ByteUtil {
 
     public static byte[] merge(byte[] arr1, byte[] arr2) {
         return ArrayUtils.addAll(arr1, arr2);
+    }
+
+    public static String toString(Object object) {
+        return gson.toJson(object);
     }
 
 

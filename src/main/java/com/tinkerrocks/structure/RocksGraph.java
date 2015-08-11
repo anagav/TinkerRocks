@@ -2,10 +2,9 @@ package com.tinkerrocks.structure;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.process.computer.GraphComputer;
-import org.apache.tinkerpop.gremlin.structure.Edge;
-import org.apache.tinkerpop.gremlin.structure.Graph;
-import org.apache.tinkerpop.gremlin.structure.Transaction;
-import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.apache.tinkerpop.gremlin.structure.*;
+import org.apache.tinkerpop.gremlin.structure.io.Io;
+import org.apache.tinkerpop.gremlin.structure.io.IoRegistry;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 import org.rocksdb.RocksDBException;
 import storage.StorageHandler;
@@ -20,6 +19,10 @@ import java.util.UUID;
  * Created by ashishn on 8/4/15.
  */
 
+@Graph.OptIn(Graph.OptIn.SUITE_STRUCTURE_STANDARD)
+@Graph.OptIn(Graph.OptIn.SUITE_PROCESS_STANDARD)
+@Graph.OptIn(Graph.OptIn.SUITE_STRUCTURE_PERFORMANCE)
+
 
 public final class RocksGraph implements Graph {
 
@@ -27,13 +30,19 @@ public final class RocksGraph implements Graph {
     private final Configuration configuration;
     private final StorageHandler storageHandler;
 
-    public RocksGraph(Configuration configuration) throws InstantiationException {
+
+    public static RocksGraph open(final Configuration configuration) throws InstantiationException {
+        return new RocksGraph(configuration);
+    }
+
+    public RocksGraph(Configuration configuration) {
         configuration.setProperty(Graph.GRAPH, RocksGraph.class.getName());
         this.configuration = configuration;
         try {
             this.storageHandler = new StorageHandler();
         } catch (RocksDBException e) {
-            throw new InstantiationException(e.getLocalizedMessage());
+            e.printStackTrace();
+            throw Exceptions.idArgsMustBeEitherIdOrElement();
         }
     }
 
@@ -44,7 +53,8 @@ public final class RocksGraph implements Graph {
     @Override
     public Vertex addVertex(Object... keyValues) {
         ElementHelper.legalPropertyKeyValueArray(keyValues);
-        byte[] idValue = UUID.randomUUID().toString().getBytes();
+        byte[] idValue = String.valueOf(ElementHelper.getIdValue(keyValues).orElse(UUID.randomUUID().toString().getBytes())).getBytes();  //UUID.randomUUID().toString().getBytes();
+        System.out.println("adding vertex with id:" + new String(idValue));
         final String label = ElementHelper.getLabelValue(keyValues).orElse(Vertex.DEFAULT_LABEL);
         try {
             storageHandler.getVertexDB().addVertex(idValue, label, keyValues);
@@ -165,5 +175,32 @@ public final class RocksGraph implements Graph {
     @Override
     public void close() throws Exception {
         storageHandler.close();
+    }
+
+
+    /**
+     * Construct a particular {@link Io} implementation for reading and writing the {@code Graph} and other data.
+     * End-users will "select" the {@link Io} implementation that they want to use by supplying the {@link Io.Builder}
+     * that constructs it.  In this way, {@code Graph} vendors can supply their {@link IoRegistry} to that builder
+     * thus allowing for custom serializers to be auto-configured into the {@link Io} instance.  Registering custom
+     * serializers is particularly useful for those graphs that have complex types for {@link Element} identifiers.
+     * </br>
+     * For those graphs that do not need to register any custom serializers, the default implementation should suffice.
+     * If the default is overriden, take care to register the current graph to the {@link Io.Builder} via the
+     * {@link Io.Builder#graph(Graph)} method.
+     *
+     * @param builder
+     */
+    @Override
+    public <I extends Io> I io(Io.Builder<I> builder) {
+        return null;
+    }
+
+    /**
+     * Gets the {@link Features} exposed by the underlying {@code Graph} implementation.
+     */
+    @Override
+    public Features features() {
+        return null;
     }
 }

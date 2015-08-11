@@ -48,7 +48,9 @@ public class RocksVertex extends RocksElement implements Vertex {
         ElementHelper.legalPropertyKeyValueArray(keyValues);
         checkRemoved();
 
-        byte[] edge_id = UUID.randomUUID().toString().getBytes();
+        byte[] edge_id = String.valueOf(ElementHelper
+                .getIdValue(keyValues).orElse(UUID.randomUUID().toString().getBytes())).getBytes();  //UUID.randomUUID().toString().getBytes();
+
 
         try {
             this.rocksGraph.getStorageHandler().getEdgeDB().addEdge(edge_id, label, this, inVertex, keyValues);
@@ -117,5 +119,31 @@ public class RocksVertex extends RocksElement implements Vertex {
     public void remove() {
         this.removed = true;
         //todo:delete vertex;
+    }
+
+    /**
+     * Returns a string representation of the object. In general, the
+     * {@code toString} method returns a string that
+     * "textually represents" this object. The result should
+     * be a concise but informative representation that is easy for a
+     * person to read.
+     * It is recommended that all subclasses override this method.
+     * <p/>
+     * The {@code toString} method for class {@code Object}
+     * returns a string consisting of the name of the class of which the
+     * object is an instance, the at-sign character `{@code @}', and
+     * the unsigned hexadecimal representation of the hash code of the
+     * object. In other words, this method returns a string equal to the
+     * value of:
+     * <blockquote>
+     * <pre>
+     * getClass().getName() + '@' + Integer.toHexString(hashCode())
+     * </pre></blockquote>
+     *
+     * @return a string representation of the object.
+     */
+    @Override
+    public String toString() {
+        return ByteUtil.toString(this);
     }
 }

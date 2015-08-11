@@ -21,7 +21,7 @@ public class RocksGraphGremlinPlugin extends AbstractGremlinPlugin {
 
     @Override
     public String getName() {
-        return "com.tinkerrocks";
+        return "tinkerpop.tinkerrocks";
     }
 
     @Override
