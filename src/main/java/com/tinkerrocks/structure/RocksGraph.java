@@ -1,4 +1,4 @@
-package com.tinkerrocks;
+package com.tinkerrocks.structure;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.process.computer.GraphComputer;
@@ -19,7 +19,10 @@ import java.util.UUID;
 /**
  * Created by ashishn on 8/4/15.
  */
+
+
 public final class RocksGraph implements Graph {
+
 
     private final Configuration configuration;
     private final StorageHandler storageHandler;

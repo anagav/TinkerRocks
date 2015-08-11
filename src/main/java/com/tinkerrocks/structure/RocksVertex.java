@@ -1,4 +1,4 @@
-package com.tinkerrocks;
+package com.tinkerrocks.structure;
 
 import org.apache.tinkerpop.gremlin.structure.*;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;

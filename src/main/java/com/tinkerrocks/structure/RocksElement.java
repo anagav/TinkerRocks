@@ -1,4 +1,4 @@
-package com.tinkerrocks; /**
+package com.tinkerrocks.structure; /**
  * Created by ashishn on 8/4/15.
  */
 
@@ -82,7 +82,7 @@ public abstract class RocksElement implements Element {
         } catch (RocksDBException ex) {
             ex.printStackTrace();
         }
-        List<RocksProperty<V>> propertiesList = new ArrayList<>(properties.size());
+        List<Property<V>> propertiesList = new ArrayList<>(properties.size());
         propertiesList.addAll(properties.entrySet().stream()
                 .map(property -> new RocksProperty<>(this,
                         property.getKey(), (V) property.getValue())).collect(Collectors.toList()));

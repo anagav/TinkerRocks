@@ -1,9 +1,9 @@
 package storage;
 
-import com.tinkerrocks.ByteUtil;
-import com.tinkerrocks.RocksElement;
-import com.tinkerrocks.RocksGraph;
-import com.tinkerrocks.RocksVertex;
+import com.tinkerrocks.structure.ByteUtil;
+import com.tinkerrocks.structure.RocksElement;
+import com.tinkerrocks.structure.RocksGraph;
+import com.tinkerrocks.structure.RocksVertex;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;

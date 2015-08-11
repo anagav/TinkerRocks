@@ -1,4 +1,4 @@
-package com.tinkerrocks;
+package com.tinkerrocks.structure;
 
 import org.apache.commons.lang.ArrayUtils;
 
