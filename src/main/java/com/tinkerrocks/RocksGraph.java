@@ -11,7 +11,10 @@ import org.rocksdb.RocksDBException;
 import storage.StorageHandler;
 
 import java.io.Closeable;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by ashishn on 8/4/15.
@@ -38,9 +41,15 @@ public final class RocksGraph implements Graph {
     @Override
     public Vertex addVertex(Object... keyValues) {
         ElementHelper.legalPropertyKeyValueArray(keyValues);
-        Object idValue = ElementHelper.getIdValue(keyValues).orElse(null);
+        byte[] idValue = UUID.randomUUID().toString().getBytes();
         final String label = ElementHelper.getLabelValue(keyValues).orElse(Vertex.DEFAULT_LABEL);
-        return storageHandler.getVertexDB().addVertex(idValue, label, keyValues);
+        try {
+            storageHandler.getVertexDB().addVertex(idValue, label, keyValues);
+        } catch (RocksDBException e) {
+            e.printStackTrace();
+        }
+        return new RocksVertex(idValue, label, this);
+
     }
 
     @Override
@@ -58,12 +67,31 @@ public final class RocksGraph implements Graph {
         if (vertexIds.length > 1 && !vertexIds[0].getClass().equals(vertexIds[1].getClass()))
             throw Graph.Exceptions.idArgsMustBeEitherIdOrElement();
 
-        return storageHandler.getVertexDB().vertices((Vertex[]) vertexIds);
+        List<byte[]> ids = new ArrayList<>(vertexIds.length);
+        for (Object vertexId : vertexIds) {
+            ids.add(String.valueOf(vertexId).getBytes());
+        }
+        return storageHandler.getVertexDB().vertices(ids).iterator();
     }
 
     @Override
     public Iterator<Edge> edges(Object... edgeIds) {
-        return storageHandler.getEdgeDB().edges(edgeIds);
+        if (edgeIds.length > 1 && !edgeIds[0].getClass().equals(edgeIds[1].getClass()))
+            throw Graph.Exceptions.idArgsMustBeEitherIdOrElement();
+
+        List<byte[]> ids = new ArrayList<>(edgeIds.length);
+        for (Object vertexId : edgeIds) {
+            ids.add(String.valueOf(vertexId).getBytes());
+        }
+
+        try {
+            return storageHandler.getEdgeDB().edges(ids, this).iterator();
+        } catch (RocksDBException e) {
+            e.printStackTrace();
+        }
+
+        //todo place holder
+        return new ArrayList<Edge>().iterator();
     }
 
     @Override

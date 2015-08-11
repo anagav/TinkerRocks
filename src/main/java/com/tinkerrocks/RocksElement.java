@@ -14,18 +14,16 @@ import java.util.stream.Collectors;
 
 public abstract class RocksElement implements Element {
 
-    protected final String id;
+    protected final byte[] id;
     protected final String label;
 
 
-    protected final StorageHandler storageHandler;
     protected final RocksGraph rocksGraph;
     protected boolean removed = false;
 
-    protected RocksElement(final String id, final String label, StorageHandler storageHandler, RocksGraph rocksGraph) {
+    protected RocksElement(final byte[] id, final String label, RocksGraph rocksGraph) {
         this.id = id;
         this.label = label;
-        this.storageHandler = storageHandler;
         this.rocksGraph = rocksGraph;
     }
 
@@ -56,7 +54,7 @@ public abstract class RocksElement implements Element {
         ElementHelper.validateProperty(key, value);
 
         if (this instanceof Vertex) {
-            storageHandler.getVertexDB().setProperty((String) this.id(), key, value);
+            this.rocksGraph.getStorageHandler().getVertexDB().setProperty(this.id(), key, value);
         } else {
             storageHandler.getEdgeDB().setProperty((String) this.id(), key, value);
         }

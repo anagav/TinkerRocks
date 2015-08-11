@@ -28,4 +28,6 @@ public class StorageHandler {
         vertexDB.close();
         edgeDB.close();
     }
+
+
 }

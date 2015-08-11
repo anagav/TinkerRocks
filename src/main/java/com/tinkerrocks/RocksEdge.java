@@ -1,7 +1,6 @@
 package com.tinkerrocks;
 
 import org.apache.tinkerpop.gremlin.structure.*;
-import storage.StorageHandler;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -15,9 +14,10 @@ public class RocksEdge extends RocksElement implements Edge {
     protected Vertex inVertex;
     protected Vertex outVertex;
 
-    protected RocksEdge(String id, String label, StorageHandler storageHandler, RocksGraph rocksGraph,
-                        Vertex inVertex, Vertex outVertex) {
-        super(id, label, storageHandler, rocksGraph);
+
+    public RocksEdge(byte[] id, String label, RocksGraph rocksGraph,
+                     Vertex inVertex, Vertex outVertex) {
+        super(id, label, rocksGraph);
         this.inVertex = inVertex;
         this.outVertex = outVertex;
     }
@@ -75,6 +75,7 @@ public class RocksEdge extends RocksElement implements Edge {
      *
      * @param propertyKeys
      */
+    @SuppressWarnings("unchecked")
     @Override
     public <V> Iterator<Property<V>> properties(String... propertyKeys) {
         return (Iterator<Property<V>>) super.properties(propertyKeys);

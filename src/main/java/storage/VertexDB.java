@@ -2,9 +2,11 @@ package storage;
 
 import com.tinkerrocks.ByteUtil;
 import com.tinkerrocks.RocksElement;
+import com.tinkerrocks.RocksVertex;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 import org.rocksdb.*;
 
 import java.util.ArrayList;
@@ -25,7 +27,7 @@ public class VertexDB {
         this.rocksDB.close();
     }
 
-    public <V> void setProperty(String id, String key, V value) {
+    public <V> void setProperty(byte[] id, String key, V value) {
         try {
             this.rocksDB.put(getColumn(VERTEX_COLUMNS.PROPERTIES), (id + key).getBytes(), String.valueOf(value).getBytes());
         } catch (RocksDBException e) {
@@ -93,6 +95,15 @@ public class VertexDB {
         return edgeIds;
     }
 
+    public RocksVertex vertex(byte[] id) {
+        return (RocksVertex) vertices(new ArrayList<byte[]>() {
+            {
+                add(id);
+            }
+        }).get(0);
+    }
+
+
     public static enum VERTEX_COLUMNS {
         PROPERTIES("PROPERTIES"),
         OUT_EDGES("OUT_EDGES"),
@@ -129,8 +140,15 @@ public class VertexDB {
         return columnFamilyHandleList.get(vertex_column.ordinal());
     }
 
-    public Vertex addVertex(Object idValue, String label, Object[] keyValues) {
-        return null;
+    public void addVertex(Object idValue, String label, Object[] keyValues) throws RocksDBException {
+
+
+        this.rocksDB.put(String.valueOf(idValue).getBytes(), label.getBytes());
+        Map<String, Object> properties = ElementHelper.asMap(keyValues);
+        byte[] id = ByteUtil.merge(String.valueOf(idValue).getBytes(), PROPERTY_SEPERATOR.getBytes());
+        for (Map.Entry<String, Object> property : properties.entrySet()) {
+            this.rocksDB.put(ByteUtil.merge(id, property.getKey().getBytes()), String.valueOf(property.getValue()).getBytes());
+        }
     }
 
 

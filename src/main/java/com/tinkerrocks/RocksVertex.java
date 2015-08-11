@@ -3,7 +3,6 @@ package com.tinkerrocks;
 import org.apache.tinkerpop.gremlin.structure.*;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 import org.rocksdb.RocksDBException;
-import storage.StorageHandler;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -16,8 +15,9 @@ import java.util.Map;
 public class RocksVertex extends RocksElement implements Vertex {
 
 
-    public RocksVertex(String id, String label, StorageHandler storageHandler, RocksGraph rocksGraph) {
-        super(id, label, storageHandler, rocksGraph);
+    public RocksVertex(byte[] id, String label, RocksGraph rocksGraph) {
+        super(id, label, rocksGraph);
+
     }
 
     @Override
@@ -25,7 +25,7 @@ public class RocksVertex extends RocksElement implements Vertex {
         Map<String, byte[]> results;
         List<VertexProperty<V>> props = new ArrayList<>();
         try {
-            results = storageHandler.getVertexDB().getProperties(this, propertyKeys);
+            results = this.rocksGraph.getStorageHandler().getVertexDB().getProperties(this, propertyKeys);
         } catch (RocksDBException e) {
             e.printStackTrace();
             return null;
@@ -40,7 +40,7 @@ public class RocksVertex extends RocksElement implements Vertex {
 
     @Override
     public <V> VertexProperty<V> property(final String key, final V value) {
-        storageHandler.getVertexDB().setProperty(this.id, key, value);
+        this.rocksGraph.getStorageHandler().getVertexDB().setProperty(this.id, key, value);
         return new RocksVertexProperty<>(this, key, value);
     }
 
@@ -54,19 +54,19 @@ public class RocksVertex extends RocksElement implements Vertex {
         Object edge_id = ElementHelper.getIdValue(keyValues);
 
         try {
-            this.storageHandler.getEdgeDB().addEdge(edge_id, label, this, inVertex, keyValues);
+            this.rocksGraph.getStorageHandler().getEdgeDB().addEdge(edge_id, label, this, inVertex, keyValues);
         } catch (RocksDBException e) {
             e.printStackTrace();
             return null;
         }
-        return new RocksEdge((String) edge_id, label, storageHandler, this.rocksGraph, this, inVertex);
+        return new RocksEdge((String) edge_id, label, this.rocksGraph, this, inVertex);
     }
 
     @Override
     public <V> VertexProperty<V> property(String key, V value, Object... keyValues) {
         ElementHelper.legalPropertyKeyValueArray(keyValues);
         try {
-            this.storageHandler.getVertexDB().addProperty(ElementHelper.getIdValue(keyValues).toString(), key, (String) value);
+            this.rocksGraph.getStorageHandler().getVertexDB().addProperty(ElementHelper.getIdValue(keyValues).toString(), key, (String) value);
         } catch (RocksDBException e) {
             e.printStackTrace();
         }
@@ -80,8 +80,8 @@ public class RocksVertex extends RocksElement implements Vertex {
 
     @Override
     public Iterator<Edge> edges(Direction direction, String... edgeLabels) {
-        List<byte[]> edgeIds = this.storageHandler.getVertexDB().getEdgeIDs(this.id, direction, edgeLabels);
-        return this.storageHandler.getEdgeDB().edges(edgeIds).iterator();
+        List<byte[]> edgeIds = this.rocksGraph.getStorageHandler().getVertexDB().getEdgeIDs(this.id, direction, edgeLabels);
+        return this.rocksGraph.getStorageHandler().getEdgeDB().edges(edgeIds).iterator();
     }
 
     /**
@@ -93,12 +93,12 @@ public class RocksVertex extends RocksElement implements Vertex {
      */
     @Override
     public Iterator<Vertex> vertices(Direction direction, String... edgeLabels) {
-        List<byte[]> edgeIds = this.storageHandler.getVertexDB().getEdgeIDs(this.id, direction, edgeLabels);
+        List<byte[]> edgeIds = this.rocksGraph.getStorageHandler().getVertexDB().getEdgeIDs(this.id, direction, edgeLabels);
         List<byte[]> vertexIds = new ArrayList<>(100);
         for (byte[] edgeId : edgeIds) {
-            vertexIds.addAll(this.storageHandler.getEdgeDB().getVertexIDs(edgeId, direction));
+            vertexIds.addAll(this.rocksGraph.getStorageHandler().getEdgeDB().getVertexIDs(edgeId, direction));
         }
-        return this.storageHandler.getVertexDB().vertices(vertexIds).iterator();
+        return this.rocksGraph.getStorageHandler().getVertexDB().vertices(vertexIds).iterator();
     }
 
     @Override
