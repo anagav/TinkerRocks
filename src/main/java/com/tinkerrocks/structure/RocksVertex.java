@@ -29,9 +29,7 @@ public class RocksVertex extends RocksElement implements Vertex {
             return null;
         }
 
-        results.forEach((s, bytes) -> {
-            props.add(new RocksVertexProperty<>(this, s, (V) new String(bytes)));
-        });
+        results.forEach((s, bytes) -> props.add(new RocksVertexProperty<>(this, s, (V) new String(bytes))));
 
         return props.iterator();
 

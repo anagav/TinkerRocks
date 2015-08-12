@@ -83,7 +83,7 @@ public class RocksEdge extends RocksElement implements Edge {
     @SuppressWarnings("unchecked")
     @Override
     public <V> Iterator<Property<V>> properties(String... propertyKeys) {
-        Map<String, byte[]> properties = new HashMap<>(30);
+        Map<String, byte[]> properties = new HashMap<>();
         try {
             if (this instanceof Vertex) {
                 properties = this.rocksGraph.getStorageHandler().getVertexDB().getProperties(this, propertyKeys);
@@ -96,7 +96,7 @@ public class RocksEdge extends RocksElement implements Edge {
         List<Property<V>> propertiesList = new ArrayList<>(properties.size());
         propertiesList.addAll(properties.entrySet().stream()
                 .map(property -> new RocksProperty<>(this,
-                        property.getKey(), (V) property.getValue())).collect(Collectors.toList()));
+                        property.getKey(), (V) new String(property.getValue()))).collect(Collectors.toList()));
         return propertiesList.iterator();
     }
 

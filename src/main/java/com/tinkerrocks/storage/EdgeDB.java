@@ -4,13 +4,7 @@ import com.tinkerrocks.structure.*;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
-import org.rocksdb.ColumnFamilyDescriptor;
-import org.rocksdb.ColumnFamilyHandle;
-import org.rocksdb.ColumnFamilyOptions;
-import org.rocksdb.DBOptions;
-import org.rocksdb.RocksDB;
-import org.rocksdb.RocksDBException;
-import org.rocksdb.RocksIterator;
+import org.rocksdb.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,7 +12,8 @@ import java.util.List;
 import java.util.Map;
 
 
-/** <p>
+/**
+ * <p>
  * class that handles edges. Including serialization and de-serialization.
  * </p>
  * Created by ashishn on 8/5/15.
@@ -94,7 +89,7 @@ public class EdgeDB {
 
         if (propertyKeys == null || propertyKeys.length == 0) {
             RocksIterator rocksIterator = this.rocksDB.newIterator(getColumn(EDGE_COLUMNS.PROPERTIES));
-            byte[] seek_key = (element.id() + StorageConstants.PROPERTY_SEPERATOR).getBytes();
+            byte[] seek_key = ByteUtil.merge((byte[]) element.id(), StorageConstants.PROPERTY_SEPERATOR.getBytes());
             for (rocksIterator.seek(seek_key); rocksIterator.isValid() && ByteUtil.startsWith(rocksIterator.key(), 0, seek_key);
                  rocksIterator.next()) {
                 results.put(new String(ByteUtil.slice(rocksIterator.key(), seek_key.length, rocksIterator.key().length)),
@@ -104,7 +99,10 @@ public class EdgeDB {
         }
 
         for (String property : propertyKeys) {
-            byte[] val = rocksDB.get((element.id() + StorageConstants.PROPERTY_SEPERATOR + property).getBytes());
+            byte[] val = rocksDB.get(getColumn(EDGE_COLUMNS.PROPERTIES),
+                    ByteUtil.merge((byte[]) element.id(), StorageConstants.PROPERTY_SEPERATOR.getBytes(),
+                            property.getBytes()));
+
             if (val != null)
                 results.put(property, val);
         }

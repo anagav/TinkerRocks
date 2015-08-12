@@ -2,9 +2,7 @@ package com.tinkerrocks.structure;
 
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
-import org.apache.tinkerpop.gremlin.structure.T;
-import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.apache.tinkerpop.gremlin.structure.VertexProperty;
+import org.apache.tinkerpop.gremlin.structure.*;
 import org.junit.Test;
 
 import java.util.Iterator;
@@ -42,6 +40,16 @@ public class RocksTest {
             Iterator<VertexProperty<Object>> properties = test.properties();
             while (properties.hasNext()) {
                 System.out.println("vertex:" + test + "\tproperties:" + properties.next());
+            }
+
+            Iterator<Edge> edges = test.edges(Direction.BOTH);
+            while (edges.hasNext()) {
+                Edge edge = edges.next();
+                System.out.println("Edge: " + edge);
+                Iterator<Property<Object>> edge_properties = edge.properties();
+                while (edge_properties.hasNext()) {
+                    System.out.println("edge:" + test + "\tproperties:" + edge_properties.next());
+                }
             }
 
             //System.out.println(iter.next().edges(Direction.BOTH).hasNext());
