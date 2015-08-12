@@ -47,15 +47,15 @@ public class EdgeDB {
 
         this.rocksDB.put(edge_id, label.getBytes());
         this.rocksDB.put(getColumn(EDGE_COLUMNS.IN_VERTICES), ByteUtil.merge(edge_id,
-                VertexDB.PROPERTY_SEPERATOR.getBytes(), (byte[]) inVertex.id()), (byte[]) inVertex.id());
+                StorageConstants.PROPERTY_SEPERATOR.getBytes(), (byte[]) inVertex.id()), (byte[]) inVertex.id());
 
         this.rocksDB.put(getColumn(EDGE_COLUMNS.OUT_VERTICES), ByteUtil.merge(edge_id,
-                VertexDB.PROPERTY_SEPERATOR.getBytes(), (byte[]) outVertex.id()), (byte[]) outVertex.id());
+                StorageConstants.PROPERTY_SEPERATOR.getBytes(), (byte[]) outVertex.id()), (byte[]) outVertex.id());
 
         Map<String, Object> properties = ElementHelper.asMap(keyValues);
         for (Map.Entry<String, Object> entry : properties.entrySet()) {
             this.rocksDB.put(getColumn(EDGE_COLUMNS.PROPERTIES),
-                    ByteUtil.merge(edge_id, VertexDB.PROPERTY_SEPERATOR.getBytes(), entry.getKey().getBytes()),
+                    ByteUtil.merge(edge_id, StorageConstants.PROPERTY_SEPERATOR.getBytes(), entry.getKey().getBytes()),
                     String.valueOf(entry.getValue()).getBytes());
         }
     }
@@ -63,7 +63,7 @@ public class EdgeDB {
     public List<byte[]> getVertexIDs(byte[] edgeId, Direction direction) {
         List<byte[]> vertexIDs = new ArrayList<>(16);
         RocksIterator rocksIterator;
-        byte[] seek_key = ByteUtil.merge(edgeId, VertexDB.PROPERTY_SEPERATOR.getBytes());
+        byte[] seek_key = ByteUtil.merge(edgeId, StorageConstants.PROPERTY_SEPERATOR.getBytes());
         if (direction == Direction.BOTH || direction == Direction.IN) {
             rocksIterator = this.rocksDB.newIterator(getColumn(EDGE_COLUMNS.IN_VERTICES));
             for (rocksIterator.seek(seek_key); rocksIterator.isValid()
@@ -86,7 +86,7 @@ public class EdgeDB {
 
         if (propertyKeys == null || propertyKeys.length == 0) {
             RocksIterator rocksIterator = this.rocksDB.newIterator(getColumn(EDGE_COLUMNS.PROPERTIES));
-            byte[] seek_key = (element.id() + VertexDB.PROPERTY_SEPERATOR).getBytes();
+            byte[] seek_key = (element.id() + StorageConstants.PROPERTY_SEPERATOR).getBytes();
             for (rocksIterator.seek(seek_key); rocksIterator.isValid() && ByteUtil.startsWith(rocksIterator.key(), 0, seek_key);
                  rocksIterator.next()) {
                 results.put(new String(ByteUtil.slice(rocksIterator.key(), seek_key.length, rocksIterator.key().length)),
@@ -96,7 +96,7 @@ public class EdgeDB {
         }
 
         for (String property : propertyKeys) {
-            byte[] val = rocksDB.get((element.id() + VertexDB.PROPERTY_SEPERATOR + property).getBytes());
+            byte[] val = rocksDB.get((element.id() + StorageConstants.PROPERTY_SEPERATOR + property).getBytes());
             if (val != null)
                 results.put(property, val);
         }
@@ -142,7 +142,7 @@ public class EdgeDB {
         }
 
 
-        byte[] seek_key = ByteUtil.merge(id, VertexDB.PROPERTY_SEPERATOR.getBytes());
+        byte[] seek_key = ByteUtil.merge(id, StorageConstants.PROPERTY_SEPERATOR.getBytes());
         iterator.seek(seek_key);
         if (iterator.isValid() && ByteUtil.startsWith(iterator.key(), 0, seek_key)) {
             return ByteUtil.slice(iterator.key(), seek_key.length);

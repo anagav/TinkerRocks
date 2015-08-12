@@ -7,7 +7,13 @@ import com.tinkerrocks.structure.RocksVertex;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
-import org.rocksdb.*;
+import org.rocksdb.ColumnFamilyDescriptor;
+import org.rocksdb.ColumnFamilyHandle;
+import org.rocksdb.ColumnFamilyOptions;
+import org.rocksdb.DBOptions;
+import org.rocksdb.RocksDB;
+import org.rocksdb.RocksDBException;
+import org.rocksdb.RocksIterator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +26,6 @@ import java.util.Map;
 
 
 public class VertexDB {
-    public static final String PROPERTY_SEPERATOR = "#";
 
 
     public void close() {
@@ -30,7 +35,7 @@ public class VertexDB {
     public <V> void setProperty(byte[] id, String key, V value) {
         try {
             this.rocksDB.put(getColumn(VERTEX_COLUMNS.PROPERTIES),
-                    ByteUtil.merge(id, PROPERTY_SEPERATOR.getBytes(), key.getBytes()), String.valueOf(value).getBytes());
+                    ByteUtil.merge(id, StorageConstants.PROPERTY_SEPERATOR.getBytes(), key.getBytes()), String.valueOf(value).getBytes());
         } catch (RocksDBException e) {
             e.printStackTrace();
         }
@@ -38,8 +43,8 @@ public class VertexDB {
 
 
     public void addEdge(byte[] vertexId, byte[] edgeId, Vertex inVertex) throws RocksDBException {
-        this.rocksDB.put(getColumn(VERTEX_COLUMNS.OUT_EDGES), ByteUtil.merge(vertexId, PROPERTY_SEPERATOR.getBytes(), edgeId), (byte[]) inVertex.id());
-        this.rocksDB.put(getColumn(VERTEX_COLUMNS.IN_EDGES), ByteUtil.merge((byte[]) inVertex.id(), PROPERTY_SEPERATOR.getBytes(), edgeId), vertexId);
+        this.rocksDB.put(getColumn(VERTEX_COLUMNS.OUT_EDGES), ByteUtil.merge(vertexId, StorageConstants.PROPERTY_SEPERATOR.getBytes(), edgeId), (byte[]) inVertex.id());
+        this.rocksDB.put(getColumn(VERTEX_COLUMNS.IN_EDGES), ByteUtil.merge((byte[]) inVertex.id(), StorageConstants.PROPERTY_SEPERATOR.getBytes(), edgeId), vertexId);
     }
 
     public Map<String, byte[]> getProperties(RocksElement rocksVertex, String[] propertyKeys) throws RocksDBException {
@@ -47,7 +52,7 @@ public class VertexDB {
 
         if (propertyKeys == null || propertyKeys.length == 0) {
             RocksIterator rocksIterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.PROPERTIES));
-            byte[] seek_key = ByteUtil.merge((byte[]) rocksVertex.id(), PROPERTY_SEPERATOR.getBytes());
+            byte[] seek_key = ByteUtil.merge((byte[]) rocksVertex.id(), StorageConstants.PROPERTY_SEPERATOR.getBytes());
             for (rocksIterator.seek(seek_key); rocksIterator.isValid() && ByteUtil.startsWith(rocksIterator.key(), 0, seek_key);
                  rocksIterator.next()) {
                 results.put(new String(ByteUtil.slice(rocksIterator.key(), seek_key.length, rocksIterator.key().length)),
@@ -57,20 +62,20 @@ public class VertexDB {
         }
 
         for (String property : propertyKeys) {
-            byte[] key = rocksDB.get(getColumn(VERTEX_COLUMNS.PROPERTIES), ByteUtil.merge((byte[]) rocksVertex.id(), PROPERTY_SEPERATOR.getBytes(), property.getBytes()));
+            byte[] key = rocksDB.get(getColumn(VERTEX_COLUMNS.PROPERTIES), ByteUtil.merge((byte[]) rocksVertex.id(), StorageConstants.PROPERTY_SEPERATOR.getBytes(), property.getBytes()));
             results.put(property, key);
         }
         return results;
     }
 
     public void addProperty(byte[] id, String key, String value) throws RocksDBException {
-        this.rocksDB.put(ByteUtil.merge(id, PROPERTY_SEPERATOR.getBytes(), key.getBytes()), value.getBytes());
+        this.rocksDB.put(ByteUtil.merge(id, StorageConstants.PROPERTY_SEPERATOR.getBytes(), key.getBytes()), value.getBytes());
     }
 
     public List<byte[]> getEdgeIDs(byte[] id, Direction direction, String[] edgeLabels) {
         List<byte[]> edgeIds = new ArrayList<>(50);
         RocksIterator iterator = null;
-        byte[] seek_key = ByteUtil.merge(id, PROPERTY_SEPERATOR.getBytes());
+        byte[] seek_key = ByteUtil.merge(id, StorageConstants.PROPERTY_SEPERATOR.getBytes());
 
         try {
             if (direction == Direction.BOTH || direction == Direction.IN) {
@@ -107,7 +112,7 @@ public class VertexDB {
     }
 
 
-    public static enum VERTEX_COLUMNS {
+    public enum VERTEX_COLUMNS {
         PROPERTIES("PROPERTIES"),
         OUT_EDGES("OUT_EDGES"),
         IN_EDGES("IN_EDGES");
@@ -148,7 +153,7 @@ public class VertexDB {
         this.rocksDB.put(idValue, label.getBytes());
         Map<String, Object> properties = ElementHelper.asMap(keyValues);
         for (Map.Entry<String, Object> property : properties.entrySet()) {
-            this.rocksDB.put(getColumn(VERTEX_COLUMNS.PROPERTIES), ByteUtil.merge(idValue, PROPERTY_SEPERATOR.getBytes(), property.getKey().getBytes()), String.valueOf(property.getValue()).getBytes());
+            this.rocksDB.put(getColumn(VERTEX_COLUMNS.PROPERTIES), ByteUtil.merge(idValue, StorageConstants.PROPERTY_SEPERATOR.getBytes(), property.getKey().getBytes()), String.valueOf(property.getValue()).getBytes());
         }
     }
 
