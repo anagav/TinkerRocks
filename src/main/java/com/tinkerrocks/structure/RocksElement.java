@@ -62,7 +62,7 @@ public abstract class RocksElement implements Element {
 
 
     protected void checkRemoved() {
-        if (this.removed) throw Element.Exceptions.elementAlreadyRemoved(Vertex.class, this.id);
+        if (this.removed) throw Element.Exceptions.elementAlreadyRemoved(Vertex.class, this.id());
     }
 
     /**

@@ -2,6 +2,8 @@ package com.tinkerrocks.structure;
 
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
+import org.apache.tinkerpop.gremlin.structure.Direction;
+import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import org.junit.Test;
@@ -23,6 +25,7 @@ public class RocksTest {
 
         vadas.property("first", "test2");
 
+
         Iterator<VertexProperty<Object>> value = vadas.properties();
         while (value.hasNext()) {
             System.out.println("property" + value.next());
@@ -30,6 +33,12 @@ public class RocksTest {
 
 
         marko.addEdge("knows", vadas, T.id, 7, "weight", 0.5f);
+
+
+        Iterator<Edge> values = marko.edges(Direction.OUT);
+        while (values.hasNext()) {
+            System.out.println("edge:" + values.next());
+        }
 
         rocksGraph.vertices(2).forEachRemaining(vertex -> System.out.printf("vertex:%s%n", vertex.toString()));
     }

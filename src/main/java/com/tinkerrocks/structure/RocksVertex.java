@@ -2,6 +2,7 @@ package com.tinkerrocks.structure;
 
 import org.apache.tinkerpop.gremlin.structure.*;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
+import org.apache.tinkerpop.gremlin.structure.util.StringFactory;
 import org.rocksdb.RocksDBException;
 
 import java.util.*;
@@ -39,7 +40,7 @@ public class RocksVertex extends RocksElement implements Vertex {
 
     @Override
     public <V> VertexProperty<V> property(final String key, final V value) {
-        this.rocksGraph.getStorageHandler().getVertexDB().setProperty(this.id, key, value);
+        this.rocksGraph.getStorageHandler().getVertexDB().setProperty((byte[]) this.id(), key, value);
         return new RocksVertexProperty<>(this, key, value);
     }
 
@@ -57,7 +58,7 @@ public class RocksVertex extends RocksElement implements Vertex {
         try {
             this.rocksGraph.getStorageHandler().getEdgeDB().addEdge(edge_id, label, this, (RocksElement) inVertex, keyValues);
             System.out.println("adding Edge with byte_id:" + new String(edge_id));
-            this.rocksGraph.getStorageHandler().getVertexDB().addEdge(this.id, edge_id, inVertex);
+            this.rocksGraph.getStorageHandler().getVertexDB().addEdge((byte[]) this.id(), edge_id, inVertex);
         } catch (RocksDBException e) {
             e.printStackTrace();
             return null;
@@ -84,7 +85,7 @@ public class RocksVertex extends RocksElement implements Vertex {
 
     @Override
     public Iterator<Edge> edges(Direction direction, String... edgeLabels) {
-        List<byte[]> edgeIds = this.rocksGraph.getStorageHandler().getVertexDB().getEdgeIDs(this.id, direction, edgeLabels);
+        List<byte[]> edgeIds = this.rocksGraph.getStorageHandler().getVertexDB().getEdgeIDs((byte[]) this.id(), direction, edgeLabels);
         try {
             List<Edge> edges = this.rocksGraph.getStorageHandler().getEdgeDB().edges(edgeIds, this.rocksGraph);
             for (Edge edge : edges) {
@@ -106,7 +107,7 @@ public class RocksVertex extends RocksElement implements Vertex {
      */
     @Override
     public Iterator<Vertex> vertices(Direction direction, String... edgeLabels) {
-        List<byte[]> edgeIds = this.rocksGraph.getStorageHandler().getVertexDB().getEdgeIDs(this.id, direction, edgeLabels);
+        List<byte[]> edgeIds = this.rocksGraph.getStorageHandler().getVertexDB().getEdgeIDs((byte[]) this.id(), direction, edgeLabels);
         List<byte[]> vertexIds = new ArrayList<>(100);
         for (byte[] edgeId : edgeIds) {
             vertexIds.addAll(this.rocksGraph.getStorageHandler().getEdgeDB().getVertexIDs(edgeId, direction));
@@ -133,6 +134,6 @@ public class RocksVertex extends RocksElement implements Vertex {
 
     @Override
     public String toString() {
-        return "V[" + new String(id) + "]";
+        return StringFactory.vertexString(this);
     }
 }
