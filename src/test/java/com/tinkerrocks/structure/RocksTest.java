@@ -22,6 +22,7 @@ public class RocksTest {
         RocksVertex vadas = (RocksVertex) rocksGraph.addVertex(T.label, "person", T.id, 2, "name", "vadas", "age", 27);
 
         vadas.property("first", "test2");
+
         Iterator<VertexProperty<Object>> value = vadas.properties();
         while (value.hasNext()) {
             System.out.println("property" + value.next());

@@ -29,7 +29,8 @@ public class VertexDB {
 
     public <V> void setProperty(byte[] id, String key, V value) {
         try {
-            this.rocksDB.put(getColumn(VERTEX_COLUMNS.PROPERTIES), (id + key).getBytes(), String.valueOf(value).getBytes());
+            this.rocksDB.put(getColumn(VERTEX_COLUMNS.PROPERTIES),
+                    ByteUtil.merge(id, PROPERTY_SEPERATOR.getBytes(), key.getBytes()), String.valueOf(value).getBytes());
         } catch (RocksDBException e) {
             e.printStackTrace();
         }
@@ -149,7 +150,7 @@ public class VertexDB {
         this.rocksDB.put(idValue, label.getBytes());
         Map<String, Object> properties = ElementHelper.asMap(keyValues);
         for (Map.Entry<String, Object> property : properties.entrySet()) {
-            this.rocksDB.put(getColumn(VERTEX_COLUMNS.PROPERTIES),ByteUtil.merge(idValue,PROPERTY_SEPERATOR.getBytes(), property.getKey().getBytes()), String.valueOf(property.getValue()).getBytes());
+            this.rocksDB.put(getColumn(VERTEX_COLUMNS.PROPERTIES), ByteUtil.merge(idValue, PROPERTY_SEPERATOR.getBytes(), property.getKey().getBytes()), String.valueOf(property.getValue()).getBytes());
         }
     }
 
