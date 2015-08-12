@@ -5,20 +5,12 @@ import com.tinkerrocks.structure.RocksElement;
 import com.tinkerrocks.structure.RocksGraph;
 import com.tinkerrocks.structure.RocksVertex;
 import org.apache.tinkerpop.gremlin.structure.Direction;
+import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
-import org.rocksdb.ColumnFamilyDescriptor;
-import org.rocksdb.ColumnFamilyHandle;
-import org.rocksdb.ColumnFamilyOptions;
-import org.rocksdb.DBOptions;
-import org.rocksdb.RocksDB;
-import org.rocksdb.RocksDBException;
-import org.rocksdb.RocksIterator;
+import org.rocksdb.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by ashishn on 8/5/15.
@@ -42,9 +34,12 @@ public class VertexDB {
     }
 
 
-    public void addEdge(byte[] vertexId, byte[] edgeId, Vertex inVertex) throws RocksDBException {
-        this.rocksDB.put(getColumn(VERTEX_COLUMNS.OUT_EDGES), ByteUtil.merge(vertexId, StorageConstants.PROPERTY_SEPERATOR.getBytes(), edgeId), (byte[]) inVertex.id());
-        this.rocksDB.put(getColumn(VERTEX_COLUMNS.IN_EDGES), ByteUtil.merge((byte[]) inVertex.id(), StorageConstants.PROPERTY_SEPERATOR.getBytes(), edgeId), vertexId);
+    public void addEdge(byte[] vertexId, Edge edge, Vertex inVertex) throws RocksDBException {
+        this.rocksDB.put(getColumn(VERTEX_COLUMNS.OUT_EDGES), ByteUtil.merge(vertexId,
+                StorageConstants.PROPERTY_SEPERATOR.getBytes(), (byte[]) edge.id()), (byte[]) inVertex.id());
+        this.rocksDB.put(getColumn(VERTEX_COLUMNS.IN_EDGES), ByteUtil.merge((byte[]) inVertex.id(),
+                StorageConstants.PROPERTY_SEPERATOR.getBytes(), (byte[]) edge.id()), vertexId);
+        this.rocksDB.put(getColumn(VERTEX_COLUMNS.OUT_EDGE_LABELS), (byte[]) edge.id(), edge.label().getBytes());
     }
 
     public Map<String, byte[]> getProperties(RocksElement rocksVertex, String[] propertyKeys) throws RocksDBException {
@@ -84,7 +79,13 @@ public class VertexDB {
                         ByteUtil.startsWith(iterator.key(), 0, seek_key); iterator.next()) {
                     System.out.println("IN seeked:" + new String(iterator.key()) + "  value:" + new String(iterator.value()));
 
-                    edgeIds.add(ByteUtil.slice(iterator.key(), seek_key.length));
+                    if (edgeLabels == null || edgeLabels.length == 0) {
+                        edgeIds.add(ByteUtil.slice(iterator.key(), seek_key.length));
+                    } else {
+                        if (contains(edgeLabels, iterator.key())) {
+                            edgeIds.add(ByteUtil.slice(iterator.key(), seek_key.length));
+                        }
+                    }
                 }
             }
             if (direction == Direction.BOTH || direction == Direction.OUT) {
@@ -92,15 +93,32 @@ public class VertexDB {
                 for (iterator.seek(seek_key); iterator.isValid() &&
                         ByteUtil.startsWith(iterator.key(), 0, seek_key); iterator.next()) {
                     System.out.println("OUT seeked:" + new String(iterator.key()) + "  value:" + new String(iterator.value()));
-                    edgeIds.add(ByteUtil.slice(iterator.key(), seek_key.length));
+                    if (edgeLabels == null || edgeLabels.length == 0) {
+                        edgeIds.add(ByteUtil.slice(iterator.key(), seek_key.length));
+                    } else {
+                        if (contains(edgeLabels, iterator.key())) {
+                            edgeIds.add(ByteUtil.slice(iterator.key(), seek_key.length));
+                        }
+                    }
                 }
             }
+        } catch (RocksDBException ex) {
+            ex.printStackTrace();
         } finally {
             if (iterator != null) {
                 iterator.dispose();
             }
         }
         return edgeIds;
+    }
+
+    private boolean contains(String[] edgeLabels, byte[] s) throws RocksDBException {
+        for (String edge : edgeLabels) {
+            if (Arrays.equals(edge.getBytes(), this.rocksDB.get(getColumn(VERTEX_COLUMNS.OUT_EDGE_LABELS), s))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public RocksVertex vertex(byte[] id, RocksGraph rocksGraph) throws RocksDBException {
@@ -115,7 +133,9 @@ public class VertexDB {
     public enum VERTEX_COLUMNS {
         PROPERTIES("PROPERTIES"),
         OUT_EDGES("OUT_EDGES"),
-        IN_EDGES("IN_EDGES");
+        IN_EDGES("IN_EDGES"),
+        OUT_EDGE_LABELS("OUT_EDGE_LABELS"),
+        IN_EDGE_LABELS("IN_EDGE_LABELS");
 
         String value;
 
@@ -169,8 +189,8 @@ public class VertexDB {
                 iterator.next();
             }
         } else {
-            for (byte[] vertexid : vertexIds) {
-                vertices.add(getVertex(vertexid, rocksGraph));
+            for (byte[] vertexId : vertexIds) {
+                vertices.add(getVertex(vertexId, rocksGraph));
             }
         }
         return vertices;
