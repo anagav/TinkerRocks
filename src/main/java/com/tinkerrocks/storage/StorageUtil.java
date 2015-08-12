@@ -1,4 +1,4 @@
-package storage;
+package com.tinkerrocks.storage;
 
 /**
  * Created by ashishn on 8/5/15.

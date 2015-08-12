@@ -1,4 +1,4 @@
-package storage;
+package com.tinkerrocks.storage;
 
 import com.tinkerrocks.structure.*;
 import org.apache.tinkerpop.gremlin.structure.Direction;

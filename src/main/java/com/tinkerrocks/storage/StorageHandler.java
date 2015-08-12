@@ -1,4 +1,4 @@
-package storage;
+package com.tinkerrocks.storage;
 
 import org.rocksdb.RocksDBException;
 

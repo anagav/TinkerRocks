@@ -7,7 +7,7 @@ import org.apache.tinkerpop.gremlin.structure.io.Io;
 import org.apache.tinkerpop.gremlin.structure.io.IoRegistry;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 import org.rocksdb.RocksDBException;
-import storage.StorageHandler;
+import com.tinkerrocks.storage.StorageHandler;
 
 import java.io.Closeable;
 import java.util.ArrayList;
