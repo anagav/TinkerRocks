@@ -1,7 +1,6 @@
 package com.tinkerrocks.structure;
 
 import org.apache.tinkerpop.gremlin.structure.*;
-import org.apache.tinkerpop.gremlin.structure.util.StringFactory;
 import org.rocksdb.RocksDBException;
 
 import java.util.*;
@@ -124,6 +123,8 @@ public class RocksEdge extends RocksElement implements Edge {
      */
     @Override
     public String toString() {
-        return StringFactory.edgeString(this);
+        return String.format("E[%s][%s-%s-->%s]", new String((byte[]) this.id()), new String((byte[])
+                this.outVertex().id()), this.label(), new String((byte[]) this.inVertex().id()));
+
     }
 }
