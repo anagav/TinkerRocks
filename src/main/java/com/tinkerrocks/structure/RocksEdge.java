@@ -68,7 +68,11 @@ public class RocksEdge extends RocksElement implements Edge {
      */
     @Override
     public void remove() {
-
+        try {
+            this.rocksGraph.getStorageHandler().getEdgeDB().remove(this);
+        } catch (RocksDBException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

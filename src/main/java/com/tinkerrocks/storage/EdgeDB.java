@@ -1,20 +1,10 @@
 package com.tinkerrocks.storage;
 
-import com.tinkerrocks.structure.ByteUtil;
-import com.tinkerrocks.structure.RocksEdge;
-import com.tinkerrocks.structure.RocksElement;
-import com.tinkerrocks.structure.RocksGraph;
-import com.tinkerrocks.structure.RocksVertex;
+import com.tinkerrocks.structure.*;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
-import org.rocksdb.ColumnFamilyDescriptor;
-import org.rocksdb.ColumnFamilyHandle;
-import org.rocksdb.ColumnFamilyOptions;
-import org.rocksdb.DBOptions;
-import org.rocksdb.RocksDB;
-import org.rocksdb.RocksDBException;
-import org.rocksdb.RocksIterator;
+import org.rocksdb.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -158,6 +148,10 @@ public class EdgeDB {
             return ByteUtil.slice(iterator.key(), seek_key.length);
         }
         return null;
+    }
+
+    public void remove(RocksEdge rocksEdge) throws RocksDBException {
+        this.rocksDB.remove((byte[]) rocksEdge.id());
     }
 
 

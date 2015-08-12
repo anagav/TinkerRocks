@@ -4,11 +4,7 @@ import org.apache.tinkerpop.gremlin.structure.*;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 import org.rocksdb.RocksDBException;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Created by ashishn on 8/5/15.
@@ -132,7 +128,12 @@ public class RocksVertex extends RocksElement implements Vertex {
     @Override
     public void remove() {
         this.removed = true;
-        //todo:delete vertex;
+        edges(Direction.BOTH).forEachRemaining(Element::remove);
+        try {
+            this.rocksGraph.getStorageHandler().getVertexDB().remove(this);
+        } catch (RocksDBException e) {
+            e.printStackTrace();
+        }
     }
 
 

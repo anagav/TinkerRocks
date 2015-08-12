@@ -129,6 +129,10 @@ public class VertexDB {
         }, rocksGraph).get(0);
     }
 
+    public void remove(RocksVertex rocksVertex) throws RocksDBException {
+        this.rocksDB.remove((byte[]) rocksVertex.id());
+    }
+
 
     public enum VERTEX_COLUMNS {
         PROPERTIES("PROPERTIES"),
