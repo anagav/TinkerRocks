@@ -10,6 +10,8 @@ public class StorageConfigFactory {
     static Options options;
     static DBOptions dbOptions;
     static ColumnFamilyOptions columnFamilyOptions;
+    static WriteOptions writeOptions;
+
 
     public static Options getOptions() {
         if (options != null) {
@@ -117,5 +119,16 @@ public class StorageConfigFactory {
                 .optimizeLevelStyleCompaction();
         return columnFamilyOptions;
     }
+
+    public static WriteOptions getWriteOptions() {
+        if (writeOptions != null) {
+            return writeOptions;
+        }
+        writeOptions = new WriteOptions();
+        writeOptions.setSync(false);
+        writeOptions.setDisableWAL(true);
+        return writeOptions;
+    }
+
 
 }
