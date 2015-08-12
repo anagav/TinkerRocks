@@ -155,7 +155,7 @@ public class EdgeDB {
     }
 
 
-    public static enum EDGE_COLUMNS {
+    public enum EDGE_COLUMNS {
         PROPERTIES("PROPERTIES"),
         IN_VERTICES("IN_VERTICES"),
         OUT_VERTICES("OUT_VERTICES");
