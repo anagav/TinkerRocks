@@ -2,9 +2,9 @@ package com.tinkerrocks.structure;
 
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
-import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import org.junit.Test;
 
 import java.util.Iterator;
@@ -36,9 +36,15 @@ public class RocksTest {
         josh.addEdge("created", lop, T.id, 11, "weight", 0.4f);
         peter.addEdge("created", lop, T.id, 12, "weight", 0.2f);
 
-        Iterator<Vertex> iter = graph.vertices(4);
+        Iterator<Vertex> iter = graph.vertices();
         while (iter.hasNext()) {
-            System.out.println(iter.next().edges(Direction.BOTH).hasNext());
+            Vertex test = iter.next();
+            Iterator<VertexProperty<Object>> properties = test.properties();
+            while (properties.hasNext()) {
+                System.out.println("vertex:" + test + "\tproperties:" + properties.next());
+            }
+
+            //System.out.println(iter.next().edges(Direction.BOTH).hasNext());
         }
     }
 }
