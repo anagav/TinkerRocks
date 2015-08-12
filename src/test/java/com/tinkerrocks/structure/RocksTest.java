@@ -8,7 +8,9 @@ import org.junit.Test;
 import java.util.Iterator;
 
 
-/**
+/**<p>
+ * Test class
+ * </p>
  * Created by ashishn on 8/11/15.
  */
 public class RocksTest {
