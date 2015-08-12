@@ -3,6 +3,7 @@ package com.tinkerrocks.storage;
 import com.tinkerrocks.structure.*;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.Property;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 import org.rocksdb.*;
 
@@ -105,6 +106,9 @@ public class EdgeDB {
 
             if (val != null)
                 results.put(property, val);
+            else {
+                throw Property.Exceptions.propertyDoesNotExist(element, property);
+            }
         }
         return results;
     }
