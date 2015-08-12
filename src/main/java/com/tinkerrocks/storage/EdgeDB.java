@@ -151,7 +151,6 @@ public class EdgeDB {
             iterator = this.rocksDB.newIterator(getColumn(EDGE_COLUMNS.IN_VERTICES));
         }
 
-
         byte[] seek_key = ByteUtil.merge(id, StorageConstants.PROPERTY_SEPERATOR.getBytes());
         iterator.seek(seek_key);
         if (iterator.isValid() && ByteUtil.startsWith(iterator.key(), 0, seek_key)) {

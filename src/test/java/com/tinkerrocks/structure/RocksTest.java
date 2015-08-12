@@ -44,6 +44,7 @@ public class RocksTest {
                 System.out.println("vertex:" + test + "\tproperties:" + properties.next());
             }
 
+
             Iterator<Edge> edges = test.edges(Direction.BOTH);
             while (edges.hasNext()) {
                 Edge edge = edges.next();
