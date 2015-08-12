@@ -162,9 +162,9 @@ public class VertexDB {
         columnFamilyDescriptors.add(new ColumnFamilyDescriptor(RocksDB.DEFAULT_COLUMN_FAMILY));
         for (VERTEX_COLUMNS vertex_columns : VERTEX_COLUMNS.values()) {
             columnFamilyDescriptors.add(new ColumnFamilyDescriptor(vertex_columns.getValue().getBytes(),
-                    new ColumnFamilyOptions()));
+                    StorageConfigFactory.getColumnFamilyOptions()));
         }
-        this.rocksDB = RocksDB.open(new DBOptions().setCreateIfMissing(true).setCreateMissingColumnFamilies(true), "/tmp/vertices", columnFamilyDescriptors, columnFamilyHandleList);
+        this.rocksDB = RocksDB.open(StorageConfigFactory.getDBOptions(), "/tmp/vertices", columnFamilyDescriptors, columnFamilyHandleList);
     }
 
 

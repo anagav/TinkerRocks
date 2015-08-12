@@ -192,9 +192,9 @@ public class EdgeDB {
         columnFamilyDescriptors.add(new ColumnFamilyDescriptor(RocksDB.DEFAULT_COLUMN_FAMILY));
         for (EDGE_COLUMNS vertex_columns : EDGE_COLUMNS.values()) {
             columnFamilyDescriptors.add(new ColumnFamilyDescriptor(vertex_columns.getValue().getBytes(),
-                    new ColumnFamilyOptions()));
+                    StorageConfigFactory.getColumnFamilyOptions()));
         }
-        this.rocksDB = RocksDB.open(new DBOptions().setCreateIfMissing(true).setCreateMissingColumnFamilies(true), "/tmp/edges", columnFamilyDescriptors, columnFamilyHandleList);
+        this.rocksDB = RocksDB.open(StorageConfigFactory.getDBOptions(), "/tmp/edges", columnFamilyDescriptors, columnFamilyHandleList);
     }
 
 
