@@ -4,6 +4,7 @@ import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Property;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
+import org.apache.tinkerpop.gremlin.structure.util.StringFactory;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -74,7 +75,7 @@ public class RocksVertexProperty<V> implements VertexProperty<V> {
     /**
      * Gets the unique identifier for the graph {@code Element}.
      *
-     * @return The id of the element
+     * @return The byte_id of the element
      */
     @Override
     public Object id() {
@@ -100,5 +101,10 @@ public class RocksVertexProperty<V> implements VertexProperty<V> {
     @Override
     public <U> Iterator<Property<U>> properties(String... propertyKeys) {
         return null;
+    }
+
+    @Override
+    public String toString() {
+        return StringFactory.propertyString(this);
     }
 }

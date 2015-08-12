@@ -99,7 +99,7 @@ public class VertexDB {
     }
 
     public RocksVertex vertex(byte[] id, RocksGraph rocksGraph) throws RocksDBException {
-        System.out.println("trying to created vertex from id:" + new String(id));
+        System.out.println("trying to created vertex from byte_id:" + new String(id));
         return (RocksVertex) vertices(new ArrayList<byte[]>() {
             {
                 add(id);
@@ -164,7 +164,7 @@ public class VertexDB {
     }
 
     private String getLabel(byte[] vertexid) throws RocksDBException {
-        System.out.println("looking for id:" + new String(vertexid));
+        System.out.println("looking for byte_id:" + new String(vertexid));
         return new String(this.rocksDB.get(vertexid));
     }
 

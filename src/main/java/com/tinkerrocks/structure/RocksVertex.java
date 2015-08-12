@@ -2,7 +2,6 @@ package com.tinkerrocks.structure;
 
 import org.apache.tinkerpop.gremlin.structure.*;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
-import org.apache.tinkerpop.gremlin.structure.util.StringFactory;
 import org.rocksdb.RocksDBException;
 
 import java.util.*;
@@ -56,8 +55,8 @@ public class RocksVertex extends RocksElement implements Vertex {
 
 
         try {
-            this.rocksGraph.getStorageHandler().getEdgeDB().addEdge(edge_id, label, this, inVertex, keyValues);
-            System.out.println("adding Edge with id:" + new String(edge_id));
+            this.rocksGraph.getStorageHandler().getEdgeDB().addEdge(edge_id, label, this, (RocksElement) inVertex, keyValues);
+            System.out.println("adding Edge with byte_id:" + new String(edge_id));
             this.rocksGraph.getStorageHandler().getVertexDB().addEdge(this.id, edge_id, inVertex);
         } catch (RocksDBException e) {
             e.printStackTrace();
@@ -134,6 +133,6 @@ public class RocksVertex extends RocksElement implements Vertex {
 
     @Override
     public String toString() {
-        return StringFactory.vertexString(this);
+        return "V[" + new String(id) + "]";
     }
 }
