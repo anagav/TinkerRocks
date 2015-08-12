@@ -88,10 +88,7 @@ public class RocksVertex extends RocksElement implements Vertex {
         List<byte[]> edgeIds = this.rocksGraph.getStorageHandler().getVertexDB().getEdgeIDs((byte[]) this.id(), direction, edgeLabels);
         try {
             List<Edge> edges = this.rocksGraph.getStorageHandler().getEdgeDB().edges(edgeIds, this.rocksGraph);
-            for (Edge edge : edges) {
-                System.out.println("edge: " + edge);
-            }
-
+            return edges.iterator();
         } catch (RocksDBException e) {
             e.printStackTrace();
         }
