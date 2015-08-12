@@ -103,25 +103,33 @@ public class EdgeDB {
     }
 
     public List<Edge> edges(List<byte[]> ids, RocksGraph rocksGraph) throws RocksDBException {
-        List<Edge> edges = new ArrayList<>(ids.size());
+        List<Edge> edges = new ArrayList<>();
+        if (ids.size() == 0) {
+            RocksIterator iterator = this.rocksDB.newIterator();
+            iterator.seekToFirst();
+            while (iterator.isValid()) {
+                edges.add(getEdge(iterator.key(), rocksGraph));
+                iterator.next();
+            }
+        }
+
 
         for (byte[] id : ids) {
-
-            //byte[] in_vertex_id = this.rocksDB.get(getColumn(EDGE_COLUMNS.IN_VERTICES), byte_id);
-            byte[] in_vertex_id = getVertex(id, Direction.IN);
-            //byte[] out_vertex_id = this.rocksDB.get(getColumn(EDGE_COLUMNS.OUT_VERTICES), byte_id);
-            byte[] out_vertex_id = getVertex(id, Direction.OUT);
-
-            System.out.println("in Edges: looking for byte_id:" + new String(in_vertex_id));
-            System.out.println("in Edges: looking for byte_id:" + new String(out_vertex_id));
-
-
-            RocksVertex inVertex = rocksGraph.getStorageHandler().getVertexDB().vertex(in_vertex_id, rocksGraph);
-            RocksVertex outVertex = rocksGraph.getStorageHandler().getVertexDB().vertex(out_vertex_id, rocksGraph);
-
-            edges.add(new RocksEdge(id, getLabel(id), rocksGraph, inVertex, outVertex));
+            edges.add(getEdge(id, rocksGraph));
         }
         return edges;
+    }
+
+
+    RocksEdge getEdge(byte[] id, RocksGraph rocksGraph) throws RocksDBException {
+        byte[] in_vertex_id = getVertex(id, Direction.IN);
+        byte[] out_vertex_id = getVertex(id, Direction.OUT);
+
+        RocksVertex inVertex = rocksGraph.getStorageHandler().getVertexDB().vertex(in_vertex_id, rocksGraph);
+        RocksVertex outVertex = rocksGraph.getStorageHandler().getVertexDB().vertex(out_vertex_id, rocksGraph);
+
+        return new RocksEdge(id, getLabel(id), rocksGraph, inVertex, outVertex);
+
     }
 
     private byte[] getVertex(byte[] id, Direction direction) {
