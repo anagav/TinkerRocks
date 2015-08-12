@@ -105,7 +105,7 @@ public final class RocksGraph implements Graph {
         if (edgeIds.length > 1 && !edgeIds[0].getClass().equals(edgeIds[1].getClass()))
             throw Graph.Exceptions.idArgsMustBeEitherIdOrElement();
 
-        List<byte[]> ids = new ArrayList<>(edgeIds.length);
+        List<byte[]> ids = new ArrayList<>();
         for (Object vertexId : edgeIds) {
             ids.add(String.valueOf(vertexId).getBytes());
         }
