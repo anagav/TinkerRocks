@@ -18,6 +18,7 @@ public class RocksVertex extends RocksElement implements Vertex {
 
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <V> Iterator<VertexProperty<V>> properties(String... propertyKeys) {
         Map<String, byte[]> results;

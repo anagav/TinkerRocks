@@ -4,8 +4,9 @@ import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.apache.tinkerpop.gremlin.util.iterator.IteratorUtils;
 import org.junit.Test;
+
+import java.util.Iterator;
 
 
 /**
@@ -34,6 +35,11 @@ public class RocksTest {
         josh.addEdge("created", lop, T.id, 11, "weight", 0.4f);
         peter.addEdge("created", lop, T.id, 12, "weight", 0.2f);
 
-        System.out.println("edges:" + IteratorUtils.count(graph.edges()));
+        Iterator<Vertex> iter = graph.vertices(4);
+        while(iter.hasNext()){
+            System.out.println(iter.next().property("name"));
+        }
+
+        //System.out.println("edges:" + IteratorUtils. graph.vertices(4).next().properties());
     }
 }

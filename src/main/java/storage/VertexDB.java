@@ -57,9 +57,9 @@ public class VertexDB {
         }
 
         for (String property : propertyKeys) {
-            byte[] val = rocksDB.get(ByteUtil.merge((byte[]) rocksVertex.id(), PROPERTY_SEPERATOR.getBytes(), property.getBytes()));
-            if (val != null)
-                results.put(property, val);
+
+            byte[] key = rocksDB.get(getColumn(VERTEX_COLUMNS.PROPERTIES), ByteUtil.merge((byte[]) rocksVertex.id(), PROPERTY_SEPERATOR.getBytes(), property.getBytes()));
+            results.put(property, key);
         }
         return results;
     }
