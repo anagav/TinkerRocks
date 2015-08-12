@@ -1,5 +1,6 @@
 package com.tinkerrocks.structure;
 
+import com.tinkerrocks.storage.StorageHandler;
 import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.process.computer.GraphComputer;
 import org.apache.tinkerpop.gremlin.structure.*;
@@ -7,7 +8,6 @@ import org.apache.tinkerpop.gremlin.structure.io.Io;
 import org.apache.tinkerpop.gremlin.structure.io.IoRegistry;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 import org.rocksdb.RocksDBException;
-import com.tinkerrocks.storage.StorageHandler;
 
 import java.io.Closeable;
 import java.util.ArrayList;
