@@ -12,7 +12,9 @@ import java.util.List;
 import java.util.Map;
 
 
-/**
+/** <p>
+ * class that handles edges. Including serialization and de-serialization.
+ * </p>
  * Created by ashishn on 8/5/15.
  */
 
