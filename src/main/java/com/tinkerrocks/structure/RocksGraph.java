@@ -77,6 +77,14 @@ public final class RocksGraph implements Graph {
 
     @Override
     public Iterator<Vertex> vertices(Object... vertexIds) {
+        if (vertexIds == null || vertexIds.length == 0) {
+            try {
+                return storageHandler.getVertexDB().vertices(null, this).iterator();
+            } catch (RocksDBException e) {
+                e.printStackTrace();
+            }
+        }
+
         if (vertexIds.length > 1 && !vertexIds[0].getClass().equals(vertexIds[1].getClass()))
             throw Graph.Exceptions.idArgsMustBeEitherIdOrElement();
 

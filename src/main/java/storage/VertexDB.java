@@ -156,13 +156,28 @@ public class VertexDB {
 
 
     public List<Vertex> vertices(List<byte[]> vertexIds, RocksGraph rocksGraph) throws RocksDBException {
-        List<Vertex> vertices = new ArrayList<>(vertexIds.size());
-        for (byte[] vertexid : vertexIds) {
-            vertices.add(new RocksVertex(vertexid, getLabel(vertexid), rocksGraph));
-        }
+        List<Vertex> vertices = new ArrayList<>();
 
+        if (vertexIds == null) {
+            RocksIterator iterator = this.rocksDB.newIterator();
+            iterator.seekToFirst();
+            while (iterator.isValid()) {
+                vertices.add(getVertex(iterator.key(), rocksGraph));
+                iterator.next();
+            }
+        } else {
+            for (byte[] vertexid : vertexIds) {
+                vertices.add(getVertex(vertexid, rocksGraph));
+            }
+        }
+        System.out.println("size:" + vertices.size());
         return vertices;
     }
+
+    private RocksVertex getVertex(byte[] vertexId, RocksGraph rocksGraph) throws RocksDBException {
+        return new RocksVertex(vertexId, getLabel(vertexId), rocksGraph);
+    }
+
 
     private String getLabel(byte[] vertexid) throws RocksDBException {
         System.out.println("looking for byte_id:" + new String(vertexid));
