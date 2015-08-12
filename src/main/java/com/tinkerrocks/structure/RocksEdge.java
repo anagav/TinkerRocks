@@ -98,7 +98,7 @@ public class RocksEdge extends RocksElement implements Edge {
     }
 
     protected void checkRemoved() {
-        if (this.removed) throw Element.Exceptions.elementAlreadyRemoved(Edge.class, this.id);
+        if (this.removed) throw Element.Exceptions.elementAlreadyRemoved(Edge.class, this.id());
     }
 
     /**
