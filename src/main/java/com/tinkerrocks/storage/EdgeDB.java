@@ -34,6 +34,7 @@ public class EdgeDB {
 
 
     public void addEdge(byte[] edge_id, String label, RocksElement inVertex, RocksElement outVertex, Object[] keyValues) throws RocksDBException {
+        //todo add check back when finished testing
 //        if (this.rocksDB.get(edge_id) != null) {
 //            throw Graph.Exceptions.edgeWithIdAlreadyExists(edge_id);
 //        }
