@@ -2,7 +2,6 @@ package com.tinkerrocks.structure;
 
 import org.apache.tinkerpop.gremlin.structure.*;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
-import org.apache.tinkerpop.gremlin.structure.util.StringFactory;
 import org.rocksdb.RocksDBException;
 
 import java.util.*;
@@ -136,6 +135,6 @@ public class RocksVertex extends RocksElement implements Vertex {
 
     @Override
     public String toString() {
-        return StringFactory.vertexString(this);
+        return "V" + "[" + new String((byte[]) id()) + "]";
     }
 }

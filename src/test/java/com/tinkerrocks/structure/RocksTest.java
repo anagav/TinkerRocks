@@ -40,8 +40,5 @@ public class RocksTest {
         while (iter.hasNext()) {
             System.out.println(iter.next().edges(Direction.BOTH).hasNext());
         }
-
-
-        //System.out.println("edges:" + IteratorUtils. graph.vertices(4).next().properties());
     }
 }
