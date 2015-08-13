@@ -1,9 +1,12 @@
 package com.tinkerrocks.storage;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.tinkerrocks.structure.*;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Property;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 import org.rocksdb.*;
 
@@ -11,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 
 /**
@@ -145,14 +149,21 @@ public class EdgeDB {
 
 
     RocksEdge getEdge(byte[] id, RocksGraph rocksGraph) throws RocksDBException {
-        byte[] in_vertex_id = getVertex(id, Direction.IN);
-        byte[] out_vertex_id = getVertex(id, Direction.OUT);
 
-        RocksVertex inVertex = rocksGraph.getStorageHandler().getVertexDB().vertex(in_vertex_id, rocksGraph);
-        RocksVertex outVertex = rocksGraph.getStorageHandler().getVertexDB().vertex(out_vertex_id, rocksGraph);
+        try {
+            return edgeCache.get(id, () -> {
+                byte[] in_vertex_id = getVertex(id, Direction.IN);
+                byte[] out_vertex_id = getVertex(id, Direction.OUT);
 
-        return new RocksEdge(id, getLabel(id), rocksGraph, inVertex, outVertex);
+                RocksVertex inVertex = rocksGraph.getStorageHandler().getVertexDB().vertex(in_vertex_id, rocksGraph);
+                RocksVertex outVertex = rocksGraph.getStorageHandler().getVertexDB().vertex(out_vertex_id, rocksGraph);
 
+                return new RocksEdge(id, getLabel(id), rocksGraph, inVertex, outVertex);
+            });
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+            throw Vertex.Exceptions.edgeAdditionsNotSupported();
+        }
     }
 
     private byte[] getVertex(byte[] id, Direction direction) {
@@ -196,6 +207,7 @@ public class EdgeDB {
     RocksDB rocksDB;
     List<ColumnFamilyHandle> columnFamilyHandleList;
     List<ColumnFamilyDescriptor> columnFamilyDescriptors;
+    Cache<byte[], RocksEdge> edgeCache;
 
     public EdgeDB() throws RocksDBException {
         columnFamilyDescriptors = new ArrayList<>(EDGE_COLUMNS.values().length);
@@ -206,6 +218,7 @@ public class EdgeDB {
                     StorageConfigFactory.getColumnFamilyOptions()));
         }
         this.rocksDB = RocksDB.open(StorageConfigFactory.getDBOptions(), "/tmp/edges", columnFamilyDescriptors, columnFamilyHandleList);
+        this.edgeCache = CacheBuilder.newBuilder().maximumSize(1000000).concurrencyLevel(1000).build();
     }
 
 

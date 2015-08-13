@@ -28,6 +28,7 @@ import java.util.UUID;
 public final class RocksGraph implements Graph {
 
 
+
     private final Configuration configuration;
     private final StorageHandler storageHandler;
 

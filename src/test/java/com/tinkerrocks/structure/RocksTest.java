@@ -3,6 +3,7 @@ package com.tinkerrocks.structure;
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.structure.*;
+import org.apache.tinkerpop.gremlin.util.iterator.IteratorUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,6 +24,7 @@ public class RocksTest {
     public void setup() {
         Configuration configuration = new BaseConfiguration();
         graph = new RocksGraph(configuration);
+
 
     }
 
@@ -105,6 +107,18 @@ public class RocksTest {
         }
         end = System.currentTimeMillis() - start;
         System.out.println("time to add 1000000 edges (ms):\t" + end);
+
+        start = System.currentTimeMillis();
+        supernode.edges(Direction.BOTH);
+        end = System.currentTimeMillis() - start;
+        System.out.println("time to read 1000000 edges (ms):\t" + end);
+
+
+        start = System.currentTimeMillis();
+        long count = IteratorUtils.count(supernode.edges(Direction.OUT, "knows"));
+        System.out.println("got edges: " + count);
+        end = System.currentTimeMillis() - start;
+        System.out.println("time to read 1000000 cached edges (ms):\t" + end);
 
 
     }
