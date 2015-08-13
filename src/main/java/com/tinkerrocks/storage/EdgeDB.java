@@ -30,10 +30,21 @@ public class EdgeDB {
 
     public <V> void setProperty(String id, String key, V value) {
         try {
-            this.rocksDB.put(getColumn(EDGE_COLUMNS.PROPERTIES), (id + key).getBytes(), String.valueOf(value).getBytes());
+            put(getColumn(EDGE_COLUMNS.PROPERTIES), (id + key).getBytes(), String.valueOf(value).getBytes());
         } catch (RocksDBException e) {
             e.printStackTrace();
         }
+    }
+
+    void put(byte[] key, byte[] value) throws RocksDBException {
+        this.put(null, key, value);
+    }
+
+    void put(ColumnFamilyHandle columnFamilyHandle, byte[] key, byte[] value) throws RocksDBException {
+        if (columnFamilyHandle != null)
+            this.rocksDB.put(columnFamilyHandle, StorageConfigFactory.getWriteOptions(), key, value);
+        else
+            this.rocksDB.put(StorageConfigFactory.getWriteOptions(), key, value);
     }
 
 
@@ -49,16 +60,17 @@ public class EdgeDB {
             throw Edge.Exceptions.labelCanNotBeEmpty();
         }
 
-        this.rocksDB.put(edge_id, label.getBytes());
-        this.rocksDB.put(getColumn(EDGE_COLUMNS.IN_VERTICES), ByteUtil.merge(edge_id,
+        put(edge_id, label.getBytes());
+
+        put(getColumn(EDGE_COLUMNS.IN_VERTICES), ByteUtil.merge(edge_id,
                 StorageConstants.PROPERTY_SEPERATOR.getBytes(), (byte[]) inVertex.id()), (byte[]) inVertex.id());
 
-        this.rocksDB.put(getColumn(EDGE_COLUMNS.OUT_VERTICES), ByteUtil.merge(edge_id,
+        put(getColumn(EDGE_COLUMNS.OUT_VERTICES), ByteUtil.merge(edge_id,
                 StorageConstants.PROPERTY_SEPERATOR.getBytes(), (byte[]) outVertex.id()), (byte[]) outVertex.id());
 
         Map<String, Object> properties = ElementHelper.asMap(keyValues);
         for (Map.Entry<String, Object> entry : properties.entrySet()) {
-            this.rocksDB.put(getColumn(EDGE_COLUMNS.PROPERTIES),
+            put(getColumn(EDGE_COLUMNS.PROPERTIES),
                     ByteUtil.merge(edge_id, StorageConstants.PROPERTY_SEPERATOR.getBytes(), entry.getKey().getBytes()),
                     String.valueOf(entry.getValue()).getBytes());
         }

@@ -95,6 +95,18 @@ public class RocksTest {
         System.out.println("read time takes to access same vertex 1000000 times (ms):\t" + end);
 
 
+        Vertex supernode = graph.vertices(200).next();
+        Vertex supernodeSink = graph.vertices(201).next();
+
+
+        start = System.currentTimeMillis();
+        for (int i = 0; i < 1000000; i++) {
+            supernode.addEdge("knows", supernodeSink, T.id, 700 + i, "weight", 0.5f);
+        }
+        end = System.currentTimeMillis() - start;
+        System.out.println("time to add 1000000 edges (ms):\t" + end);
+
+
     }
 
     @After
