@@ -52,7 +52,6 @@ public class StorageConfigFactory {
                 .setFilterDeletes(false)
                 .setDisableAutoCompactions(false)
                 .setBytesPerSync(2 << 20)
-                .optimizeForPointLookup(4096)
                 .setUseAdaptiveMutex(true)
                 .setHardRateLimit(2)
                 .setParanoidChecks(false)
@@ -114,7 +113,6 @@ public class StorageConfigFactory {
                 .setSourceCompactionFactor(1)
                 .setFilterDeletes(false)
                 .setDisableAutoCompactions(false)
-                .optimizeForPointLookup(4096)
                 .setHardRateLimit(2)
                 .optimizeLevelStyleCompaction();
         return columnFamilyOptions;
