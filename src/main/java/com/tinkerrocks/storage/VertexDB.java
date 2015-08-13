@@ -1,5 +1,7 @@
 package com.tinkerrocks.storage;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.tinkerrocks.structure.ByteUtil;
 import com.tinkerrocks.structure.RocksElement;
 import com.tinkerrocks.structure.RocksGraph;
@@ -11,6 +13,7 @@ import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 import org.rocksdb.*;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by ashishn on 8/5/15.
@@ -167,6 +170,7 @@ public class VertexDB {
     RocksDB rocksDB;
     List<ColumnFamilyHandle> columnFamilyHandleList;
     List<ColumnFamilyDescriptor> columnFamilyDescriptors;
+    Cache<byte[], RocksVertex> cache;
 
     public VertexDB() throws RocksDBException {
         columnFamilyDescriptors = new ArrayList<>(VERTEX_COLUMNS.values().length);
@@ -177,6 +181,12 @@ public class VertexDB {
                     StorageConfigFactory.getColumnFamilyOptions()));
         }
         this.rocksDB = RocksDB.open(StorageConfigFactory.getDBOptions(), "/tmp/vertices", columnFamilyDescriptors, columnFamilyHandleList);
+
+        cache = CacheBuilder.newBuilder()
+                .initialCapacity(4096)
+                .maximumSize(100000)
+                .concurrencyLevel(1000)
+                .build();
     }
 
 
@@ -213,6 +223,13 @@ public class VertexDB {
     }
 
     private RocksVertex getVertex(byte[] vertexId, RocksGraph rocksGraph) throws RocksDBException {
+        try {
+            // try cache, if failed fall back to regular
+            return cache.get(vertexId, () -> new RocksVertex(vertexId, getLabel(vertexId), rocksGraph));
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
         return new RocksVertex(vertexId, getLabel(vertexId), rocksGraph);
     }
 
