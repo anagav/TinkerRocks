@@ -78,7 +78,6 @@ public class VertexDB {
                 iterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.IN_EDGES));
                 for (iterator.seek(seek_key); iterator.isValid() &&
                         ByteUtil.startsWith(iterator.key(), 0, seek_key); iterator.next()) {
-                    System.out.println("IN seeked:" + new String(iterator.key()) + "  value:" + new String(iterator.value()));
 
                     if (edgeLabels == null || edgeLabels.length == 0) {
                         edgeIds.add(ByteUtil.slice(iterator.key(), seek_key.length));
@@ -93,7 +92,6 @@ public class VertexDB {
                 iterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.OUT_EDGES));
                 for (iterator.seek(seek_key); iterator.isValid() &&
                         ByteUtil.startsWith(iterator.key(), 0, seek_key); iterator.next()) {
-                    System.out.println("OUT seeked:" + new String(iterator.key()) + "  value:" + new String(iterator.value()));
                     if (edgeLabels == null || edgeLabels.length == 0) {
                         edgeIds.add(ByteUtil.slice(iterator.key(), seek_key.length));
                     } else {

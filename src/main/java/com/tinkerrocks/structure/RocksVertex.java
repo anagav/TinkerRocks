@@ -55,7 +55,6 @@ public class RocksVertex extends RocksElement implements Vertex {
 
         try {
             this.rocksGraph.getStorageHandler().getEdgeDB().addEdge(edge_id, label, (RocksElement) inVertex, this, keyValues);
-            System.out.println("adding Edge with byte_id:" + new String(edge_id));
             this.rocksGraph.getStorageHandler().getVertexDB().addEdge((byte[]) this.id(), edge, inVertex);
         } catch (RocksDBException e) {
             e.printStackTrace();

@@ -54,7 +54,6 @@ public final class RocksGraph implements Graph {
     public Vertex addVertex(Object... keyValues) {
         ElementHelper.legalPropertyKeyValueArray(keyValues);
         byte[] idValue = String.valueOf(ElementHelper.getIdValue(keyValues).orElse(UUID.randomUUID().toString().getBytes())).getBytes();  //UUID.randomUUID().toString().getBytes();
-        System.out.println("adding vertex with id:" + new String(idValue));
         final String label = ElementHelper.getLabelValue(keyValues).orElse(Vertex.DEFAULT_LABEL);
         try {
             storageHandler.getVertexDB().addVertex(idValue, label, keyValues);

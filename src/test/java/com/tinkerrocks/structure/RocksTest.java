@@ -3,21 +3,31 @@ package com.tinkerrocks.structure;
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.structure.*;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Iterator;
 
 
-/**<p>
+/**
+ * <p>
  * Test class
  * </p>
  * Created by ashishn on 8/11/15.
  */
 public class RocksTest {
+    RocksGraph graph;
+
+    @Before
+    public void setup() {
+        Configuration configuration = new BaseConfiguration();
+        graph = new RocksGraph(configuration);
+
+    }
+
+
     @Test
     public void addVertexTest() {
-        Configuration configuration = new BaseConfiguration();
-        RocksGraph graph = new RocksGraph(configuration);
 
         Vertex marko = graph.addVertex(T.label, "person", T.id, 1, "name", "marko", "age", 29);
         Vertex vadas = graph.addVertex(T.label, "person", T.id, 2, "name", "vadas", "age", 27);
@@ -57,5 +67,17 @@ public class RocksTest {
 
             //System.out.println(iter.next().edges(Direction.BOTH).hasNext());
         }
+    }
+
+
+    @Test
+    public void PerfTest() {
+        long start = System.currentTimeMillis();
+        for (int i = 0; i < 1000000; i++) {
+            graph.addVertex(T.label, "person", T.id, 200 + i, "name", "marko" + i, "age", 29);
+        }
+        long end = System.currentTimeMillis() - start;
+        System.out.println("time takes to add 1000000 vertices (ms):\t" + end);
+
     }
 }
