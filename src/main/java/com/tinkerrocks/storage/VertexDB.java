@@ -26,7 +26,7 @@ public class VertexDB {
 
     public <V> void setProperty(byte[] id, String key, V value) {
         try {
-            this.rocksDB.put(getColumn(VERTEX_COLUMNS.PROPERTIES),
+            put(getColumn(VERTEX_COLUMNS.PROPERTIES),
                     ByteUtil.merge(id, StorageConstants.PROPERTY_SEPERATOR.getBytes(), key.getBytes()), String.valueOf(value).getBytes());
         } catch (RocksDBException e) {
             e.printStackTrace();
@@ -35,11 +35,11 @@ public class VertexDB {
 
 
     public void addEdge(byte[] vertexId, Edge edge, Vertex inVertex) throws RocksDBException {
-        this.rocksDB.put(getColumn(VERTEX_COLUMNS.OUT_EDGES), ByteUtil.merge(vertexId,
+        put(getColumn(VERTEX_COLUMNS.OUT_EDGES), ByteUtil.merge(vertexId,
                 StorageConstants.PROPERTY_SEPERATOR.getBytes(), (byte[]) edge.id()), (byte[]) inVertex.id());
-        this.rocksDB.put(getColumn(VERTEX_COLUMNS.IN_EDGES), ByteUtil.merge((byte[]) inVertex.id(),
+        put(getColumn(VERTEX_COLUMNS.IN_EDGES), ByteUtil.merge((byte[]) inVertex.id(),
                 StorageConstants.PROPERTY_SEPERATOR.getBytes(), (byte[]) edge.id()), vertexId);
-        this.rocksDB.put(getColumn(VERTEX_COLUMNS.OUT_EDGE_LABELS), (byte[]) edge.id(), edge.label().getBytes());
+        put(getColumn(VERTEX_COLUMNS.OUT_EDGE_LABELS), (byte[]) edge.id(), edge.label().getBytes());
     }
 
     public Map<String, byte[]> getProperties(RocksElement rocksVertex, String[] propertyKeys) throws RocksDBException {
@@ -63,8 +63,20 @@ public class VertexDB {
         return results;
     }
 
+
+    void put(byte[] key, byte[] value) throws RocksDBException {
+        this.put(null, key, value);
+    }
+
+    void put(ColumnFamilyHandle columnFamilyHandle, byte[] key, byte[] value) throws RocksDBException {
+        if (columnFamilyHandle != null)
+            this.rocksDB.put(columnFamilyHandle, StorageConfigFactory.getWriteOptions(), key, value);
+        else
+            this.rocksDB.put(StorageConfigFactory.getWriteOptions(), key, value);
+    }
+
     public void addProperty(byte[] id, String key, String value) throws RocksDBException {
-        this.rocksDB.put(ByteUtil.merge(id, StorageConstants.PROPERTY_SEPERATOR.getBytes(), key.getBytes()), value.getBytes());
+        put(ByteUtil.merge(id, StorageConstants.PROPERTY_SEPERATOR.getBytes(), key.getBytes()), value.getBytes());
     }
 
     public List<byte[]> getEdgeIDs(byte[] id, Direction direction, String[] edgeLabels) {
@@ -174,10 +186,10 @@ public class VertexDB {
 
     public void addVertex(byte[] idValue, String label, Object[] keyValues) throws RocksDBException {
 
-        this.rocksDB.put(idValue, label.getBytes());
+        put(idValue, label.getBytes());
         Map<String, Object> properties = ElementHelper.asMap(keyValues);
         for (Map.Entry<String, Object> property : properties.entrySet()) {
-            this.rocksDB.put(getColumn(VERTEX_COLUMNS.PROPERTIES), ByteUtil.merge(idValue, StorageConstants.PROPERTY_SEPERATOR.getBytes(), property.getKey().getBytes()), String.valueOf(property.getValue()).getBytes());
+            put(getColumn(VERTEX_COLUMNS.PROPERTIES), ByteUtil.merge(idValue, StorageConstants.PROPERTY_SEPERATOR.getBytes(), property.getKey().getBytes()), String.valueOf(property.getValue()).getBytes());
         }
     }
 

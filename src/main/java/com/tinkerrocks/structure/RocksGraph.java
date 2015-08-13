@@ -3,9 +3,10 @@ package com.tinkerrocks.structure;
 import com.tinkerrocks.storage.StorageHandler;
 import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.process.computer.GraphComputer;
-import org.apache.tinkerpop.gremlin.structure.*;
-import org.apache.tinkerpop.gremlin.structure.io.Io;
-import org.apache.tinkerpop.gremlin.structure.io.IoRegistry;
+import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.Graph;
+import org.apache.tinkerpop.gremlin.structure.Transaction;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 import org.rocksdb.RocksDBException;
 
@@ -184,24 +185,6 @@ public final class RocksGraph implements Graph {
         storageHandler.close();
     }
 
-
-    /**
-     * Construct a particular {@link Io} implementation for reading and writing the {@code Graph} and other data.
-     * End-users will "select" the {@link Io} implementation that they want to use by supplying the {@link Io.Builder}
-     * that constructs it.  In this way, {@code Graph} vendors can supply their {@link IoRegistry} to that builder
-     * thus allowing for custom serializers to be auto-configured into the {@link Io} instance.  Registering custom
-     * serializers is particularly useful for those graphs that have complex types for {@link Element} identifiers.
-     * </br>
-     * For those graphs that do not need to register any custom serializers, the default implementation should suffice.
-     * If the default is overriden, take care to register the current graph to the {@link Io.Builder} via the
-     * {@link Io.Builder#graph(Graph)} method.
-     *
-     * @param builder
-     */
-    @Override
-    public <I extends Io> I io(Io.Builder<I> builder) {
-        return null;
-    }
 
     /**
      * Gets the {@link Features} exposed by the underlying {@code Graph} implementation.

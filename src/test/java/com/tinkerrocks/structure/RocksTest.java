@@ -3,6 +3,7 @@ package com.tinkerrocks.structure;
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.structure.*;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -77,7 +78,20 @@ public class RocksTest {
             graph.addVertex(T.label, "person", T.id, 200 + i, "name", "marko" + i, "age", 29);
         }
         long end = System.currentTimeMillis() - start;
-        System.out.println("time takes to add 1000000 vertices (ms):\t" + end);
+        System.out.println("write time takes to add 1000000 vertices (ms):\t" + end);
 
+        start = System.currentTimeMillis();
+        for (int i = 0; i < 1000000; i++) {
+            graph.vertices(200 + i).next().property("name");
+        }
+        end = System.currentTimeMillis() - start;
+        System.out.println("read time takes to add 1000000 vertices (ms):\t" + end);
+
+
+    }
+
+    @After
+    public void close() throws Exception {
+        this.graph.close();
     }
 }

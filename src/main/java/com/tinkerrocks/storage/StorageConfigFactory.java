@@ -7,10 +7,10 @@ import org.rocksdb.util.SizeUnit;
  * Created by ashishn on 8/12/15.
  */
 public class StorageConfigFactory {
-    static Options options;
-    static DBOptions dbOptions;
-    static ColumnFamilyOptions columnFamilyOptions;
-    static WriteOptions writeOptions;
+    private static Options options;
+    private static DBOptions dbOptions;
+    private static ColumnFamilyOptions columnFamilyOptions;
+    private static WriteOptions writeOptions;
 
 
     public static Options getOptions() {
