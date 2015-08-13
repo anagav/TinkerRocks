@@ -123,7 +123,7 @@ public class StorageConfigFactory {
             return writeOptions;
         }
         writeOptions = new WriteOptions();
-        writeOptions.setSync(false);
+        writeOptions.setSync(true);
         writeOptions.setDisableWAL(true);
         return writeOptions;
     }

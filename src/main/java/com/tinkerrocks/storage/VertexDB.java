@@ -6,6 +6,7 @@ import com.tinkerrocks.structure.RocksGraph;
 import com.tinkerrocks.structure.RocksVertex;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 import org.rocksdb.*;
@@ -230,7 +231,11 @@ public class VertexDB {
 
 
     private String getLabel(byte[] vertexid) throws RocksDBException {
-        return new String(this.rocksDB.get(vertexid));
+        byte[] result = this.rocksDB.get(vertexid);
+        if (result == null) {
+            throw Graph.Exceptions.elementNotFound(Vertex.class, new String(vertexid));
+        }
+        return new String(result);
     }
 
 

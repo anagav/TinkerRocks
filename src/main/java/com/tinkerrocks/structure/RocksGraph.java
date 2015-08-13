@@ -83,8 +83,10 @@ public final class RocksGraph implements Graph {
         throw Exceptions.graphComputerNotSupported();
     }
 
+
     @Override
     public Iterator<Vertex> vertices(Object... vertexIds) {
+
         if (vertexIds == null || vertexIds.length == 0) {
             try {
                 return storageHandler.getVertexDB().vertices(null, this).iterator();
@@ -99,7 +101,11 @@ public final class RocksGraph implements Graph {
 
         List<byte[]> ids = new ArrayList<>(vertexIds.length);
         for (Object vertexId : vertexIds) {
-            ids.add(String.valueOf(vertexId).getBytes());
+            if (vertexId instanceof RocksElement) {
+                ids.add((byte[]) ((RocksElement) vertexId).id());
+            } else {
+                ids.add(String.valueOf(vertexId).getBytes());
+            }
         }
         try {
             return storageHandler.getVertexDB().vertices(ids, this).iterator();
