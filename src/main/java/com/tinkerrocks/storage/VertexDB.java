@@ -72,6 +72,7 @@ public class VertexDB {
         RocksIterator iterator = null;
         byte[] seek_key = ByteUtil.merge(id, StorageConstants.PROPERTY_SEPERATOR.getBytes());
 
+
         try {
             if (direction == Direction.BOTH || direction == Direction.IN) {
                 iterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.IN_EDGES));
@@ -102,6 +103,7 @@ public class VertexDB {
                     }
                 }
             }
+
         } catch (RocksDBException ex) {
             ex.printStackTrace();
         } finally {

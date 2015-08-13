@@ -36,7 +36,7 @@ public class RocksTest {
         josh.addEdge("created", lop, T.id, 11, "weight", 0.4f);
         peter.addEdge("created", lop, T.id, 12, "weight", 0.2f);
 
-        Iterator<Vertex> iter = graph.vertices();
+        Iterator<Vertex> iter = graph.vertices(4);
         while (iter.hasNext()) {
             Vertex test = iter.next();
             Iterator<VertexProperty<Object>> properties = test.properties();
