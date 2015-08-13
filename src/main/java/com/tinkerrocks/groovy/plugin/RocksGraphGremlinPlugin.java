@@ -14,7 +14,6 @@ import java.util.Set;
  */
 public class RocksGraphGremlinPlugin extends AbstractGremlinPlugin {
 
-
     private static final Set<String> IMPORTS = new HashSet<String>() {{
         add(IMPORT_SPACE + RocksGraph.class.getPackage().getName() + DOT_STAR);
     }};

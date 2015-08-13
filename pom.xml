@@ -31,6 +31,35 @@
                 </executions>
             </plugin>
 
+            <!--<plugin>-->
+                <!--<groupId>org.apache.maven.plugins</groupId>-->
+                <!--<artifactId>maven-enforcer-plugin</artifactId>-->
+                <!--<version>1.4</version>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<id>enforce-plugin-versions</id>-->
+                        <!--<goals>-->
+                            <!--<goal>enforce</goal>-->
+                        <!--</goals>-->
+                        <!--<configuration>-->
+                            <!--<rules>-->
+                                <!--<requirePluginVersions>-->
+                                    <!--&lt;!&ndash;<banLatest>true</banLatest>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<banRelease>true</banRelease>&ndash;&gt;-->
+                                    <!--<banSnapshots>true</banSnapshots>-->
+                                    <!--<phases>clean,deploy,site</phases>-->
+                                    <!--<additionalPlugins>-->
+                                        <!--<additionalPlugin>org.apache.maven.plugins:maven-eclipse-plugin</additionalPlugin>-->
+                                        <!--<additionalPlugin>org.apache.maven.plugins:maven-reactor-plugin</additionalPlugin>-->
+                                    <!--</additionalPlugins>-->
+                                    <!--<unCheckedPluginList>org.apache.maven.plugins:maven-enforcer-plugin,org.apache.maven.plugins:maven-idea-plugin</unCheckedPluginList>-->
+                                <!--</requirePluginVersions>-->
+                            <!--</rules>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+            <!--</plugin>-->
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -64,6 +93,7 @@
             <groupId>org.apache.tinkerpop</groupId>
             <artifactId>gremlin-core</artifactId>
             <version>3.0.0.M9-incubating</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.rocksdb</groupId>
@@ -80,6 +110,7 @@
             <groupId>org.apache.tinkerpop</groupId>
             <artifactId>gremlin-groovy</artifactId>
             <version>3.0.0.M9-incubating</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

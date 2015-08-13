@@ -1,6 +1,7 @@
 package com.tinkerrocks.structure;
 
 import com.tinkerrocks.storage.StorageHandler;
+import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.process.computer.GraphComputer;
 import org.apache.tinkerpop.gremlin.structure.Edge;
@@ -28,12 +29,14 @@ import java.util.UUID;
 public final class RocksGraph implements Graph {
 
 
-
     private final Configuration configuration;
     private final StorageHandler storageHandler;
 
 
-    public static RocksGraph open(final Configuration configuration) throws InstantiationException {
+    public static RocksGraph open(Configuration configuration) throws InstantiationException {
+        if (configuration == null) {
+            configuration = new BaseConfiguration();
+        }
         return new RocksGraph(configuration);
     }
 
@@ -55,6 +58,10 @@ public final class RocksGraph implements Graph {
     @Override
     public Vertex addVertex(Object... keyValues) {
         ElementHelper.legalPropertyKeyValueArray(keyValues);
+        Object id = ElementHelper.getIdValue(keyValues).orElse(null);
+        if (id == null) {
+            throw Exceptions.idArgsMustBeEitherIdOrElement();
+        }
         byte[] idValue = String.valueOf(ElementHelper.getIdValue(keyValues).orElse(UUID.randomUUID().toString().getBytes())).getBytes();  //UUID.randomUUID().toString().getBytes();
         final String label = ElementHelper.getLabelValue(keyValues).orElse(Vertex.DEFAULT_LABEL);
         try {
