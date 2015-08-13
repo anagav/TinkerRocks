@@ -82,6 +82,7 @@ public final class RocksGraph implements Graph {
                 return storageHandler.getVertexDB().vertices(null, this).iterator();
             } catch (RocksDBException e) {
                 e.printStackTrace();
+                throw Exceptions.elementNotFound(Vertex.class, "all ids");
             }
         }
 
@@ -96,8 +97,8 @@ public final class RocksGraph implements Graph {
             return storageHandler.getVertexDB().vertices(ids, this).iterator();
         } catch (RocksDBException e) {
             e.printStackTrace();
+            throw Exceptions.elementNotFound(Vertex.class, ids.get(0));
         }
-        return new ArrayList<Vertex>().iterator();
     }
 
     @Override

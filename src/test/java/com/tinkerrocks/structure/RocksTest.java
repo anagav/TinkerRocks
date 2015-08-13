@@ -85,7 +85,14 @@ public class RocksTest {
             graph.vertices(200 + i).next().property("name");
         }
         end = System.currentTimeMillis() - start;
-        System.out.println("read time takes to add 1000000 vertices (ms):\t" + end);
+        System.out.println("read time takes to read 1000000 vertices (ms):\t" + end);
+
+        start = System.currentTimeMillis();
+        for (int i = 0; i < 1000000; i++) {
+            graph.vertices(200).next().property("name");
+        }
+        end = System.currentTimeMillis() - start;
+        System.out.println("read time takes to access same vertex 1000000 times (ms):\t" + end);
 
 
     }
