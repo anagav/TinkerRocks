@@ -26,7 +26,7 @@ import java.util.UUID;
 @Graph.OptIn(Graph.OptIn.SUITE_STRUCTURE_PERFORMANCE)
 
 
-public final class RocksGraph implements Graph {
+public final class RocksGraph implements Graph{
 
 
     private final Configuration configuration;

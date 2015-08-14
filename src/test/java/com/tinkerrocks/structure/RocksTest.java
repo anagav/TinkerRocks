@@ -3,6 +3,7 @@ package com.tinkerrocks.structure;
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.process.traversal.engine.StandardTraversalEngine;
 import org.apache.tinkerpop.gremlin.structure.*;
 import org.apache.tinkerpop.gremlin.util.iterator.IteratorUtils;
 import org.junit.After;
@@ -33,12 +34,12 @@ public class RocksTest {
     @Test
     public void addVertexTest() {
 
-        GraphTraversalSource g = graph.traversal();
+        GraphTraversalSource g = graph.traversal(GraphTraversalSource.build().engine(StandardTraversalEngine.build()));
 
         System.out.println("g=" + g);
 
 
-        System.out.println("traversed edge" + g.V(1).bothE("knows").has("weight", 0.5f).tryNext());
+        System.out.println("traversed edge" + g.V().bothE("knows").has("weight", 0.5f).tryNext().orElse(null));
 
 
         //g.addV()
@@ -91,25 +92,27 @@ public class RocksTest {
     @Test
     public void PerfTest() {
         long start = System.currentTimeMillis();
-        for (int i = 0; i < 1000000; i++) {
+        int ITERATIONS = 1000000;
+
+        for (int i = 0; i < ITERATIONS; i++) {
             graph.addVertex(T.label, "person", T.id, 200 + i, "name", "marko" + i, "age", 29);
         }
         long end = System.currentTimeMillis() - start;
-        System.out.println("write time takes to add 1000000 vertices (ms):\t" + end);
+        System.out.println("write time takes to add " + ITERATIONS + " vertices (ms):\t" + end);
 
         start = System.currentTimeMillis();
-        for (int i = 0; i < 1000000; i++) {
+        for (int i = 0; i < ITERATIONS; i++) {
             graph.vertices(200 + i).next().property("name");
         }
         end = System.currentTimeMillis() - start;
-        System.out.println("read time takes to read 1000000 vertices (ms):\t" + end);
+        System.out.println("read time takes to read " + ITERATIONS + " vertices (ms):\t" + end);
 
         start = System.currentTimeMillis();
-        for (int i = 0; i < 1000000; i++) {
+        for (int i = 0; i < ITERATIONS; i++) {
             graph.vertices(200).next().property("name");
         }
         end = System.currentTimeMillis() - start;
-        System.out.println("read time takes to access same vertex 1000000 times (ms):\t" + end);
+        System.out.println("read time takes to access same vertex " + ITERATIONS + " times (ms):\t" + end);
 
 
         Vertex supernode = graph.vertices(200).next();
@@ -117,23 +120,23 @@ public class RocksTest {
 
 
         start = System.currentTimeMillis();
-        for (int i = 0; i < 1000000; i++) {
+        for (int i = 0; i < ITERATIONS; i++) {
             supernode.addEdge("knows", supernodeSink, T.id, 700 + i, "weight", 0.5f);
         }
         end = System.currentTimeMillis() - start;
-        System.out.println("time to add 1000000 edges (ms):\t" + end);
+        System.out.println("time to add " + ITERATIONS + " edges (ms):\t" + end);
 
         start = System.currentTimeMillis();
         supernode.edges(Direction.BOTH);
         end = System.currentTimeMillis() - start;
-        System.out.println("time to read 1000000 edges (ms):\t" + end);
+        System.out.println("time to read " + ITERATIONS + " edges (ms):\t" + end);
 
 
         start = System.currentTimeMillis();
         Iterator<Edge> test = supernode.edges(Direction.OUT, "knows");
         end = System.currentTimeMillis() - start;
 
-        System.out.println("time to read 1000000 cached edges (ms):\t" + end);
+        System.out.println("time to read " + ITERATIONS + " cached edges (ms):\t" + end);
         long count = IteratorUtils.count(test);
         System.out.println("got edges: " + count);
 
