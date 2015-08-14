@@ -29,7 +29,7 @@ public class VertexDB extends StorageAbstractClass {
     public <V> void setProperty(byte[] id, String key, V value) {
         try {
             put(getColumn(VERTEX_COLUMNS.PROPERTIES),
-                    ByteUtil.merge(id, StorageConstants.PROPERTY_SEPERATOR.getBytes(), key.getBytes()), String.valueOf(value).getBytes());
+                    ByteUtil.merge(id, StorageConstants.PROPERTY_SEPERATOR.getBytes(), key.getBytes()), serialize(value));
         } catch (RocksDBException e) {
             e.printStackTrace();
         }
@@ -205,9 +205,7 @@ public class VertexDB extends StorageAbstractClass {
         put(idValue, label.getBytes());
         Map<String, Object> properties = ElementHelper.asMap(keyValues);
         for (Map.Entry<String, Object> property : properties.entrySet()) {
-            put(getColumn(VERTEX_COLUMNS.PROPERTIES), ByteUtil.merge(idValue,
-                            StorageConstants.PROPERTY_SEPERATOR.getBytes(), property.getKey().getBytes()),
-                    serialize(property.getValue()));
+            setProperty(idValue, property.getKey(), property.getValue());
         }
     }
 

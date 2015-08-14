@@ -37,6 +37,7 @@ public class StorageConfigFactory {
                 .setTargetFileSizeMultiplier(1)
                 .setMaxBytesForLevelMultiplier(10)
                 .setAllowOsBuffer(true)
+                .setLevelCompactionDynamicLevelBytes(true)
                 .setTableCacheNumshardbits(10)
                 .setLevelZeroFileNumCompactionTrigger(10)
                 .setLevelZeroSlowdownWritesTrigger(20)
@@ -72,6 +73,7 @@ public class StorageConfigFactory {
                 .setCreateMissingColumnFamilies(true)
                 .setIncreaseParallelism(10)
                 .setAllowOsBuffer(true)
+
                 .setTableCacheNumshardbits(10)
                 .setMaxBackgroundFlushes(3)
                 .setDisableDataSync(true)
@@ -104,6 +106,7 @@ public class StorageConfigFactory {
                 .setMemtablePrefixBloomBits(8 * 1024 * 1024)
                 .setMemtablePrefixBloomProbes(6)
                 .setBloomLocality(1)
+                .setLevelCompactionDynamicLevelBytes(true)
                 .setTargetFileSizeMultiplier(1)
                 .setMaxBytesForLevelMultiplier(10)
                 .setLevelZeroFileNumCompactionTrigger(10)
@@ -123,7 +126,7 @@ public class StorageConfigFactory {
             return writeOptions;
         }
         writeOptions = new WriteOptions();
-        writeOptions.setSync(true);
+        writeOptions.setSync(false);
         writeOptions.setDisableWAL(true);
         return writeOptions;
     }

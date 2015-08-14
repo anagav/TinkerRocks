@@ -130,9 +130,11 @@ public class RocksTest {
 
 
         start = System.currentTimeMillis();
+        Iterator<Edge> test = supernode.edges(Direction.OUT, "knows");
         end = System.currentTimeMillis() - start;
+
         System.out.println("time to read 1000000 cached edges (ms):\t" + end);
-        long count = IteratorUtils.count(supernode.edges(Direction.OUT, "knows"));
+        long count = IteratorUtils.count(test);
         System.out.println("got edges: " + count);
 
 

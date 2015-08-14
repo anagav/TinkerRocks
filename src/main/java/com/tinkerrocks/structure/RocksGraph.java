@@ -69,6 +69,7 @@ public final class RocksGraph implements Graph {
         } catch (RocksDBException e) {
             e.printStackTrace();
         }
+
         return new RocksVertex(idValue, label, this);
 
     }
