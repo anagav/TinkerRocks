@@ -5,7 +5,6 @@ import com.google.common.cache.CacheBuilder;
 import com.tinkerrocks.structure.*;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Edge;
-import org.apache.tinkerpop.gremlin.structure.Property;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 import org.rocksdb.*;
@@ -116,15 +115,18 @@ public class EdgeDB {
         }
 
         for (String property : propertyKeys) {
+
+
             byte[] val = rocksDB.get(getColumn(EDGE_COLUMNS.PROPERTIES),
                     ByteUtil.merge((byte[]) element.id(), StorageConstants.PROPERTY_SEPERATOR.getBytes(),
                             property.getBytes()));
 
+
             if (val != null)
                 results.put(property, val);
-            else {
-                throw Property.Exceptions.propertyDoesNotExist(element, property);
-            }
+            else
+                results.put(property, null);
+
         }
         return results;
     }

@@ -37,6 +37,10 @@ public class RocksTest {
 
         System.out.println("g=" + g);
 
+
+        System.out.println("traversal edge:  " + g.V(1).bothE("knows").has("weight1").tryNext().orElse(null));
+
+
         //g.addV()
 
         //g.addV().addE()
@@ -60,7 +64,7 @@ public class RocksTest {
         peter.addEdge("created", lop, T.id, 12, "weight", 0.2f);
 
 
-        Iterator<Vertex> iter = graph.vertices(peter);
+        Iterator<Vertex> iter = graph.vertices(1);
         while (iter.hasNext()) {
             Vertex test = iter.next();
             Iterator<VertexProperty<Object>> properties = test.properties();

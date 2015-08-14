@@ -4,7 +4,6 @@ import org.apache.tinkerpop.gremlin.structure.*;
 import org.rocksdb.RocksDBException;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Created by ashishn on 8/5/15.
@@ -83,6 +82,11 @@ public class RocksEdge extends RocksElement implements Edge {
     @SuppressWarnings("unchecked")
     @Override
     public <V> Iterator<Property<V>> properties(String... propertyKeys) {
+        for (String s : propertyKeys) {
+            System.out.println("prop:" + s);
+        }
+
+
         Map<String, byte[]> properties = new HashMap<>();
         try {
             if (this instanceof Vertex) {
@@ -93,10 +97,20 @@ public class RocksEdge extends RocksElement implements Edge {
         } catch (RocksDBException ex) {
             ex.printStackTrace();
         }
+
         List<Property<V>> propertiesList = new ArrayList<>(properties.size());
-        propertiesList.addAll(properties.entrySet().stream()
-                .map(property -> new RocksProperty<>(this,
-                        property.getKey(), (V) new String(property.getValue()))).collect(Collectors.toList()));
+
+
+
+        for (Map.Entry<String, byte[]> property : properties.entrySet()) {
+            if (property.getValue() == null) {
+                continue;
+            }
+            propertiesList.add(new RocksVertexProperty<>(this,
+                    property.getKey(),
+                    (V) new String(property.getValue())));
+        }
+
         return propertiesList.iterator();
     }
 
