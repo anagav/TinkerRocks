@@ -20,7 +20,7 @@ public class RocksVertex extends RocksElement implements Vertex {
     @SuppressWarnings("unchecked")
     @Override
     public <V> Iterator<VertexProperty<V>> properties(String... propertyKeys) {
-        Map<String, byte[]> results;
+        Map<String, Object> results;
         List<VertexProperty<V>> props = new ArrayList<>();
         try {
             results = this.rocksGraph.getStorageHandler().getVertexDB().getProperties(this, propertyKeys);
@@ -29,7 +29,7 @@ public class RocksVertex extends RocksElement implements Vertex {
             return null;
         }
 
-        results.forEach((s, bytes) -> props.add(new RocksVertexProperty<>(this, s, (V) new String(bytes))));
+        results.forEach((s, bytes) -> props.add(new RocksVertexProperty<>(this, s, (V) bytes)));
 
         return props.iterator();
 
@@ -76,7 +76,7 @@ public class RocksVertex extends RocksElement implements Vertex {
         ElementHelper.legalPropertyKeyValueArray(keyValues);
         try {
             this.rocksGraph.getStorageHandler().getVertexDB()
-                    .addProperty(String.valueOf(ElementHelper.getIdValue(keyValues)).getBytes(), key, (String) value);
+                    .addProperty(String.valueOf(ElementHelper.getIdValue(keyValues)).getBytes(), key, value);
         } catch (RocksDBException e) {
             e.printStackTrace();
         }

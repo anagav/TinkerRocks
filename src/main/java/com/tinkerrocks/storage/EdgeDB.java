@@ -24,7 +24,7 @@ import java.util.concurrent.ExecutionException;
  */
 
 
-public class EdgeDB {
+public class EdgeDB extends StorageAbstractClass {
 
 
     public void close() {
@@ -33,7 +33,7 @@ public class EdgeDB {
 
     public <V> void setProperty(String id, String key, V value) {
         try {
-            put(getColumn(EDGE_COLUMNS.PROPERTIES), (id + key).getBytes(), String.valueOf(value).getBytes());
+            put(getColumn(EDGE_COLUMNS.PROPERTIES), (id + key).getBytes(), serialize(value));
         } catch (RocksDBException e) {
             e.printStackTrace();
         }
@@ -75,7 +75,7 @@ public class EdgeDB {
         for (Map.Entry<String, Object> entry : properties.entrySet()) {
             put(getColumn(EDGE_COLUMNS.PROPERTIES),
                     ByteUtil.merge(edge_id, StorageConstants.PROPERTY_SEPERATOR.getBytes(), entry.getKey().getBytes()),
-                    String.valueOf(entry.getValue()).getBytes());
+                    serialize(entry.getValue()));
         }
     }
 
@@ -100,8 +100,8 @@ public class EdgeDB {
         return vertexIDs;
     }
 
-    public Map<String, byte[]> getProperties(RocksElement element, String[] propertyKeys) throws RocksDBException {
-        Map<String, byte[]> results = new HashMap<>();
+    public Map<String, Object> getProperties(RocksElement element, String[] propertyKeys) throws RocksDBException {
+        Map<String, Object> results = new HashMap<>();
 
         if (propertyKeys == null || propertyKeys.length == 0) {
             RocksIterator rocksIterator = this.rocksDB.newIterator(getColumn(EDGE_COLUMNS.PROPERTIES));
@@ -109,7 +109,7 @@ public class EdgeDB {
             for (rocksIterator.seek(seek_key); rocksIterator.isValid() && ByteUtil.startsWith(rocksIterator.key(), 0, seek_key);
                  rocksIterator.next()) {
                 results.put(new String(ByteUtil.slice(rocksIterator.key(), seek_key.length, rocksIterator.key().length)),
-                        rocksIterator.value());
+                        deserialize(rocksIterator.value()));
             }
             return results;
         }
@@ -123,7 +123,7 @@ public class EdgeDB {
 
 
             if (val != null)
-                results.put(property, val);
+                results.put(property, deserialize(val));
             else
                 results.put(property, null);
 
@@ -211,6 +211,7 @@ public class EdgeDB {
     List<ColumnFamilyDescriptor> columnFamilyDescriptors;
     Cache<byte[], RocksEdge> edgeCache;
 
+
     public EdgeDB() throws RocksDBException {
         columnFamilyDescriptors = new ArrayList<>(EDGE_COLUMNS.values().length);
         columnFamilyHandleList = new ArrayList<>(EDGE_COLUMNS.values().length);
@@ -221,6 +222,7 @@ public class EdgeDB {
         }
         this.rocksDB = RocksDB.open(StorageConfigFactory.getDBOptions(), "/tmp/edges", columnFamilyDescriptors, columnFamilyHandleList);
         this.edgeCache = CacheBuilder.newBuilder().maximumSize(1000000).concurrencyLevel(1000).build();
+
     }
 
 

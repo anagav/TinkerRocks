@@ -87,7 +87,7 @@ public class RocksEdge extends RocksElement implements Edge {
         }
 
 
-        Map<String, byte[]> properties = new HashMap<>();
+        Map<String, Object> properties = new HashMap<>();
         try {
             if (this instanceof Vertex) {
                 properties = this.rocksGraph.getStorageHandler().getVertexDB().getProperties(this, propertyKeys);
@@ -101,14 +101,13 @@ public class RocksEdge extends RocksElement implements Edge {
         List<Property<V>> propertiesList = new ArrayList<>(properties.size());
 
 
-
-        for (Map.Entry<String, byte[]> property : properties.entrySet()) {
+        for (Map.Entry<String, Object> property : properties.entrySet()) {
             if (property.getValue() == null) {
                 continue;
             }
             propertiesList.add(new RocksVertexProperty<>(this,
                     property.getKey(),
-                    (V) new String(property.getValue())));
+                    (V) property.getValue()));
         }
 
         return propertiesList.iterator();

@@ -38,7 +38,7 @@ public class RocksTest {
         System.out.println("g=" + g);
 
 
-        System.out.println("traversal edge:  " + g.V(1).bothE("knows").has("weight1").tryNext().orElse(null));
+        System.out.println("traversed edge" + g.V(1).bothE("knows").has("weight", 0.5f).tryNext());
 
 
         //g.addV()

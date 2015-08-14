@@ -72,7 +72,8 @@ public abstract class RocksElement implements Element {
      */
     @Override
     public <V> Iterator<? extends Property<V>> properties(String... propertyKeys) {
-        Map<String, byte[]> properties = new HashMap<>(30);
+        Map<String, Object> properties = new HashMap<>(30);
+
         try {
             if (this instanceof Vertex) {
                 properties = this.rocksGraph.getStorageHandler().getVertexDB().getProperties(this, propertyKeys);
