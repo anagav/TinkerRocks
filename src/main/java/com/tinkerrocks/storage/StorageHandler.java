@@ -9,10 +9,12 @@ import org.rocksdb.RocksDBException;
 public class StorageHandler {
     VertexDB vertexDB;
     EdgeDB edgeDB;
+    IndexDB indexDB;
 
     public StorageHandler() throws RocksDBException {
         vertexDB = new VertexDB();
         edgeDB = new EdgeDB();
+        indexDB = new IndexDB();
     }
 
 
@@ -24,9 +26,14 @@ public class StorageHandler {
         return edgeDB;
     }
 
+    public IndexDB getIndexDB() {
+        return indexDB;
+    }
+
     public void close() {
         vertexDB.close();
         edgeDB.close();
+        indexDB.close();
     }
 
 
