@@ -47,6 +47,14 @@ public class RocksVertex extends RocksElement implements Vertex {
 
         ElementHelper.legalPropertyKeyValueArray(keyValues);
         checkRemoved();
+        if (label == null) {
+            throw Element.Exceptions.labelCanNotBeNull();
+        }
+
+        if (label.isEmpty()) {
+            throw Element.Exceptions.labelCanNotBeEmpty();
+        }
+
 
         byte[] edge_id = String.valueOf(ElementHelper
                 .getIdValue(keyValues).orElse(UUID.randomUUID().toString().getBytes())).getBytes();  //UUID.randomUUID().toString().getBytes();

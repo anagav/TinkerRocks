@@ -2,6 +2,7 @@ package com.tinkerrocks.structure;
 
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.*;
 import org.apache.tinkerpop.gremlin.util.iterator.IteratorUtils;
 import org.junit.After;
@@ -32,6 +33,15 @@ public class RocksTest {
     @Test
     public void addVertexTest() {
 
+        GraphTraversalSource g = graph.traversal();
+
+        System.out.println("g=" + g);
+
+        //g.addV()
+
+        //g.addV().addE()
+
+
         Vertex marko = graph.addVertex(T.label, "person", T.id, 1, "name", "marko", "age", 29);
         Vertex vadas = graph.addVertex(T.label, "person", T.id, 2, "name", "vadas", "age", 27);
         Vertex lop = graph.addVertex(T.label, "software", T.id, 3, "name", "lop", "lang", "java");
@@ -48,6 +58,7 @@ public class RocksTest {
         josh.addEdge("created", ripple, T.id, 10, "weight", 1.0f);
         josh.addEdge("created", lop, T.id, 11, "weight", 0.4f);
         peter.addEdge("created", lop, T.id, 12, "weight", 0.2f);
+
 
         Iterator<Vertex> iter = graph.vertices(peter);
         while (iter.hasNext()) {
