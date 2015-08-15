@@ -228,12 +228,12 @@ public class VertexDB extends StorageAbstractClass {
         return vertices;
     }
 
-    private RocksVertex getVertex(byte[] vertexId, RocksGraph rocksGraph) throws RocksDBException {
+    public RocksVertex getVertex(byte[] vertexId, RocksGraph rocksGraph) throws RocksDBException {
         return new RocksVertex(vertexId, getLabel(vertexId), rocksGraph);
     }
 
 
-    private String getLabel(byte[] vertexid) throws RocksDBException {
+    public String getLabel(byte[] vertexid) throws RocksDBException {
         byte[] result = this.rocksDB.get(vertexid);
         if (result == null) {
             throw Graph.Exceptions.elementNotFound(Vertex.class, new String(vertexid));

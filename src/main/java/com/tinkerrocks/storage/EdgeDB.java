@@ -150,7 +150,7 @@ public class EdgeDB extends StorageAbstractClass {
     }
 
 
-    RocksEdge getEdge(byte[] id, RocksGraph rocksGraph) throws RocksDBException {
+    public RocksEdge getEdge(byte[] id, RocksGraph rocksGraph) throws RocksDBException {
 
         try {
             return edgeCache.get(id, () -> {

@@ -39,7 +39,7 @@ public class RocksTest {
         System.out.println("g=" + g);
 
 
-        System.out.println("traversed edge" + g.V().bothE("knows").has("weight", 0.5f).tryNext().orElse(null));
+        //System.out.println("traversed edge" + g.V().bothE("knows").has("weight", 0.5f).tryNext().orElse(null));
 
 
         //g.addV()
@@ -55,7 +55,7 @@ public class RocksTest {
         Vertex peter = graph.addVertex(T.label, "person", T.id, 6, "name", "peter", "age", 35);
 
 
-        marko.addEdge("knows", vadas, T.id, 7, "weight", 0.5f);
+        marko.addEdge("knows", vadas, T.id, 7, "weight", 0.5f, "weight1", 10.6f);
         marko.addEdge("knows", josh, T.id, 8, "weight", 1.0f);
         marko.addEdge("created", lop, T.id, 9, "weight", 0.4f);
 

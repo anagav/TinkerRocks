@@ -12,6 +12,8 @@ import java.util.*;
 public class RocksVertex extends RocksElement implements Vertex {
 
 
+
+
     public RocksVertex(byte[] id, String label, RocksGraph rocksGraph) {
         super(id, label, rocksGraph);
 
