@@ -1,7 +1,9 @@
 package com.tinkerrocks.index;
 
 import com.tinkerrocks.structure.RocksGraph;
+import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Element;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
 
 import java.util.List;
 import java.util.Set;
@@ -21,7 +23,13 @@ public class RocksIndex<T extends Element> {
 
 
     protected void put(final String key, final Object value, final T element) {
+        if (element instanceof Vertex) {
+            this.rocksGraph.getStorageHandler().getIndexDB().putVertexIndex(indexClass, key, value, element.id());
+        }
+        if (element instanceof Edge) {
+            this.rocksGraph.getStorageHandler().getIndexDB().putEdgeIndex(indexClass, key, value, element.id());
 
+        }
     }
 
 
