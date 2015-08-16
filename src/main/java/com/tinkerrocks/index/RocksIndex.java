@@ -73,7 +73,6 @@ public class RocksIndex<T extends Element> {
 
     @SuppressWarnings("unchecked")
     public void createKeyIndex(final String key) {
-        System.out.println("create index called");
 
 
         Iterator<Element> iterator = (Iterator<Element>) (Vertex.class.isAssignableFrom(this.indexClass) ?
@@ -84,7 +83,6 @@ public class RocksIndex<T extends Element> {
                 this.put(key, element.property(key).value(), (T) element);
             }
         });
-        System.out.println("create index completed");
 
     }
 

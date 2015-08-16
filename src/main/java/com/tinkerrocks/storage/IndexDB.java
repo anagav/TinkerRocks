@@ -66,7 +66,6 @@ public class IndexDB extends StorageAbstractClass {
         byte[] key1 = (className +
                 StorageConstants.PROPERTY_SEPERATOR + key + StorageConstants.PROPERTY_SEPERATOR).getBytes();
 
-        System.out.println("adding key:" + new String(key1));
         key1 = ByteUtil.merge(key1, id);
         this.rocksDB.put(getColumn(INDEX_COLUMNS.INDEX_KEYS), key1, "".getBytes());
         indexes.add(indexClass.getName() + StorageConstants.PROPERTY_SEPERATOR + key);
