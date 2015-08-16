@@ -8,10 +8,7 @@ import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.rocksdb.RocksDBException;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by ashishn on 8/13/15.
@@ -76,12 +73,19 @@ public class RocksIndex<T extends Element> {
 
     @SuppressWarnings("unchecked")
     public void createKeyIndex(final String key) {
-        (Vertex.class.isAssignableFrom(this.indexClass) ?
-                this.rocksGraph.vertices() : this.rocksGraph.edges()).forEachRemaining(element -> {
+        System.out.println("create index called");
+
+
+        Iterator<Element> iterator = (Iterator<Element>) (Vertex.class.isAssignableFrom(this.indexClass) ?
+                this.rocksGraph.vertices() : this.rocksGraph.edges());
+
+        iterator.forEachRemaining(element -> {
             if (element.property(key).isPresent()) {
                 this.put(key, element.property(key).value(), (T) element);
             }
         });
+        System.out.println("create index completed");
+
     }
 
 

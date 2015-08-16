@@ -33,19 +33,22 @@ public class RocksTest {
 
     @Test
     public void addVertexTest() {
+        graph.createIndex("name", Vertex.class);
+
+        graph.createIndex("weight", Edge.class);
+
 
         GraphTraversalSource g = graph.traversal(GraphTraversalSource.build().engine(StandardTraversalEngine.build()));
 
-        System.out.println("g=" + g);
+        //System.out.println("g=" + g);
 
 
-        //System.out.println("traversed edge" + g.V().bothE("knows").has("weight", 0.5f).tryNext().orElse(null));
+        System.out.println("traversed edge" + g.V().bothE("knows").has("weight", 0.5f).tryNext().orElse(null));
 
 
         //g.addV()
 
         //g.addV().addE()
-
 
         Vertex marko = graph.addVertex(T.label, "person", T.id, 1, "name", "marko", "age", 29);
         Vertex vadas = graph.addVertex(T.label, "person", T.id, 2, "name", "vadas", "age", 27);

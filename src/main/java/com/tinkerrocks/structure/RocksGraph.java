@@ -1,10 +1,12 @@
 package com.tinkerrocks.structure;
 
 import com.tinkerrocks.index.RocksIndex;
+import com.tinkerrocks.process.traversal.RocksGraphStepStrategy;
 import com.tinkerrocks.storage.StorageHandler;
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.process.computer.GraphComputer;
+import org.apache.tinkerpop.gremlin.process.traversal.TraversalStrategies;
 import org.apache.tinkerpop.gremlin.structure.*;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 import org.rocksdb.RocksDBException;
@@ -22,6 +24,12 @@ import java.util.*;
 
 
 public final class RocksGraph implements Graph {
+
+
+    static {
+        TraversalStrategies.GlobalCache.registerStrategies(RocksGraph.class,
+                TraversalStrategies.GlobalCache.getStrategies(Graph.class).clone().addStrategies(RocksGraphStepStrategy.instance()));
+    }
 
 
     private final Configuration configuration;
@@ -80,6 +88,19 @@ public final class RocksGraph implements Graph {
     @Override
     public GraphComputer compute() throws IllegalArgumentException {
         throw Exceptions.graphComputerNotSupported();
+    }
+
+
+    public <E extends Element> void createIndex(final String key, final Class<E> elementClass) {
+        if (Vertex.class.isAssignableFrom(elementClass)) {
+            if (null == this.vertexIndex) this.vertexIndex = new RocksIndex<>(this, RocksVertex.class);
+            this.vertexIndex.createKeyIndex(key);
+        } else if (Edge.class.isAssignableFrom(elementClass)) {
+            if (null == this.edgeIndex) this.edgeIndex = new RocksIndex<>(this, RocksEdge.class);
+            this.edgeIndex.createKeyIndex(key);
+        } else {
+            throw new IllegalArgumentException("Class is not indexable: " + elementClass);
+        }
     }
 
 

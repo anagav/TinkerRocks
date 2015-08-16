@@ -33,7 +33,7 @@ public class IndexDB extends StorageAbstractClass {
     RocksDB rocksDB;
     List<ColumnFamilyHandle> columnFamilyHandleList;
     List<ColumnFamilyDescriptor> columnFamilyDescriptors;
-    Set<String> indexes;
+    Set<String> indexes = new HashSet<>();
 
 
     public IndexDB() throws RocksDBException {
@@ -46,7 +46,7 @@ public class IndexDB extends StorageAbstractClass {
                     StorageConfigFactory.getColumnFamilyOptions()));
         }
 
-        rocksDB = RocksDB.open("/tmp/indexes");
+        rocksDB = RocksDB.open(StorageConfigFactory.getDBOptions(), StorageConstants.DATABASE_PREFIX + "/indexes", columnFamilyDescriptors, columnFamilyHandleList);
     }
 
     public ColumnFamilyHandle getColumn(INDEX_COLUMNS edge_column) {
@@ -61,14 +61,15 @@ public class IndexDB extends StorageAbstractClass {
         Preconditions.checkNotNull(indexClass);
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(key);
-        Preconditions.checkNotNull(value);
-        indexes.add(indexClass + StorageConstants.PROPERTY_SEPERATOR + key);
 
         String className = indexClass.getName();
         byte[] key1 = (className +
-                StorageConstants.PROPERTY_SEPERATOR + key + StorageConstants.PROPERTY_SEPERATOR + value).getBytes();
+                StorageConstants.PROPERTY_SEPERATOR + key + StorageConstants.PROPERTY_SEPERATOR).getBytes();
+
+        System.out.println("adding key:" + new String(key1));
         key1 = ByteUtil.merge(key1, id);
         this.rocksDB.put(getColumn(INDEX_COLUMNS.INDEX_KEYS), key1, "".getBytes());
+        indexes.add(indexClass.getName() + StorageConstants.PROPERTY_SEPERATOR + key);
         this.rocksDB.put(key1, id);
     }
 
@@ -77,11 +78,12 @@ public class IndexDB extends StorageAbstractClass {
         List<byte[]> results = new ArrayList<>();
         RocksIterator iterator = this.rocksDB.newIterator();
         byte[] seek_key = (indexClass.getName() + StorageConstants.PROPERTY_SEPERATOR + key +
-                StorageConstants.PROPERTY_SEPERATOR + value).getBytes();
+                StorageConstants.PROPERTY_SEPERATOR).getBytes();
 
         iterator.seek(seek_key);
         while (iterator.isValid() && ByteUtil.startsWith(iterator.key(), 0, seek_key)) {
             results.add(ByteUtil.slice(iterator.key(), seek_key.length));
+            iterator.next();
         }
         return results;
     }
@@ -94,7 +96,7 @@ public class IndexDB extends StorageAbstractClass {
 
 
     public <T extends Element> Set<String> getIndexedKeys(Class<T> indexClass) {
-        if (indexes != null) {
+        if (indexes.size() > 0) {
             return indexes;
         }
         indexes = new HashSet<>();

@@ -220,7 +220,7 @@ public class EdgeDB extends StorageAbstractClass {
             columnFamilyDescriptors.add(new ColumnFamilyDescriptor(vertex_columns.getValue().getBytes(),
                     StorageConfigFactory.getColumnFamilyOptions()));
         }
-        this.rocksDB = RocksDB.open(StorageConfigFactory.getDBOptions(), "/tmp/edges", columnFamilyDescriptors, columnFamilyHandleList);
+        this.rocksDB = RocksDB.open(StorageConfigFactory.getDBOptions(), StorageConstants.DATABASE_PREFIX + "/edges", columnFamilyDescriptors, columnFamilyHandleList);
         this.edgeCache = CacheBuilder.newBuilder().maximumSize(1000000).concurrencyLevel(1000).build();
 
     }
