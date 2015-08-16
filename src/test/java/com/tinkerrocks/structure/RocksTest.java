@@ -161,7 +161,7 @@ public class RocksTest {
             graph.addVertex(T.label, "person", T.id, i, "name", "marko", "age", 29);
             i++;
         }
-        while (i < 200000) {
+        while (i < 2000000) {
             graph.addVertex(T.label, "person", T.id, i, "name", "marko");
             i++;
         }

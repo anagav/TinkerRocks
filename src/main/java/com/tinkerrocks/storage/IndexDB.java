@@ -49,6 +49,19 @@ public class IndexDB extends StorageAbstractClass {
         rocksDB = RocksDB.open(StorageConfigFactory.getDBOptions(), StorageConstants.DATABASE_PREFIX + "/indexes", columnFamilyDescriptors, columnFamilyHandleList);
     }
 
+
+    void put(byte[] key, byte[] value) throws RocksDBException {
+        this.put(null, key, value);
+    }
+
+    void put(ColumnFamilyHandle columnFamilyHandle, byte[] key, byte[] value) throws RocksDBException {
+        if (columnFamilyHandle != null)
+            this.rocksDB.put(columnFamilyHandle, StorageConfigFactory.getWriteOptions(), key, value);
+        else
+            this.rocksDB.put(StorageConfigFactory.getWriteOptions(), key, value);
+    }
+
+
     public ColumnFamilyHandle getColumn(INDEX_COLUMNS edge_column) {
         return columnFamilyHandleList.get(edge_column.ordinal() + 1);
     }
@@ -67,9 +80,9 @@ public class IndexDB extends StorageAbstractClass {
                 StorageConstants.PROPERTY_SEPERATOR + key + StorageConstants.PROPERTY_SEPERATOR + value).getBytes();
 
         key1 = ByteUtil.merge(key1, StorageConstants.PROPERTY_SEPERATOR.getBytes(), id);
-        this.rocksDB.put(getColumn(INDEX_COLUMNS.INDEX_KEYS), (className +
+        put(getColumn(INDEX_COLUMNS.INDEX_KEYS), (className +
                 StorageConstants.PROPERTY_SEPERATOR + key).getBytes(), "".getBytes());
-        this.rocksDB.put(key1, id);
+        put(key1, id);
     }
 
 
@@ -84,7 +97,6 @@ public class IndexDB extends StorageAbstractClass {
             results.add(ByteUtil.slice(iterator.key(), seek_key.length));
             iterator.next();
         }
-
         return results;
     }
 
@@ -104,7 +116,6 @@ public class IndexDB extends StorageAbstractClass {
             indexes.add(indexClass.getName() + StorageConstants.PROPERTY_SEPERATOR
                     + new String(ByteUtil.slice(iterator.key(), seek_key.length)));
         }
-
         return indexes;
     }
 }
