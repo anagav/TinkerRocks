@@ -2,6 +2,7 @@ package com.tinkerrocks.structure;
 
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
+import org.apache.commons.io.FileUtils;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.engine.StandardTraversalEngine;
 import org.apache.tinkerpop.gremlin.structure.*;
@@ -10,6 +11,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Iterator;
 
 
@@ -23,8 +26,9 @@ public class RocksTest {
     RocksGraph graph;
 
     @Before
-    public void setup() {
+    public void setup() throws IOException {
         Configuration configuration = new BaseConfiguration();
+        FileUtils.forceMkdir(new File("/tmp/databases"));
         graph = new RocksGraph(configuration);
 
 
