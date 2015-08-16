@@ -1,21 +1,16 @@
 package com.tinkerrocks.structure;
 
+import com.tinkerrocks.index.RocksIndex;
 import com.tinkerrocks.storage.StorageHandler;
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.process.computer.GraphComputer;
-import org.apache.tinkerpop.gremlin.structure.Edge;
-import org.apache.tinkerpop.gremlin.structure.Graph;
-import org.apache.tinkerpop.gremlin.structure.Transaction;
-import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.apache.tinkerpop.gremlin.structure.*;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 import org.rocksdb.RocksDBException;
 
 import java.io.Closeable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Created by ashishn on 8/4/15.
@@ -26,11 +21,14 @@ import java.util.UUID;
 @Graph.OptIn(Graph.OptIn.SUITE_STRUCTURE_PERFORMANCE)
 
 
-public final class RocksGraph implements Graph{
+public final class RocksGraph implements Graph {
 
 
     private final Configuration configuration;
     private final StorageHandler storageHandler;
+
+    public RocksIndex<RocksVertex> vertexIndex = null;
+    public RocksIndex<RocksEdge> edgeIndex = null;
 
 
     public static RocksGraph open(Configuration configuration) throws InstantiationException {
@@ -85,8 +83,6 @@ public final class RocksGraph implements Graph{
     }
 
 
-
-
     @Override
     public Iterator<Vertex> vertices(Object... vertexIds) {
 
@@ -117,6 +113,18 @@ public final class RocksGraph implements Graph{
             throw Exceptions.elementNotFound(Vertex.class, ids.get(0));
         }
     }
+
+
+    public <E extends Element> Set<String> getIndexedKeys(final Class<E> elementClass) {
+        if (Vertex.class.isAssignableFrom(elementClass)) {
+            return null == this.vertexIndex ? Collections.emptySet() : this.vertexIndex.getIndexedKeys();
+        } else if (Edge.class.isAssignableFrom(elementClass)) {
+            return null == this.edgeIndex ? Collections.emptySet() : this.edgeIndex.getIndexedKeys();
+        } else {
+            throw new IllegalArgumentException("Class is not indexable: " + elementClass);
+        }
+    }
+
 
     @Override
     public Iterator<Edge> edges(Object... edgeIds) {

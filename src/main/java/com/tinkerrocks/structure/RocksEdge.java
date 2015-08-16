@@ -22,6 +22,15 @@ public class RocksEdge extends RocksElement implements Edge {
         this.outVertex = outVertex;
     }
 
+    public RocksEdge(byte[] id, RocksGraph rocksGraph) throws RocksDBException {
+        super(id, rocksGraph.getStorageHandler().getEdgeDB().getLabel(id), rocksGraph);
+        byte[] inVertexId = rocksGraph.getStorageHandler().getEdgeDB().getVertexIDs(id, Direction.IN).get(0);
+        byte[] outVertexId = rocksGraph.getStorageHandler().getEdgeDB().getVertexIDs(id, Direction.OUT).get(0);
+        this.inVertex = rocksGraph.getStorageHandler().getVertexDB().getVertex(inVertexId, rocksGraph);
+        this.outVertex = rocksGraph.getStorageHandler().getVertexDB().getVertex(outVertexId, rocksGraph);
+    }
+
+
     /**
      * Retrieve the vertex (or vertices) associated with this edge as defined by the direction.
      * If the direction is {@link Direction#BOTH} then the iterator order is: {@link Direction#OUT} then {@link Direction#IN}.

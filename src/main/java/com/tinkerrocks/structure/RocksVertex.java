@@ -12,12 +12,14 @@ import java.util.*;
 public class RocksVertex extends RocksElement implements Vertex {
 
 
-
-
     public RocksVertex(byte[] id, String label, RocksGraph rocksGraph) {
         super(id, label, rocksGraph);
-
     }
+
+    public RocksVertex(byte[] id, RocksGraph rocksGraph) throws RocksDBException {
+        super(id, rocksGraph.getStorageHandler().getVertexDB().getLabel(id), rocksGraph);
+    }
+
 
     @SuppressWarnings("unchecked")
     @Override
