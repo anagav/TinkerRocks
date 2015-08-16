@@ -24,10 +24,10 @@ public class RocksIndex<T extends Element> {
 
     protected void put(final String key, final Object value, final T element) {
         if (element instanceof Vertex) {
-            this.rocksGraph.getStorageHandler().getIndexDB().putVertexIndex(indexClass, key, value, element.id());
+            this.rocksGraph.getStorageHandler().getIndexDB().putIndex(indexClass, key, value, element.id());
         }
         if (element instanceof Edge) {
-            this.rocksGraph.getStorageHandler().getIndexDB().putEdgeIndex(indexClass, key, value, element.id());
+            this.rocksGraph.getStorageHandler().getIndexDB().putIndex(indexClass, key, value, element.id());
 
         }
     }

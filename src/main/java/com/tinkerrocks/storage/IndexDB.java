@@ -1,5 +1,7 @@
 package com.tinkerrocks.storage;
 
+import com.google.common.base.Preconditions;
+import com.tinkerrocks.structure.ByteUtil;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.rocksdb.RocksDB;
 import org.rocksdb.RocksDBException;
@@ -19,10 +21,20 @@ public class IndexDB extends StorageAbstractClass {
         this.rocksDB.close();
     }
 
+    public <T extends Element> void putIndex(Class<T> indexClass, String key, Object value, byte[] id) throws RocksDBException {
+        Preconditions.checkNotNull(indexClass);
+        Preconditions.checkNotNull(id);
+        Preconditions.checkNotNull(key);
+        Preconditions.checkNotNull(value);
 
-
-
-    public <T extends Element> void putVertexIndex(Class<T> indexClass, String key, Object value, Object id) {
-
+        String className = indexClass.getName();
+        byte[] key1 = (className +
+                StorageConstants.PROPERTY_SEPERATOR + key + StorageConstants.PROPERTY_SEPERATOR + value).getBytes();
+        key1 = ByteUtil.merge(key1, id);
+        this.rocksDB.put(key1, id);
     }
+
+
+
+
 }
