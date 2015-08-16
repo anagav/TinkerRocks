@@ -91,10 +91,6 @@ public class RocksEdge extends RocksElement implements Edge {
     @SuppressWarnings("unchecked")
     @Override
     public <V> Iterator<Property<V>> properties(String... propertyKeys) {
-        for (String s : propertyKeys) {
-            System.out.println("prop:" + s);
-        }
-
 
         Map<String, Object> properties = new HashMap<>();
         try {
