@@ -69,7 +69,6 @@ public class IndexDB extends StorageAbstractClass {
         key1 = ByteUtil.merge(key1, StorageConstants.PROPERTY_SEPERATOR.getBytes(), id);
         this.rocksDB.put(getColumn(INDEX_COLUMNS.INDEX_KEYS), (className +
                 StorageConstants.PROPERTY_SEPERATOR + key).getBytes(), "".getBytes());
-        //indexes.add(indexClass.getName() + StorageConstants.PROPERTY_SEPERATOR + key + StorageConstants.PROPERTY_SEPERATOR + value);
         this.rocksDB.put(key1, id);
     }
 
@@ -102,7 +101,6 @@ public class IndexDB extends StorageAbstractClass {
         byte[] seek_key = (indexClass.getName() + StorageConstants.PROPERTY_SEPERATOR).getBytes();
         iterator.seek(seek_key);
         for (; iterator.isValid() && ByteUtil.startsWith(iterator.key(), 0, seek_key); iterator.next()) {
-            System.out.println("key iter");
             indexes.add(indexClass.getName() + StorageConstants.PROPERTY_SEPERATOR
                     + new String(ByteUtil.slice(iterator.key(), seek_key.length)));
         }
