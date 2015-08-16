@@ -101,7 +101,7 @@ public class StorageConfigFactory {
                 .setMaxGrandparentOverlapFactor(10)
                 .setTargetFileSizeBase(64 * SizeUnit.MB)
                 .setMaxBytesForLevelBase(512 * SizeUnit.MB)
-                .setCompressionType(CompressionType.SNAPPY_COMPRESSION)
+                .setCompressionType(CompressionType.ZLIB_COMPRESSION)
                 .setCompactionStyle(CompactionStyle.LEVEL)
                 .setMemtablePrefixBloomBits(8 * 1024 * 1024)
                 .setMemtablePrefixBloomProbes(6)

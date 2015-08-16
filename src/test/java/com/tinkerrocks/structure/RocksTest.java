@@ -169,7 +169,7 @@ public class RocksTest {
         GraphTraversalSource g = graph.traversal(GraphTraversalSource.build().engine(StandardTraversalEngine.build()));
 
         long start = System.currentTimeMillis();
-        System.out.println(g.V().has("age",29).properties().tryNext());
+        System.out.println(g.V().has("person", "age", 29).toList().size());
         long end = System.currentTimeMillis();
         System.out.println("time taken to search:" + (end - start));
 

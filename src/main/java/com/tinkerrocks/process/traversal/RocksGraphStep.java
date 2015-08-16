@@ -10,7 +10,6 @@ import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.util.StringFactory;
-import org.apache.tinkerpop.gremlin.util.iterator.IteratorUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -57,7 +56,6 @@ public class RocksGraphStep<S extends Element> extends GraphStep<S> implements H
         if (this.ids != null && this.ids.length > 0)
             results = this.iteratorList(graph.vertices(this.ids));
         else {
-            System.out.println("vertex in");
             results = null == indexedContainer ?
                     this.iteratorList(graph.vertices()) :
                     RocksIndex.queryVertexIndex(graph, indexedContainer.getKey(), indexedContainer.getPredicate().getValue()).stream()
@@ -65,21 +63,14 @@ public class RocksGraphStep<S extends Element> extends GraphStep<S> implements H
                             .collect(Collectors.<Vertex>toList()).iterator();
         }
 
-        System.out.println("size" + IteratorUtils.count(results));
         return results;
     }
 
     private HasContainer getIndexKey(final Class<? extends Element> indexedClass) {
         final Set<String> indexedKeys = ((RocksGraph) this.getTraversal().getGraph().get()).getIndexedKeys(indexedClass);
 
-        System.out.println("index keys length:" + indexedKeys.size());
-        System.out.println("has containers size:" + this.hasContainers.size());
         return this.hasContainers.stream()
-                .filter(c -> {
-                            System.out.println(c.getKey());
-                            return indexedKeys.contains(c.getKey()) && c.getPredicate().getBiPredicate().equals(Compare.eq);
-                        }
-                )
+                .filter(c -> indexedKeys.contains(c.getKey()) && c.getPredicate().getBiPredicate().equals(Compare.eq))
                 .findAny()
                 .orElseGet(() -> null);
     }

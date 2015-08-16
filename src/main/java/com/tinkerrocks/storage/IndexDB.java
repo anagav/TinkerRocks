@@ -86,7 +86,6 @@ public class IndexDB extends StorageAbstractClass {
             iterator.next();
         }
 
-        System.out.println("index size:" + results.size());
         return results;
     }
 
@@ -103,10 +102,10 @@ public class IndexDB extends StorageAbstractClass {
         byte[] seek_key = (indexClass.getName() + StorageConstants.PROPERTY_SEPERATOR).getBytes();
         iterator.seek(seek_key);
         for (; iterator.isValid() && ByteUtil.startsWith(iterator.key(), 0, seek_key); iterator.next()) {
+            System.out.println("key iter");
             indexes.add(indexClass.getName() + StorageConstants.PROPERTY_SEPERATOR
                     + new String(ByteUtil.slice(iterator.key(), seek_key.length)));
         }
-        System.out.println("indexes size" + indexes.size());
 
         return indexes;
     }
