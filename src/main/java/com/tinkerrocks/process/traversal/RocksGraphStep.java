@@ -51,19 +51,17 @@ public class RocksGraphStep<S extends Element> extends GraphStep<S> implements H
     private Iterator<? extends Vertex> vertices() {
         final RocksGraph graph = (RocksGraph) this.getTraversal().getGraph().get();
         final HasContainer indexedContainer = getIndexKey(Vertex.class);
-        // ids are present, filter on them first
         Iterator<? extends Vertex> results;
         if (this.ids != null && this.ids.length > 0)
-            results = this.iteratorList(graph.vertices(this.ids));
+            return this.iteratorList(graph.vertices(this.ids));
         else {
-            results = null == indexedContainer ?
+            return null == indexedContainer ?
                     this.iteratorList(graph.vertices()) :
                     RocksIndex.queryVertexIndex(graph, indexedContainer.getKey(), indexedContainer.getPredicate().getValue()).stream()
                             .filter(vertex -> HasContainer.testAll(vertex, this.hasContainers))
                             .collect(Collectors.<Vertex>toList()).iterator();
         }
 
-        return results;
     }
 
     private HasContainer getIndexKey(final Class<? extends Element> indexedClass) {
