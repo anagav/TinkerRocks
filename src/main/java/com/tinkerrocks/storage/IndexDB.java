@@ -90,7 +90,7 @@ public class IndexDB extends StorageAbstractClass {
         List<byte[]> results = new ArrayList<>();
         RocksIterator iterator = this.rocksDB.newIterator();
         byte[] seek_key = (indexClass.getName() + StorageConstants.PROPERTY_SEPERATOR + key +
-                StorageConstants.PROPERTY_SEPERATOR + value).getBytes();
+                StorageConstants.PROPERTY_SEPERATOR + value + StorageConstants.PROPERTY_SEPERATOR).getBytes();
 
         iterator.seek(seek_key);
         while (iterator.isValid() && ByteUtil.startsWith(iterator.key(), 0, seek_key)) {
