@@ -1,10 +1,12 @@
 package com.tinkerrocks.structure;
 
 import com.tinkerrocks.index.RocksIndex;
+import com.tinkerrocks.process.traversal.RocksGraphStepStrategy;
 import com.tinkerrocks.storage.StorageHandler;
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.process.computer.GraphComputer;
+import org.apache.tinkerpop.gremlin.process.traversal.TraversalStrategies;
 import org.apache.tinkerpop.gremlin.structure.*;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 import org.rocksdb.RocksDBException;
@@ -24,10 +26,10 @@ import java.util.*;
 public final class RocksGraph implements Graph {
 
 
-//    static {
-//        TraversalStrategies.GlobalCache.registerStrategies(RocksGraph.class,
-//                TraversalStrategies.GlobalCache.getStrategies(Graph.class).clone().addStrategies(RocksGraphStepStrategy.instance()));
-//    }
+    static {
+        TraversalStrategies.GlobalCache.registerStrategies(RocksGraph.class,
+                TraversalStrategies.GlobalCache.getStrategies(Graph.class).clone().addStrategies(RocksGraphStepStrategy.instance()));
+    }
 
 
     private final Configuration configuration;
