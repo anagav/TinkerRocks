@@ -64,11 +64,12 @@ public class IndexDB extends StorageAbstractClass {
 
         String className = indexClass.getName();
         byte[] key1 = (className +
-                StorageConstants.PROPERTY_SEPERATOR + key + StorageConstants.PROPERTY_SEPERATOR).getBytes();
+                StorageConstants.PROPERTY_SEPERATOR + key + StorageConstants.PROPERTY_SEPERATOR + value).getBytes();
 
-        key1 = ByteUtil.merge(key1, id);
-        this.rocksDB.put(getColumn(INDEX_COLUMNS.INDEX_KEYS), key1, "".getBytes());
-        indexes.add(indexClass.getName() + StorageConstants.PROPERTY_SEPERATOR + key);
+        key1 = ByteUtil.merge(key1, StorageConstants.PROPERTY_SEPERATOR.getBytes(), id);
+        this.rocksDB.put(getColumn(INDEX_COLUMNS.INDEX_KEYS), (className +
+                StorageConstants.PROPERTY_SEPERATOR + key).getBytes(), "".getBytes());
+        //indexes.add(indexClass.getName() + StorageConstants.PROPERTY_SEPERATOR + key + StorageConstants.PROPERTY_SEPERATOR + value);
         this.rocksDB.put(key1, id);
     }
 
@@ -77,13 +78,15 @@ public class IndexDB extends StorageAbstractClass {
         List<byte[]> results = new ArrayList<>();
         RocksIterator iterator = this.rocksDB.newIterator();
         byte[] seek_key = (indexClass.getName() + StorageConstants.PROPERTY_SEPERATOR + key +
-                StorageConstants.PROPERTY_SEPERATOR).getBytes();
+                StorageConstants.PROPERTY_SEPERATOR + value).getBytes();
 
         iterator.seek(seek_key);
         while (iterator.isValid() && ByteUtil.startsWith(iterator.key(), 0, seek_key)) {
             results.add(ByteUtil.slice(iterator.key(), seek_key.length));
             iterator.next();
         }
+
+        System.out.println("index size:" + results.size());
         return results;
     }
 
@@ -95,10 +98,6 @@ public class IndexDB extends StorageAbstractClass {
 
 
     public <T extends Element> Set<String> getIndexedKeys(Class<T> indexClass) {
-        if (indexes.size() > 0) {
-            return indexes;
-        }
-        indexes = new HashSet<>();
 
         RocksIterator iterator = this.rocksDB.newIterator(getColumn(INDEX_COLUMNS.INDEX_KEYS));
         byte[] seek_key = (indexClass.getName() + StorageConstants.PROPERTY_SEPERATOR).getBytes();
@@ -107,6 +106,8 @@ public class IndexDB extends StorageAbstractClass {
             indexes.add(indexClass.getName() + StorageConstants.PROPERTY_SEPERATOR
                     + new String(ByteUtil.slice(iterator.key(), seek_key.length)));
         }
+        System.out.println("indexes size" + indexes.size());
+
         return indexes;
     }
 }

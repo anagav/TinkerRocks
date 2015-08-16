@@ -37,7 +37,7 @@ public class RocksTest {
 
     @Test
     public void addVertexTest() {
-        graph.createIndex("name", Vertex.class);
+        graph.createIndex("age", Vertex.class);
 
         graph.createIndex("weight", Edge.class);
 
@@ -47,7 +47,7 @@ public class RocksTest {
         //System.out.println("g=" + g);
 
 
-        System.out.println("traversed edge" + g.V().bothE("knows").has("weight", 0.5f).tryNext().orElse(null));
+        System.out.println("traversed edge" + g.V().toList());  //.bothE("knows").has("weight", 0.5f).tryNext().orElse(null));
 
 
         //g.addV()
@@ -98,8 +98,11 @@ public class RocksTest {
 
     @Test
     public void PerfTest() {
+        graph.createIndex("name", Vertex.class);
+
+
         long start = System.currentTimeMillis();
-        int ITERATIONS = 1000000;
+        int ITERATIONS = 10000;
 
         for (int i = 0; i < ITERATIONS; i++) {
             graph.addVertex(T.label, "person", T.id, 200 + i, "name", "marko" + i, "age", 29);
@@ -149,6 +152,30 @@ public class RocksTest {
 
 
     }
+
+    @Test
+    public void IndexTest() {
+        graph.createIndex("age", Vertex.class);
+        int i = 0;
+        while (i < 10000) {
+            graph.addVertex(T.label, "person", T.id, i, "name", "marko", "age", 29);
+            i++;
+        }
+        while (i < 200000) {
+            graph.addVertex(T.label, "person", T.id, i, "name", "marko");
+            i++;
+        }
+
+        GraphTraversalSource g = graph.traversal(GraphTraversalSource.build().engine(StandardTraversalEngine.build()));
+
+        long start = System.currentTimeMillis();
+        System.out.println(g.V().has("age",29).properties().tryNext());
+        long end = System.currentTimeMillis();
+        System.out.println("time taken to search:" + (end - start));
+
+
+    }
+
 
     @After
     public void close() throws Exception {

@@ -10,6 +10,7 @@ import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.util.StringFactory;
+import org.apache.tinkerpop.gremlin.util.iterator.IteratorUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -24,10 +25,14 @@ public class RocksGraphStep<S extends Element> extends GraphStep<S> implements H
 
     public RocksGraphStep(final GraphStep<S> originalGraphStep) {
         super(originalGraphStep.getTraversal(), originalGraphStep.getReturnClass(), originalGraphStep.getIds());
+
+        System.out.println("traversal strategy called....");
+
         originalGraphStep.getLabels().forEach(this::addLabel);
-        if ((this.ids.length == 0 || !(this.ids[0] instanceof Element)))
+        if ((this.ids.length == 0 || !(this.ids[0] instanceof Element))) {
             this.setIteratorSupplier(() -> Vertex.class.isAssignableFrom(this.returnClass) ?
                     (Iterator<S>) this.vertices() : (Iterator<S>) this.edges());
+        }
     }
 
     private Iterator<? extends Edge> edges() {
@@ -48,20 +53,33 @@ public class RocksGraphStep<S extends Element> extends GraphStep<S> implements H
         final RocksGraph graph = (RocksGraph) this.getTraversal().getGraph().get();
         final HasContainer indexedContainer = getIndexKey(Vertex.class);
         // ids are present, filter on them first
+        Iterator<? extends Vertex> results;
         if (this.ids != null && this.ids.length > 0)
-            return this.iteratorList(graph.vertices(this.ids));
-        else
-            return null == indexedContainer ?
+            results = this.iteratorList(graph.vertices(this.ids));
+        else {
+            System.out.println("vertex in");
+            results = null == indexedContainer ?
                     this.iteratorList(graph.vertices()) :
                     RocksIndex.queryVertexIndex(graph, indexedContainer.getKey(), indexedContainer.getPredicate().getValue()).stream()
                             .filter(vertex -> HasContainer.testAll(vertex, this.hasContainers))
                             .collect(Collectors.<Vertex>toList()).iterator();
+        }
+
+        System.out.println("size" + IteratorUtils.count(results));
+        return results;
     }
 
     private HasContainer getIndexKey(final Class<? extends Element> indexedClass) {
         final Set<String> indexedKeys = ((RocksGraph) this.getTraversal().getGraph().get()).getIndexedKeys(indexedClass);
+
+        System.out.println("index keys length:" + indexedKeys.size());
+        System.out.println("has containers size:" + this.hasContainers.size());
         return this.hasContainers.stream()
-                .filter(c -> indexedKeys.contains(c.getKey()) && c.getPredicate().getBiPredicate().equals(Compare.eq))
+                .filter(c -> {
+                            System.out.println(c.getKey());
+                            return indexedKeys.contains(c.getKey()) && c.getPredicate().getBiPredicate().equals(Compare.eq);
+                        }
+                )
                 .findAny()
                 .orElseGet(() -> null);
     }

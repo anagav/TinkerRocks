@@ -39,12 +39,14 @@ public abstract class StorageAbstractClass {
 
 
     public Object deserialize(byte[] inbBytes) {
+        if (inbBytes == null) {
+            return null;
+        }
         return pool.run(kryo -> {
             Input input = new Input(new ByteArrayInputStream(inbBytes));
             return kryo.readClassAndObject(input);
         });
     }
-
 
 
 }
