@@ -26,10 +26,10 @@ public class RocksTest {
     RocksGraph graph;
 
     @Before
-    public void setup() throws IOException {
+    public void setup() throws IOException, InstantiationException {
         Configuration configuration = new BaseConfiguration();
         FileUtils.forceMkdir(new File("/tmp/databases"));
-        graph = new RocksGraph(configuration);
+        graph = RocksGraph.open(configuration);
 
 
     }

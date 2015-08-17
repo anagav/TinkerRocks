@@ -32,6 +32,7 @@ public class RocksGraphStep<S extends Element> extends GraphStep<S> implements H
             this.setIteratorSupplier(() -> Vertex.class.isAssignableFrom(this.returnClass) ?
                     (Iterator<S>) this.vertices() : (Iterator<S>) this.edges());
         }
+
     }
 
     private Iterator<? extends Edge> edges() {

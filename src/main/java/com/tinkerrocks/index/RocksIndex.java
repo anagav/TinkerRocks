@@ -57,9 +57,6 @@ public class RocksIndex<T extends Element> {
         } catch (RocksDBException ex) {
             ex.printStackTrace();
         }
-
-        System.out.println("results size:" + results.size());
-
         return results;
     }
 
@@ -122,9 +119,7 @@ public class RocksIndex<T extends Element> {
     }
 
     public static List<Vertex> queryVertexIndex(final RocksGraph graph, final String key, final Object value) {
-        List<Vertex> temp = null == graph.vertexIndex ? Collections.emptyList() : graph.vertexIndex.get(key, value);
-        System.out.println("temp size:" + temp.size());
-        return temp;
+        return null == graph.vertexIndex ? Collections.emptyList() : graph.vertexIndex.get(key, value);
     }
 
     public static List<Edge> queryEdgeIndex(final RocksGraph graph, final String key, final Object value) {
