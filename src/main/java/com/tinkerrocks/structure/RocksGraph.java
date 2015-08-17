@@ -249,6 +249,15 @@ public final class RocksGraph implements Graph {
     }
 
 
+    public RocksIndex<RocksVertex> getVertexIndex() {
+        return vertexIndex;
+    }
+
+
+    public RocksIndex<RocksEdge> getEdgeIndex() {
+        return edgeIndex;
+    }
+
     /**
      * Gets the {@link Features} exposed by the underlying {@code Graph} implementation.
      */

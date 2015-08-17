@@ -112,7 +112,7 @@ public class RocksIndex<T extends Element> {
     }
 
     public void remove(final String key, final Object value, final T element) {
-
+        this.rocksGraph.getStorageHandler().getIndexDB().removeIndex(this.indexClass, key, value, (byte[]) element.id());
     }
 
     public static List<RocksVertex> queryVertexIndex(final RocksGraph graph, final String key, final Object value) {

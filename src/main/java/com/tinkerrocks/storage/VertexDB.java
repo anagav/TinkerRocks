@@ -235,7 +235,7 @@ public class VertexDB extends StorageAbstractClass {
     }
 
     public RocksVertex getVertex(byte[] vertexId, RocksGraph rocksGraph) throws RocksDBException {
-        if (!this.rocksDB.keyMayExist(vertexId, null)) {
+        if (this.rocksDB.get(vertexId) == null) {
             return null;
         }
         return new RocksVertex(vertexId, getLabel(vertexId), rocksGraph);

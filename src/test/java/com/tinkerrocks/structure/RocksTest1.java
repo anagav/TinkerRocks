@@ -47,18 +47,18 @@ public class RocksTest1 {
             String id = object.get("@id").getAsString();
             Vertex v = graph.vertices(T.id).hasNext() ? graph.vertices(T.id).next() : graph.addVertex(T.id, id, T.label, "person");
 
-            String label = "";
+            String label;
             if (object.has("label")) {
                 label = object.get("label").getAsString();
                 v.property("name", label);
             }
 
-            float height = 0;
+            float height;
             if (object.has("height")) {
                 height = object.get("height").getAsFloat();
                 v.property("height", height);
             }
-            graph.addVertex(T.id, id, T.label, "person", "name", label, "height", height);
+            //  graph.addVertex(T.id, id, T.label, "person", "name", label, "height", height);
         }
         System.out.println("inserted records:" + count);
     }

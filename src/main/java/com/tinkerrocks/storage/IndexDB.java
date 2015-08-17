@@ -15,6 +15,16 @@ import java.util.Set;
  */
 public class IndexDB extends StorageAbstractClass {
 
+    public <T extends Element> void removeIndex(Class<T> indexClass, String key, Object value, byte[] id) {
+        try {
+            this.rocksDB.remove((getIndexClass(indexClass) + StorageConstants.PROPERTY_SEPERATOR +
+                    key + StorageConstants.PROPERTY_SEPERATOR + value + StorageConstants.PROPERTY_SEPERATOR
+                    + new String(id)).getBytes());
+        } catch (RocksDBException e) {
+            e.printStackTrace();
+        }
+    }
+
     public enum INDEX_COLUMNS {
         INDEX_KEYS("INDEX_KEYS");
 
