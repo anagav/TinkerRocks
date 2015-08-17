@@ -42,7 +42,7 @@ public class RocksTest1 {
         graph.createIndex("name", Vertex.class);
         int count = 0;
         long start = System.currentTimeMillis();
-        while ((line = bufferedReader.readLine()) != null && count <= 1000) {
+        while ((line = bufferedReader.readLine()) != null) {
             count++;
             object = jsonParser.parse(line).getAsJsonObject();
             String id = object.get("@id").getAsString();

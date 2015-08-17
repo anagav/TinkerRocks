@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created by ashishn on 8/13/15.
@@ -75,9 +76,9 @@ public class IndexDB extends StorageAbstractClass {
 
     void put(ColumnFamilyHandle columnFamilyHandle, byte[] key, byte[] value) throws RocksDBException {
         if (columnFamilyHandle != null)
-            this.rocksDB.put(columnFamilyHandle, StorageConfigFactory.getWriteOptions().setSync(false), key, value);
+            this.rocksDB.put(columnFamilyHandle, StorageConfigFactory.getWriteOptions(), key, value);
         else
-            this.rocksDB.put(StorageConfigFactory.getWriteOptions().setSync(false), key, value);
+            this.rocksDB.put(StorageConfigFactory.getWriteOptions(), key, value);
     }
 
 
@@ -95,6 +96,7 @@ public class IndexDB extends StorageAbstractClass {
     }
 
 
+    @SuppressWarnings("unchecked")
     public <T extends Element> void putIndex(Class<T> indexClass, String key, Object value, byte[] id) throws RocksDBException {
         Preconditions.checkNotNull(indexClass);
         Preconditions.checkNotNull(id);
@@ -104,22 +106,41 @@ public class IndexDB extends StorageAbstractClass {
         byte[] key1 = (className +
                 StorageConstants.PROPERTY_SEPERATOR + key + StorageConstants.PROPERTY_SEPERATOR + value).getBytes();
 
-        key1 = ByteUtil.merge(key1, StorageConstants.PROPERTY_SEPERATOR.getBytes(), id);
-        put(key1, id);
+        //key1 = ByteUtil.merge(key1, StorageConstants.PROPERTY_SEPERATOR.getBytes(), id);
+        HashSet<byte[]> hashSet = (HashSet<byte[]>) deserialize(this.rocksDB.get(key1), HashSet.class);
+        if (hashSet == null) {
+            hashSet = new HashSet<>();
+        }
+        hashSet.add(id);
+        put(key1, serialize(hashSet));
     }
 
 
+    @SuppressWarnings("unchecked")
     public <T extends Element> List<byte[]> getIndex(Class<T> indexClass, String key, Object value) {
         List<byte[]> results = new ArrayList<>();
-        RocksIterator iterator = this.rocksDB.newIterator();
-        byte[] seek_key = (getIndexClass(indexClass) + StorageConstants.PROPERTY_SEPERATOR + key +
-                StorageConstants.PROPERTY_SEPERATOR + value + StorageConstants.PROPERTY_SEPERATOR).getBytes();
-
-        iterator.seek(seek_key);
-        while (iterator.isValid() && ByteUtil.startsWith(iterator.key(), 0, seek_key)) {
-            results.add(ByteUtil.slice(iterator.key(), seek_key.length));
-            iterator.next();
+        try {
+            byte[] key1 = (getIndexClass(indexClass) +
+                    StorageConstants.PROPERTY_SEPERATOR + key + StorageConstants.PROPERTY_SEPERATOR + value).getBytes();
+            HashSet<byte[]> hashSet = (HashSet<byte[]>) deserialize(this.rocksDB.get(key1), HashSet.class);
+            if (hashSet == null) {
+                hashSet = new HashSet<>();
+            }
+            return hashSet.parallelStream().collect(Collectors.toList());
+        } catch (RocksDBException ex) {
+            ex.printStackTrace();
         }
+
+
+//        RocksIterator iterator = this.rocksDB.newIterator();
+//        byte[] seek_key = (getIndexClass(indexClass) + StorageConstants.PROPERTY_SEPERATOR + key +
+//                StorageConstants.PROPERTY_SEPERATOR + value + StorageConstants.PROPERTY_SEPERATOR).getBytes();
+//
+//        iterator.seek(seek_key);
+//        while (iterator.isValid() && ByteUtil.startsWith(iterator.key(), 0, seek_key)) {
+//            results.add(ByteUtil.slice(iterator.key(), seek_key.length));
+//            iterator.next();
+//        }
         return results;
     }
 

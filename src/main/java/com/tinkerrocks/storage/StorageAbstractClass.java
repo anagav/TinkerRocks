@@ -50,6 +50,14 @@ public abstract class StorageAbstractClass {
         });
     }
 
+    public <T> T deserialize(byte[] inbBytes, Class<T> _clazz) {
+        Object data = deserialize(inbBytes);
+        if (data == null) {
+            return null;
+        }
+        return _clazz.cast(deserialize(inbBytes));
+    }
+
 
 }
 
