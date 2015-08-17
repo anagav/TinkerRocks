@@ -155,7 +155,7 @@ public class RocksTest {
 
     @Test
     public void IndexTest() {
-        //graph.createIndex("age", Vertex.class);
+        graph.createIndex("age", Vertex.class);
         int i = 0;
         while (i < 5000) {
             graph.addVertex(T.label, "person", T.id, i, "name", "marko", "age", 29);
@@ -175,7 +175,7 @@ public class RocksTest {
         GraphTraversalSource g = graph.traversal(GraphTraversalSource.build().engine(StandardTraversalEngine.build()));
 
         long start = System.currentTimeMillis();
-        System.out.println(g.V().has("person", "age", 29).toList().size());
+        System.out.println(g.V().has("age", 29).toList().size());
         long end = System.currentTimeMillis();
         System.out.println("time taken to search:" + (end - start));
 

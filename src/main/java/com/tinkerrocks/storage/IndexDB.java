@@ -33,7 +33,6 @@ public class IndexDB extends StorageAbstractClass {
     RocksDB rocksDB;
     List<ColumnFamilyHandle> columnFamilyHandleList;
     List<ColumnFamilyDescriptor> columnFamilyDescriptors;
-    Set<String> indexes = new HashSet<>();
 
 
     public IndexDB() throws RocksDBException {
@@ -113,14 +112,14 @@ public class IndexDB extends StorageAbstractClass {
 
 
     public <T extends Element> Set<String> getIndexedKeys(Class<T> indexClass) {
-
+        Set<String> indexes = new HashSet<>();
         RocksIterator iterator = this.rocksDB.newIterator(getColumn(INDEX_COLUMNS.INDEX_KEYS));
         byte[] seek_key = (getIndexClass(indexClass) + StorageConstants.PROPERTY_SEPERATOR).getBytes();
         iterator.seek(seek_key);
         for (; iterator.isValid() && ByteUtil.startsWith(iterator.key(), 0, seek_key); iterator.next()) {
-            indexes.add(getIndexClass(indexClass) + StorageConstants.PROPERTY_SEPERATOR
-                    + new String(ByteUtil.slice(iterator.key(), seek_key.length)));
+            indexes.add(new String(ByteUtil.slice(iterator.key(), seek_key.length)));
         }
+        System.out.println("indexes" + indexes);
         return indexes;
     }
 }

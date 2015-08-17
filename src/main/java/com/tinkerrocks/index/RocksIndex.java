@@ -44,12 +44,12 @@ public class RocksIndex<T extends Element> {
         try {
             List<byte[]> ids = this.rocksGraph.getStorageHandler().getIndexDB().getIndex(indexClass, key, value);
             results = new ArrayList<>();
-            if (indexClass.isAssignableFrom(Vertex.class)) {
+            if (indexClass.isAssignableFrom(RocksVertex.class)) {
                 for (byte[] id : ids) {
                     results.add((T) new RocksVertex(id, rocksGraph));
                 }
             }
-            if (indexClass.isAssignableFrom(Edge.class)) {
+            if (indexClass.isAssignableFrom(RocksEdge.class)) {
                 for (byte[] id : ids) {
                     results.add((T) new RocksEdge(id, rocksGraph));
                 }
@@ -57,6 +57,8 @@ public class RocksIndex<T extends Element> {
         } catch (RocksDBException ex) {
             ex.printStackTrace();
         }
+
+        System.out.println("results size:" + results.size());
 
         return results;
     }
@@ -113,6 +115,7 @@ public class RocksIndex<T extends Element> {
     }
 
     public static List<RocksVertex> queryVertexIndex(final RocksGraph graph, final String key, final Object value) {
+        System.out.println("this is called...");
         List<RocksVertex> temp = null == graph.vertexIndex ? Collections.emptyList() : graph.vertexIndex.get(key, value);
         System.out.println("temp size:" + temp.size());
         return temp;
