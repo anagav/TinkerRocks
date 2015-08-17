@@ -35,13 +35,14 @@ public class RocksTest1 {
 
     @Test
     public void testActualData() throws IOException {
-        BufferedReader bufferedReader = new BufferedReader(new FileReader("/tmp/out"));
+        BufferedReader bufferedReader = new BufferedReader(new FileReader("/tmp/all_data"));
         String line;
         JsonObject object;
         graph.createIndex("height", Vertex.class);
         graph.createIndex("name", Vertex.class);
         int count = 0;
-        while ((line = bufferedReader.readLine()) != null) {
+        long start = System.currentTimeMillis();
+        while ((line = bufferedReader.readLine()) != null && count <= 1000) {
             count++;
             object = jsonParser.parse(line).getAsJsonObject();
             String id = object.get("@id").getAsString();
@@ -60,7 +61,7 @@ public class RocksTest1 {
             }
             //  graph.addVertex(T.id, id, T.label, "person", "name", label, "height", height);
         }
-        System.out.println("inserted records:" + count);
+        System.out.println("inserted records:" + count + "\t\t time taken:" + (System.currentTimeMillis() - start));
     }
 
 

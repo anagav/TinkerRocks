@@ -35,8 +35,8 @@ public final class RocksGraph implements Graph {
     private final Configuration configuration;
     private final StorageHandler storageHandler;
 
-    public RocksIndex<RocksVertex> vertexIndex = null;
-    public RocksIndex<RocksEdge> edgeIndex = null;
+    public RocksIndex<Vertex> vertexIndex = null;
+    public RocksIndex<Edge> edgeIndex = null;
 
 
     public static RocksGraph open(Configuration configuration) throws InstantiationException {
@@ -55,8 +55,8 @@ public final class RocksGraph implements Graph {
             e.printStackTrace();
             throw Exceptions.idArgsMustBeEitherIdOrElement();
         }
-        this.vertexIndex = new RocksIndex<>(this, RocksVertex.class);
-        this.edgeIndex = new RocksIndex<>(this, RocksEdge.class);
+        this.vertexIndex = new RocksIndex<>(this, Vertex.class);
+        this.edgeIndex = new RocksIndex<>(this, Edge.class);
     }
 
     public StorageHandler getStorageHandler() {
@@ -104,10 +104,10 @@ public final class RocksGraph implements Graph {
 
     public <E extends Element> void createIndex(final String key, final Class<E> elementClass) {
         if (Vertex.class.isAssignableFrom(elementClass)) {
-            if (null == this.vertexIndex) this.vertexIndex = new RocksIndex<>(this, RocksVertex.class);
+            if (null == this.vertexIndex) this.vertexIndex = new RocksIndex<>(this, Vertex.class);
             this.vertexIndex.createKeyIndex(key);
         } else if (Edge.class.isAssignableFrom(elementClass)) {
-            if (null == this.edgeIndex) this.edgeIndex = new RocksIndex<>(this, RocksEdge.class);
+            if (null == this.edgeIndex) this.edgeIndex = new RocksIndex<>(this, Edge.class);
             this.edgeIndex.createKeyIndex(key);
         } else {
             throw new IllegalArgumentException("Class is not indexable: " + elementClass);
@@ -249,12 +249,12 @@ public final class RocksGraph implements Graph {
     }
 
 
-    public RocksIndex<RocksVertex> getVertexIndex() {
+    public RocksIndex<Vertex> getVertexIndex() {
         return vertexIndex;
     }
 
 
-    public RocksIndex<RocksEdge> getEdgeIndex() {
+    public RocksIndex<Edge> getEdgeIndex() {
         return edgeIndex;
     }
 

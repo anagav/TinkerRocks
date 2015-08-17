@@ -25,6 +25,16 @@ public class IndexDB extends StorageAbstractClass {
         }
     }
 
+    public void createIndex(Class indexClass, String key) {
+        try {
+            put(getColumn(INDEX_COLUMNS.INDEX_KEYS), (getIndexClass(indexClass) +
+                    StorageConstants.PROPERTY_SEPERATOR + key).getBytes(), "".getBytes());
+        } catch (RocksDBException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     public enum INDEX_COLUMNS {
         INDEX_KEYS("INDEX_KEYS");
 
@@ -65,9 +75,9 @@ public class IndexDB extends StorageAbstractClass {
 
     void put(ColumnFamilyHandle columnFamilyHandle, byte[] key, byte[] value) throws RocksDBException {
         if (columnFamilyHandle != null)
-            this.rocksDB.put(columnFamilyHandle, StorageConfigFactory.getWriteOptions().setSync(true), key, value);
+            this.rocksDB.put(columnFamilyHandle, StorageConfigFactory.getWriteOptions().setSync(false), key, value);
         else
-            this.rocksDB.put(StorageConfigFactory.getWriteOptions().setSync(true), key, value);
+            this.rocksDB.put(StorageConfigFactory.getWriteOptions().setSync(false), key, value);
     }
 
 
@@ -84,6 +94,7 @@ public class IndexDB extends StorageAbstractClass {
         return _class.getSimpleName();
     }
 
+
     public <T extends Element> void putIndex(Class<T> indexClass, String key, Object value, byte[] id) throws RocksDBException {
         Preconditions.checkNotNull(indexClass);
         Preconditions.checkNotNull(id);
@@ -94,8 +105,6 @@ public class IndexDB extends StorageAbstractClass {
                 StorageConstants.PROPERTY_SEPERATOR + key + StorageConstants.PROPERTY_SEPERATOR + value).getBytes();
 
         key1 = ByteUtil.merge(key1, StorageConstants.PROPERTY_SEPERATOR.getBytes(), id);
-        put(getColumn(INDEX_COLUMNS.INDEX_KEYS), (className +
-                StorageConstants.PROPERTY_SEPERATOR + key).getBytes(), "".getBytes());
         put(key1, id);
     }
 

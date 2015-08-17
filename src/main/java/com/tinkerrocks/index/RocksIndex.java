@@ -76,9 +76,15 @@ public class RocksIndex<T extends Element> {
     @SuppressWarnings("unchecked")
     public void createKeyIndex(final String key) {
 
+        Iterator<? extends Element> iterator;
 
-        Iterator<Element> iterator = (Iterator<Element>) (Vertex.class.isAssignableFrom(this.indexClass) ?
-                this.rocksGraph.vertices() : this.rocksGraph.edges());
+        if (Vertex.class.isAssignableFrom(this.indexClass)) {
+            this.rocksGraph.getStorageHandler().getIndexDB().createIndex(Vertex.class, key);
+            iterator = this.rocksGraph.vertices();
+        } else {
+            this.rocksGraph.getStorageHandler().getIndexDB().createIndex(Edge.class, key);
+            iterator = this.rocksGraph.edges();
+        }
 
         iterator.forEachRemaining(element -> {
             if (element.property(key).isPresent()) {
@@ -115,14 +121,13 @@ public class RocksIndex<T extends Element> {
         this.rocksGraph.getStorageHandler().getIndexDB().removeIndex(this.indexClass, key, value, (byte[]) element.id());
     }
 
-    public static List<RocksVertex> queryVertexIndex(final RocksGraph graph, final String key, final Object value) {
-        System.out.println("this is called...");
-        List<RocksVertex> temp = null == graph.vertexIndex ? Collections.emptyList() : graph.vertexIndex.get(key, value);
+    public static List<Vertex> queryVertexIndex(final RocksGraph graph, final String key, final Object value) {
+        List<Vertex> temp = null == graph.vertexIndex ? Collections.emptyList() : graph.vertexIndex.get(key, value);
         System.out.println("temp size:" + temp.size());
         return temp;
     }
 
-    public static List<RocksEdge> queryEdgeIndex(final RocksGraph graph, final String key, final Object value) {
+    public static List<Edge> queryEdgeIndex(final RocksGraph graph, final String key, final Object value) {
         return null == graph.edgeIndex ? Collections.emptyList() : graph.edgeIndex.get(key, value);
     }
 
