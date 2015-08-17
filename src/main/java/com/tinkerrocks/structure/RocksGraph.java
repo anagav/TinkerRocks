@@ -102,6 +102,8 @@ public final class RocksGraph implements Graph {
     }
 
 
+
+
     public <E extends Element> void createIndex(final String key, final Class<E> elementClass) {
         if (Vertex.class.isAssignableFrom(elementClass)) {
             if (null == this.vertexIndex) this.vertexIndex = new RocksIndex<>(this, Vertex.class);

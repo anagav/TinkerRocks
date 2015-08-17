@@ -73,7 +73,6 @@ public class StorageConfigFactory {
                 .setCreateMissingColumnFamilies(true)
                 .setIncreaseParallelism(10)
                 .setAllowOsBuffer(true)
-
                 .setTableCacheNumshardbits(10)
                 .setMaxBackgroundFlushes(3)
                 .setDisableDataSync(true)
@@ -113,6 +112,7 @@ public class StorageConfigFactory {
                 .setLevelZeroSlowdownWritesTrigger(20)
                 .setLevelZeroStopWritesTrigger(12)
                 .setNumLevels(8)
+
                 .setSourceCompactionFactor(1)
                 .setFilterDeletes(false)
                 .setDisableAutoCompactions(false)
