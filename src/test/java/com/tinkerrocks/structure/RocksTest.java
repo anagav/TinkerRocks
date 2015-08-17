@@ -28,6 +28,8 @@ public class RocksTest {
     @Before
     public void setup() throws IOException, InstantiationException {
         Configuration configuration = new BaseConfiguration();
+        FileUtils.deleteDirectory(new File("/tmp/databases"));
+
         FileUtils.forceMkdir(new File("/tmp/databases"));
         graph = RocksGraph.open(configuration);
 
