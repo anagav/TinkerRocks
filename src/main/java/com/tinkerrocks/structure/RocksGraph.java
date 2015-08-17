@@ -72,13 +72,22 @@ public final class RocksGraph implements Graph {
         }
         byte[] idValue = String.valueOf(ElementHelper.getIdValue(keyValues).orElse(UUID.randomUUID().toString().getBytes())).getBytes();  //UUID.randomUUID().toString().getBytes();
         final String label = ElementHelper.getLabelValue(keyValues).orElse(Vertex.DEFAULT_LABEL);
+
+        RocksVertex vertex = new RocksVertex(idValue, label, this);
+
         try {
-            storageHandler.getVertexDB().addVertex(idValue, label, keyValues);
+            storageHandler.getVertexDB().addVertex(idValue, label, null);
+            Map<String, Object> properties = ElementHelper.asMap(keyValues);
+
+            for (Map.Entry<String, Object> property : properties.entrySet()) {
+                vertexIndex.autoUpdate(property.getKey(), property.getValue(), null, vertex);
+                storageHandler.getVertexDB().setProperty(idValue, property.getKey(), property.getValue());
+            }
         } catch (RocksDBException e) {
             e.printStackTrace();
         }
 
-        return new RocksVertex(idValue, label, this);
+        return vertex;
 
     }
 

@@ -171,11 +171,16 @@ public class RocksTest {
             graph.addVertex(T.label, "movie", T.id, i, "name", "marko");
             i++;
         }
+        graph.addVertex(T.label, "personal", T.id, i, "name", "marko", "age", 30);
+
+        graph.addVertex(T.label, "personal", T.id, i, "name", "marko", "age", 31);
+
+
 
         GraphTraversalSource g = graph.traversal(GraphTraversalSource.build().engine(StandardTraversalEngine.build()));
 
         long start = System.currentTimeMillis();
-        System.out.println(g.V().has("age", 29).toList().size());
+        System.out.println(g.V().has("age", 31).toList().size());
         long end = System.currentTimeMillis();
         System.out.println("time taken to search:" + (end - start));
 

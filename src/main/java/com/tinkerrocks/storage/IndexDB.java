@@ -55,9 +55,9 @@ public class IndexDB extends StorageAbstractClass {
 
     void put(ColumnFamilyHandle columnFamilyHandle, byte[] key, byte[] value) throws RocksDBException {
         if (columnFamilyHandle != null)
-            this.rocksDB.put(columnFamilyHandle, StorageConfigFactory.getWriteOptions(), key, value);
+            this.rocksDB.put(columnFamilyHandle, StorageConfigFactory.getWriteOptions().setSync(true), key, value);
         else
-            this.rocksDB.put(StorageConfigFactory.getWriteOptions(), key, value);
+            this.rocksDB.put(StorageConfigFactory.getWriteOptions().setSync(true), key, value);
     }
 
 
@@ -119,7 +119,6 @@ public class IndexDB extends StorageAbstractClass {
         for (; iterator.isValid() && ByteUtil.startsWith(iterator.key(), 0, seek_key); iterator.next()) {
             indexes.add(new String(ByteUtil.slice(iterator.key(), seek_key.length)));
         }
-        System.out.println("indexes" + indexes);
         return indexes;
     }
 }

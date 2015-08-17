@@ -24,7 +24,7 @@ public class RocksIndex<T extends Element> {
     }
 
 
-    protected void put(final String key, final Object value, final T element) {
+    public void put(final String key, final Object value, final T element) {
         try {
             if (element instanceof Vertex) {
                 this.rocksGraph.getStorageHandler().getIndexDB().putIndex(indexClass, key, value, (byte[]) element.id());
@@ -104,6 +104,7 @@ public class RocksIndex<T extends Element> {
             this.put(key, newValue, element);
         }
     }
+
 
     public void autoRemove(final String key, final Object oldValue, final T element) {
         if (this.getIndexedKeys().contains(key))

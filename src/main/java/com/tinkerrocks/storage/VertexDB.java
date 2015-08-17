@@ -203,7 +203,11 @@ public class VertexDB extends StorageAbstractClass {
     public void addVertex(byte[] idValue, String label, Object[] keyValues) throws RocksDBException {
 
         put(idValue, label.getBytes());
+        if (keyValues == null || keyValues.length == 0) {
+            return;
+        }
         Map<String, Object> properties = ElementHelper.asMap(keyValues);
+
         for (Map.Entry<String, Object> property : properties.entrySet()) {
             setProperty(idValue, property.getKey(), property.getValue());
         }
