@@ -138,6 +138,11 @@ public final class RocksGraph implements Graph {
                 ids.add(String.valueOf(vertexId).getBytes());
             }
         }
+
+        if (ids.size() == 0) {
+            throw Exceptions.elementNotFound(Vertex.class, ids.get(0));
+        }
+
         try {
             return storageHandler.getVertexDB().vertices(ids, this).iterator();
         } catch (RocksDBException e) {

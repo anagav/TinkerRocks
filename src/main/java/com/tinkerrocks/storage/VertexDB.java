@@ -226,13 +226,18 @@ public class VertexDB extends StorageAbstractClass {
             }
         } else {
             for (byte[] vertexId : vertexIds) {
-                vertices.add(getVertex(vertexId, rocksGraph));
+                Vertex vertex = getVertex(vertexId, rocksGraph);
+                if (vertex != null)
+                    vertices.add(vertex);
             }
         }
         return vertices;
     }
 
     public RocksVertex getVertex(byte[] vertexId, RocksGraph rocksGraph) throws RocksDBException {
+        if (!this.rocksDB.keyMayExist(vertexId, null)) {
+            return null;
+        }
         return new RocksVertex(vertexId, getLabel(vertexId), rocksGraph);
     }
 
