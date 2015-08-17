@@ -155,7 +155,8 @@ public class RocksTest {
 
     @Test
     public void IndexTest() {
-        graph.createIndex("age", Vertex.class);
+
+        //graph.createIndex("age", Vertex.class);
         int i = 0;
         while (i < 5000) {
             graph.addVertex(T.label, "person", T.id, i, "name", "marko", "age", 29);
@@ -174,6 +175,8 @@ public class RocksTest {
         graph.addVertex(T.label, "personal", T.id, i, "name", "marko", "age", 30);
 
         graph.addVertex(T.label, "personal", T.id, i, "name", "marko", "age", 31);
+
+
 
         GraphTraversalSource g = graph.traversal(GraphTraversalSource.build().engine(StandardTraversalEngine.build()));
 
