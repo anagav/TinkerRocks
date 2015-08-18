@@ -126,7 +126,7 @@ public class IndexDB extends StorageAbstractClass {
             if (hashSet == null) {
                 hashSet = new HashSet<>();
             }
-            return hashSet.parallelStream().collect(Collectors.toList());
+            return hashSet.stream().collect(Collectors.toList());
         } catch (RocksDBException ex) {
             ex.printStackTrace();
         }
