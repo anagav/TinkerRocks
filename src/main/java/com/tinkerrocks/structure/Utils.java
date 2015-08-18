@@ -7,6 +7,9 @@ import org.apache.commons.lang.ArrayUtils;
 import java.util.Arrays;
 
 /**
+ * <p>
+ *     generic utils class.
+ * </p>
  * Created by ashishn on 8/5/15.
  */
 public class Utils {
