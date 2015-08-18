@@ -1,7 +1,7 @@
 package com.tinkerrocks.storage;
 
 import com.google.common.base.Preconditions;
-import com.tinkerrocks.structure.ByteUtil;
+import com.tinkerrocks.structure.Utils;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.rocksdb.*;
 
@@ -156,8 +156,8 @@ public class IndexDB extends StorageAbstractClass {
         RocksIterator iterator = this.rocksDB.newIterator(getColumn(INDEX_COLUMNS.INDEX_KEYS));
         byte[] seek_key = (getIndexClass(indexClass) + StorageConstants.PROPERTY_SEPERATOR).getBytes();
         iterator.seek(seek_key);
-        for (; iterator.isValid() && ByteUtil.startsWith(iterator.key(), 0, seek_key); iterator.next()) {
-            indexes.add(new String(ByteUtil.slice(iterator.key(), seek_key.length)));
+        for (; iterator.isValid() && Utils.startsWith(iterator.key(), 0, seek_key); iterator.next()) {
+            indexes.add(new String(Utils.slice(iterator.key(), seek_key.length)));
         }
         return indexes;
     }

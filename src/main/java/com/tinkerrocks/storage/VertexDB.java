@@ -1,6 +1,6 @@
 package com.tinkerrocks.storage;
 
-import com.tinkerrocks.structure.ByteUtil;
+import com.tinkerrocks.structure.Utils;
 import com.tinkerrocks.structure.RocksElement;
 import com.tinkerrocks.structure.RocksGraph;
 import com.tinkerrocks.structure.RocksVertex;
@@ -12,8 +12,6 @@ import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 import org.rocksdb.*;
 
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 /**
@@ -27,14 +25,12 @@ public class VertexDB extends StorageAbstractClass {
     public void close() {
         if (rocksDB != null)
             this.rocksDB.close();
-        if (executor != null)
-            executor.shutdown();
     }
 
     public <V> void setProperty(byte[] id, String key, V value) {
         try {
             put(getColumn(VERTEX_COLUMNS.PROPERTIES),
-                    ByteUtil.merge(id, StorageConstants.PROPERTY_SEPERATOR.getBytes(), key.getBytes()), serialize(value));
+                    Utils.merge(id, StorageConstants.PROPERTY_SEPERATOR.getBytes(), key.getBytes()), serialize(value));
         } catch (RocksDBException e) {
             e.printStackTrace();
         }
@@ -42,9 +38,9 @@ public class VertexDB extends StorageAbstractClass {
 
 
     public void addEdge(byte[] vertexId, Edge edge, Vertex inVertex) throws RocksDBException {
-        put(getColumn(VERTEX_COLUMNS.OUT_EDGES), ByteUtil.merge(vertexId,
+        put(getColumn(VERTEX_COLUMNS.OUT_EDGES), Utils.merge(vertexId,
                 StorageConstants.PROPERTY_SEPERATOR.getBytes(), (byte[]) edge.id()), (byte[]) inVertex.id());
-        put(getColumn(VERTEX_COLUMNS.IN_EDGES), ByteUtil.merge((byte[]) inVertex.id(),
+        put(getColumn(VERTEX_COLUMNS.IN_EDGES), Utils.merge((byte[]) inVertex.id(),
                 StorageConstants.PROPERTY_SEPERATOR.getBytes(), (byte[]) edge.id()), vertexId);
         put(getColumn(VERTEX_COLUMNS.OUT_EDGE_LABELS), (byte[]) edge.id(), edge.label().getBytes());
     }
@@ -54,11 +50,11 @@ public class VertexDB extends StorageAbstractClass {
 
         if (propertyKeys == null || propertyKeys.length == 0) {
             RocksIterator rocksIterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.PROPERTIES));
-            byte[] seek_key = ByteUtil.merge((byte[]) rocksVertex.id(), StorageConstants.PROPERTY_SEPERATOR.getBytes());
-            for (rocksIterator.seek(seek_key); rocksIterator.isValid() && ByteUtil.startsWith(rocksIterator.key(), 0, seek_key);
+            byte[] seek_key = Utils.merge((byte[]) rocksVertex.id(), StorageConstants.PROPERTY_SEPERATOR.getBytes());
+            for (rocksIterator.seek(seek_key); rocksIterator.isValid() && Utils.startsWith(rocksIterator.key(), 0, seek_key);
                  rocksIterator.next()) {
                 if (rocksIterator.value() != null)
-                    results.put(new String(ByteUtil.slice(rocksIterator.key(), seek_key.length, rocksIterator.key().length)),
+                    results.put(new String(Utils.slice(rocksIterator.key(), seek_key.length, rocksIterator.key().length)),
                             deserialize(rocksIterator.value()));
             }
             return results;
@@ -66,7 +62,7 @@ public class VertexDB extends StorageAbstractClass {
 
         for (String property : propertyKeys) {
             byte[] key = rocksDB.get(getColumn(VERTEX_COLUMNS.PROPERTIES),
-                    ByteUtil.merge((byte[]) rocksVertex.id(), StorageConstants.PROPERTY_SEPERATOR.getBytes(),
+                    Utils.merge((byte[]) rocksVertex.id(), StorageConstants.PROPERTY_SEPERATOR.getBytes(),
                             property.getBytes()));
             results.put(property, deserialize(key));
         }
@@ -86,13 +82,13 @@ public class VertexDB extends StorageAbstractClass {
     }
 
     public <V> void addProperty(byte[] id, String key, V value) throws RocksDBException {
-        put(ByteUtil.merge(id, StorageConstants.PROPERTY_SEPERATOR.getBytes(), key.getBytes()), serialize(value));
+        put(Utils.merge(id, StorageConstants.PROPERTY_SEPERATOR.getBytes(), key.getBytes()), serialize(value));
     }
 
     public List<byte[]> getEdgeIDs(byte[] id, Direction direction, HashSet<byte[]> edgeLabels) {
         List<byte[]> edgeIds = new ArrayList<>(50);
         RocksIterator iterator = null;
-        byte[] seek_key = ByteUtil.merge(id, StorageConstants.PROPERTY_SEPERATOR.getBytes());
+        byte[] seek_key = Utils.merge(id, StorageConstants.PROPERTY_SEPERATOR.getBytes());
         Set<byte[]> results = new HashSet<>(edgeLabels.size());
 
         results.addAll(edgeLabels.stream().map(this::get).collect(Collectors.toSet()));
@@ -102,13 +98,13 @@ public class VertexDB extends StorageAbstractClass {
             if (direction == Direction.BOTH || direction == Direction.IN) {
                 iterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.IN_EDGES));
                 for (iterator.seek(seek_key); iterator.isValid() &&
-                        ByteUtil.startsWith(iterator.key(), 0, seek_key); iterator.next()) {
+                        Utils.startsWith(iterator.key(), 0, seek_key); iterator.next()) {
 
                     if (edgeLabels.size() == 0) {
-                        edgeIds.add(ByteUtil.slice(iterator.key(), seek_key.length));
+                        edgeIds.add(Utils.slice(iterator.key(), seek_key.length));
                     } else {
                         if (results.contains(iterator.key())) {
-                            edgeIds.add(ByteUtil.slice(iterator.key(), seek_key.length));
+                            edgeIds.add(Utils.slice(iterator.key(), seek_key.length));
                         }
                     }
                 }
@@ -116,12 +112,12 @@ public class VertexDB extends StorageAbstractClass {
             if (direction == Direction.BOTH || direction == Direction.OUT) {
                 iterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.OUT_EDGES));
                 for (iterator.seek(seek_key); iterator.isValid() &&
-                        ByteUtil.startsWith(iterator.key(), 0, seek_key); iterator.next()) {
+                        Utils.startsWith(iterator.key(), 0, seek_key); iterator.next()) {
                     if (edgeLabels.size() == 0) {
-                        edgeIds.add(ByteUtil.slice(iterator.key(), seek_key.length));
+                        edgeIds.add(Utils.slice(iterator.key(), seek_key.length));
                     } else {
                         if (results.contains(iterator.key())) {
-                            edgeIds.add(ByteUtil.slice(iterator.key(), seek_key.length));
+                            edgeIds.add(Utils.slice(iterator.key(), seek_key.length));
                         }
                     }
                 }
@@ -188,7 +184,6 @@ public class VertexDB extends StorageAbstractClass {
     RocksDB rocksDB;
     List<ColumnFamilyHandle> columnFamilyHandleList;
     List<ColumnFamilyDescriptor> columnFamilyDescriptors;
-    ExecutorService executor;
 
     public VertexDB() throws RocksDBException {
         columnFamilyDescriptors = new ArrayList<>(VERTEX_COLUMNS.values().length);
@@ -199,7 +194,6 @@ public class VertexDB extends StorageAbstractClass {
                     StorageConfigFactory.getColumnFamilyOptions()));
         }
         this.rocksDB = RocksDB.open(StorageConfigFactory.getDBOptions(), StorageConstants.DATABASE_PREFIX + "/vertices", columnFamilyDescriptors, columnFamilyHandleList);
-        executor = Executors.newFixedThreadPool(5);
     }
 
 
@@ -245,7 +239,6 @@ public class VertexDB extends StorageAbstractClass {
         }
         return vertices;
     }
-
 
 
     public RocksVertex getVertex(byte[] vertexId, RocksGraph rocksGraph) throws RocksDBException {

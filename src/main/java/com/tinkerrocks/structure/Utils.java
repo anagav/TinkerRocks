@@ -9,7 +9,7 @@ import java.util.Arrays;
 /**
  * Created by ashishn on 8/5/15.
  */
-public class ByteUtil {
+public class Utils {
 
     static Gson gson = new GsonBuilder().create();
 
