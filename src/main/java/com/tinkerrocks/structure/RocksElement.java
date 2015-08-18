@@ -70,6 +70,7 @@ public abstract class RocksElement implements Element {
      *
      * @param propertyKeys
      */
+    @SuppressWarnings("unchecked")
     @Override
     public <V> Iterator<? extends Property<V>> properties(String... propertyKeys) {
         Map<String, Object> properties = new HashMap<>(30);

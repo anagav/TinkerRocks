@@ -74,14 +74,23 @@ public class RocksIndex<T extends Element> {
     public void createKeyIndex(final String key) {
 
         Iterator<? extends Element> iterator;
+        boolean hasKey;
 
         if (Vertex.class.isAssignableFrom(this.indexClass)) {
             this.rocksGraph.getStorageHandler().getIndexDB().createIndex(Vertex.class, key);
             iterator = this.rocksGraph.vertices();
+            hasKey = this.rocksGraph.getVertexIndex().getIndexedKeys().contains(key);
         } else {
             this.rocksGraph.getStorageHandler().getIndexDB().createIndex(Edge.class, key);
             iterator = this.rocksGraph.edges();
+            hasKey = this.rocksGraph.getEdgeIndex().getIndexedKeys().contains(key);
+
         }
+
+        if (hasKey) {
+            return;
+        }
+
 
         iterator.forEachRemaining(element -> {
             if (element.property(key).isPresent()) {
