@@ -85,17 +85,18 @@ public class EdgeDB extends StorageAbstractClass {
         byte[] seek_key = Utils.merge(edgeId, StorageConstants.PROPERTY_SEPERATOR.getBytes());
         if (direction == Direction.BOTH || direction == Direction.IN) {
             rocksIterator = this.rocksDB.newIterator(getColumn(EDGE_COLUMNS.IN_VERTICES));
-            for (rocksIterator.seek(seek_key); rocksIterator.isValid()
-                    && Utils.startsWith(rocksIterator.key(), 0, seek_key); rocksIterator.next()) {
-                vertexIDs.add(Utils.slice(rocksIterator.value(), seek_key.length));
-            }
+
+            Utils.RocksIterUtil(rocksIterator, seek_key, (key, value) -> {
+                vertexIDs.add(Utils.slice(value, seek_key.length));
+                return true;
+            });
         }
         if (direction == Direction.BOTH || direction == Direction.OUT) {
             rocksIterator = this.rocksDB.newIterator(getColumn(EDGE_COLUMNS.OUT_VERTICES));
-            for (rocksIterator.seek(seek_key); rocksIterator.isValid()
-                    && Utils.startsWith(rocksIterator.key(), 0, seek_key); rocksIterator.next()) {
-                vertexIDs.add(Utils.slice(rocksIterator.value(), seek_key.length));
-            }
+            Utils.RocksIterUtil(rocksIterator, seek_key, (key, value) -> {
+                vertexIDs.add(Utils.slice(value, seek_key.length));
+                return true;
+            });
         }
         return vertexIDs;
     }
@@ -106,11 +107,20 @@ public class EdgeDB extends StorageAbstractClass {
         if (propertyKeys == null || propertyKeys.length == 0) {
             RocksIterator rocksIterator = this.rocksDB.newIterator(getColumn(EDGE_COLUMNS.PROPERTIES));
             byte[] seek_key = Utils.merge((byte[]) element.id(), StorageConstants.PROPERTY_SEPERATOR.getBytes());
-            for (rocksIterator.seek(seek_key); rocksIterator.isValid() && Utils.startsWith(rocksIterator.key(), 0, seek_key);
-                 rocksIterator.next()) {
-                results.put(new String(Utils.slice(rocksIterator.key(), seek_key.length, rocksIterator.key().length)),
-                        deserialize(rocksIterator.value()));
-            }
+
+            Utils.RocksIterUtil(rocksIterator, seek_key, (key, value) -> {
+                results.put(new String(Utils.slice(key, seek_key.length, key.length)),
+                        deserialize(value));
+
+                return true;
+            });
+
+
+//            for (rocksIterator.seek(seek_key); rocksIterator.isValid() && Utils.startsWith(rocksIterator.key(), 0, seek_key);
+//                 rocksIterator.next()) {
+//                results.put(new String(Utils.slice(rocksIterator.key(), seek_key.length, rocksIterator.key().length)),
+//                        deserialize(rocksIterator.value()));
+//            }
             return results;
         }
 
@@ -177,11 +187,15 @@ public class EdgeDB extends StorageAbstractClass {
         }
 
         byte[] seek_key = Utils.merge(id, StorageConstants.PROPERTY_SEPERATOR.getBytes());
-        iterator.seek(seek_key);
-        if (iterator.isValid() && Utils.startsWith(iterator.key(), 0, seek_key)) {
-            return Utils.slice(iterator.key(), seek_key.length);
-        }
-        return null;
+
+        final byte[][] returnValue = new byte[1][1];
+        Utils.RocksIterUtil(iterator, seek_key, (key, value) -> {
+            returnValue[0] = Utils.slice(iterator.key(), seek_key.length);
+            return false;
+        });
+
+        return returnValue[0];
+
     }
 
     public void remove(RocksEdge rocksEdge) throws RocksDBException {

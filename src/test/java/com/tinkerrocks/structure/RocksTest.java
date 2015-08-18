@@ -158,7 +158,7 @@ public class RocksTest {
     @Test
     public void IndexTest() {
 
-        //graph.createIndex("age", Vertex.class);
+        graph.createIndex("age", Vertex.class);
         int i = 0;
         while (i < 5000) {
             graph.addVertex(T.label, "person", T.id, i, "name", "marko", "age", 29);

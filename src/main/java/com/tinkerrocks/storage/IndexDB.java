@@ -131,16 +131,6 @@ public class IndexDB extends StorageAbstractClass {
             ex.printStackTrace();
         }
 
-
-//        RocksIterator iterator = this.rocksDB.newIterator();
-//        byte[] seek_key = (getIndexClass(indexClass) + StorageConstants.PROPERTY_SEPERATOR + key +
-//                StorageConstants.PROPERTY_SEPERATOR + value + StorageConstants.PROPERTY_SEPERATOR).getBytes();
-//
-//        iterator.seek(seek_key);
-//        while (iterator.isValid() && ByteUtil.startsWith(iterator.key(), 0, seek_key)) {
-//            results.add(ByteUtil.slice(iterator.key(), seek_key.length));
-//            iterator.next();
-//        }
         return results;
     }
 
@@ -155,10 +145,12 @@ public class IndexDB extends StorageAbstractClass {
         Set<String> indexes = new HashSet<>();
         RocksIterator iterator = this.rocksDB.newIterator(getColumn(INDEX_COLUMNS.INDEX_KEYS));
         byte[] seek_key = (getIndexClass(indexClass) + StorageConstants.PROPERTY_SEPERATOR).getBytes();
-        iterator.seek(seek_key);
-        for (; iterator.isValid() && Utils.startsWith(iterator.key(), 0, seek_key); iterator.next()) {
-            indexes.add(new String(Utils.slice(iterator.key(), seek_key.length)));
-        }
+
+        Utils.RocksIterUtil(iterator, seek_key, (key, value) -> {
+            indexes.add(new String(Utils.slice(key, seek_key.length)));
+            return true;
+        });
+
         return indexes;
     }
 }

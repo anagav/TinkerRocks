@@ -3,12 +3,13 @@ package com.tinkerrocks.structure;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.commons.lang.ArrayUtils;
+import org.rocksdb.RocksIterator;
 
 import java.util.Arrays;
 
 /**
  * <p>
- *     generic utils class.
+ * generic utils class.
  * </p>
  * Created by ashishn on 8/5/15.
  */
@@ -50,6 +51,19 @@ public class Utils {
 
     public static String toString(Object object) {
         return gson.toJson(object);
+    }
+
+
+    public static void RocksIterUtil(RocksIterator rocksIterator, byte[] seek_key, RocksIteratorCallback rocksIteratorCallback) {
+        boolean returnValue = true;
+        try {
+            for (rocksIterator.seek(seek_key); returnValue && rocksIterator.isValid() &&
+                    startsWith(rocksIterator.key(), 0, seek_key); rocksIterator.next()) {
+                returnValue = rocksIteratorCallback.process(rocksIterator.key(), rocksIterator.value());
+            }
+        } finally {
+            rocksIterator.dispose();
+        }
     }
 
 

@@ -1,9 +1,6 @@
 package com.tinkerrocks.storage;
 
-import com.tinkerrocks.structure.Utils;
-import com.tinkerrocks.structure.RocksElement;
-import com.tinkerrocks.structure.RocksGraph;
-import com.tinkerrocks.structure.RocksVertex;
+import com.tinkerrocks.structure.*;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Graph;
@@ -51,12 +48,12 @@ public class VertexDB extends StorageAbstractClass {
         if (propertyKeys == null || propertyKeys.length == 0) {
             RocksIterator rocksIterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.PROPERTIES));
             byte[] seek_key = Utils.merge((byte[]) rocksVertex.id(), StorageConstants.PROPERTY_SEPERATOR.getBytes());
-            for (rocksIterator.seek(seek_key); rocksIterator.isValid() && Utils.startsWith(rocksIterator.key(), 0, seek_key);
-                 rocksIterator.next()) {
-                if (rocksIterator.value() != null)
-                    results.put(new String(Utils.slice(rocksIterator.key(), seek_key.length, rocksIterator.key().length)),
-                            deserialize(rocksIterator.value()));
-            }
+            Utils.RocksIterUtil(rocksIterator, seek_key, (key, value) -> {
+                if (value != null)
+                    results.put(new String(Utils.slice(key, seek_key.length, key.length)),
+                            deserialize(value));
+                return true;
+            });
             return results;
         }
 
@@ -97,30 +94,30 @@ public class VertexDB extends StorageAbstractClass {
         try {
             if (direction == Direction.BOTH || direction == Direction.IN) {
                 iterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.IN_EDGES));
-                for (iterator.seek(seek_key); iterator.isValid() &&
-                        Utils.startsWith(iterator.key(), 0, seek_key); iterator.next()) {
-
+                Utils.RocksIterUtil(iterator, seek_key, (key, value) -> {
                     if (edgeLabels.size() == 0) {
-                        edgeIds.add(Utils.slice(iterator.key(), seek_key.length));
+                        edgeIds.add(Utils.slice(key, seek_key.length));
                     } else {
-                        if (results.contains(iterator.key())) {
-                            edgeIds.add(Utils.slice(iterator.key(), seek_key.length));
+                        if (results.contains(key)) {
+                            edgeIds.add(Utils.slice(key, seek_key.length));
                         }
                     }
-                }
+                    return true;
+                });
             }
             if (direction == Direction.BOTH || direction == Direction.OUT) {
                 iterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.OUT_EDGES));
-                for (iterator.seek(seek_key); iterator.isValid() &&
-                        Utils.startsWith(iterator.key(), 0, seek_key); iterator.next()) {
+                Utils.RocksIterUtil(iterator, seek_key, (key, value) -> {
                     if (edgeLabels.size() == 0) {
-                        edgeIds.add(Utils.slice(iterator.key(), seek_key.length));
+                        edgeIds.add(Utils.slice(key, seek_key.length));
                     } else {
-                        if (results.contains(iterator.key())) {
-                            edgeIds.add(Utils.slice(iterator.key(), seek_key.length));
+                        if (results.contains(key)) {
+                            edgeIds.add(Utils.slice(key, seek_key.length));
                         }
                     }
-                }
+                    return true;
+                });
+
             }
 
         } finally {
