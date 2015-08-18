@@ -12,6 +12,8 @@ import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 import org.rocksdb.*;
 
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 /**
@@ -23,7 +25,10 @@ public class VertexDB extends StorageAbstractClass {
 
 
     public void close() {
-        this.rocksDB.close();
+        if (rocksDB != null)
+            this.rocksDB.close();
+        if (executor != null)
+            executor.shutdown();
     }
 
     public <V> void setProperty(byte[] id, String key, V value) {
@@ -183,6 +188,7 @@ public class VertexDB extends StorageAbstractClass {
     RocksDB rocksDB;
     List<ColumnFamilyHandle> columnFamilyHandleList;
     List<ColumnFamilyDescriptor> columnFamilyDescriptors;
+    ExecutorService executor;
 
     public VertexDB() throws RocksDBException {
         columnFamilyDescriptors = new ArrayList<>(VERTEX_COLUMNS.values().length);
@@ -193,6 +199,7 @@ public class VertexDB extends StorageAbstractClass {
                     StorageConfigFactory.getColumnFamilyOptions()));
         }
         this.rocksDB = RocksDB.open(StorageConfigFactory.getDBOptions(), StorageConstants.DATABASE_PREFIX + "/vertices", columnFamilyDescriptors, columnFamilyHandleList);
+        executor = Executors.newFixedThreadPool(5);
     }
 
 
@@ -220,10 +227,15 @@ public class VertexDB extends StorageAbstractClass {
         if (vertexIds == null) {
             RocksIterator iterator = this.rocksDB.newIterator();
             iterator.seekToFirst();
-            while (iterator.isValid()) {
-                vertices.add(getVertex(iterator.key(), rocksGraph));
-                iterator.next();
+            try {
+                while (iterator.isValid()) {
+                    vertices.add(getVertex(iterator.key(), rocksGraph));
+                    iterator.next();
+                }
+            } finally {
+                iterator.dispose();
             }
+
         } else {
             for (byte[] vertexId : vertexIds) {
                 Vertex vertex = getVertex(vertexId, rocksGraph);
@@ -233,6 +245,8 @@ public class VertexDB extends StorageAbstractClass {
         }
         return vertices;
     }
+
+
 
     public RocksVertex getVertex(byte[] vertexId, RocksGraph rocksGraph) throws RocksDBException {
         if (this.rocksDB.get(vertexId) == null) {

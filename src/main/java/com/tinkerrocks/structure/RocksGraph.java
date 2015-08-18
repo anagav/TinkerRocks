@@ -38,6 +38,10 @@ public final class RocksGraph implements Graph {
     public RocksIndex<Vertex> vertexIndex = null;
     public RocksIndex<Edge> edgeIndex = null;
 
+    public static RocksGraph open() {
+        return new RocksGraph(new BaseConfiguration());
+    }
+
 
     public static RocksGraph open(Configuration configuration) throws InstantiationException {
         if (configuration == null) {

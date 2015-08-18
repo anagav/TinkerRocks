@@ -112,12 +112,34 @@ public class StorageConfigFactory {
                 .setLevelZeroSlowdownWritesTrigger(20)
                 .setLevelZeroStopWritesTrigger(12)
                 .setNumLevels(8)
+                .useFixedLengthPrefixExtractor(0)
 
                 .setSourceCompactionFactor(1)
                 .setFilterDeletes(false)
                 .setDisableAutoCompactions(false)
                 .setHardRateLimit(2)
                 .optimizeLevelStyleCompaction();
+
+
+        columnFamilyOptions.setMemTableConfig(new SkipListMemTableConfig());
+
+        BlockBasedTableConfig table_options = new BlockBasedTableConfig();
+
+        Filter bloomFilter = new BloomFilter(10, true);
+
+        table_options.setBlockCacheSize(512 * SizeUnit.MB)
+                .setBlockCacheCompressedNumShardBits(8)
+                .setHashIndexAllowCollision(false)
+                .setFilter(bloomFilter)
+                .setBlockSize(4096)
+                .setBlockSizeDeviation(5)
+                .setBlockRestartInterval(10)
+                .setBlockCacheCompressedSize(128 * SizeUnit.KB)
+                .setCacheNumShardBits(8);
+
+        columnFamilyOptions.setTableFormatConfig(table_options);
+
+
         return columnFamilyOptions;
     }
 
