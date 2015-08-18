@@ -130,7 +130,6 @@ public class IndexDB extends StorageAbstractClass {
         } catch (RocksDBException ex) {
             ex.printStackTrace();
         }
-
         return results;
     }
 
