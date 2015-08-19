@@ -57,8 +57,8 @@ public class RocksGraphStep<S extends Element> extends GraphStep<S> implements H
         else {
             return null == indexedContainer ?
                     this.iteratorList(graph.vertices()) :
-                    RocksIndex.queryVertexIndex(graph, indexedContainer.getKey(), indexedContainer.getPredicate().getValue()).stream()
-                            .filter(vertex -> HasContainer.testAll(vertex, this.hasContainers))
+                    RocksIndex.queryVertexIndex(graph, indexedContainer.getKey(), indexedContainer.getPredicate().getValue())
+                            .stream().filter(vertex -> HasContainer.testAll(vertex, this.hasContainers))
                             .collect(Collectors.<Vertex>toList()).iterator();
         }
 
