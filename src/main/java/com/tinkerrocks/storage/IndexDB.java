@@ -11,7 +11,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
+/** <p>
+ * Class for handling indexes -> Creation, Update and deleting index keys
+ * </p>
  * Created by ashishn on 8/13/15.
  */
 public class IndexDB extends StorageAbstractClass {
