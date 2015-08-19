@@ -232,15 +232,7 @@ public class VertexDB extends StorageAbstractClass {
                 iterator.dispose();
             }
         }
-        List<Vertex> vertices = new ArrayList<>(vertexIds.size());
-
-        for (byte[] vertexID : vertexIds) {
-            Vertex v = getVertex(vertexID, rocksGraph);
-            if (v != null)
-                vertices.add(v);
-        }
-
-        return vertices;
+        return vertexIds.stream().map(bytes -> getVertex(bytes, rocksGraph)).filter(rocksVertex -> rocksVertex != null).collect(Collectors.toList());
     }
 
 
