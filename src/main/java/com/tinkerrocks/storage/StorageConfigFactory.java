@@ -11,6 +11,7 @@ public class StorageConfigFactory {
     private static DBOptions dbOptions;
     private static ColumnFamilyOptions columnFamilyOptions;
     private static WriteOptions writeOptions;
+    private static ReadOptions readOptions;
     private static CompressionType compressionType = CompressionType.SNAPPY_COMPRESSION;
 
 
@@ -152,6 +153,18 @@ public class StorageConfigFactory {
         writeOptions.setSync(false);
         writeOptions.setDisableWAL(true);
         return writeOptions;
+    }
+
+
+    public static ReadOptions getReadOptions() {
+        if (readOptions != null) {
+            return readOptions;
+        }
+        readOptions = new ReadOptions();
+        readOptions.setFillCache(true);
+        readOptions.setVerifyChecksums(false);
+
+        return readOptions;
     }
 
 
