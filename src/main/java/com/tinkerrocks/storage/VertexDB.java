@@ -218,35 +218,44 @@ public class VertexDB extends StorageAbstractClass {
     public List<Vertex> vertices(List<byte[]> vertexIds, RocksGraph rocksGraph) throws RocksDBException {
         List<Vertex> vertices = new ArrayList<>();
 
+
         if (vertexIds == null) {
             RocksIterator iterator = this.rocksDB.newIterator();
-
+            vertexIds = new ArrayList<>();
             iterator.seekToFirst();
             try {
                 while (iterator.isValid()) {
-                    vertices.add(getVertex(iterator.key(), rocksGraph));
+                    vertexIds.add(iterator.key());
                     iterator.next();
                 }
             } finally {
                 iterator.dispose();
             }
-
-        } else {
-            for (byte[] vertexId : vertexIds) {
-                Vertex vertex = getVertex(vertexId, rocksGraph);
-                if (vertex != null)
-                    vertices.add(vertex);
-            }
         }
+
+        vertexIds.parallelStream().map(bytes -> getVertex(bytes,rocksGraph)).collect(Collectors.toList());
+
+//        for (byte[] vertexId : vertexIds) {
+//            Vertex vertex = getVertex(vertexId, rocksGraph);
+//            if (vertex != null)
+//                vertices.add(vertex);
+//        }
+
         return vertices;
     }
 
 
-    public RocksVertex getVertex(byte[] vertexId, RocksGraph rocksGraph) throws RocksDBException {
-        if (this.rocksDB.get(vertexId) == null) {
-            return null;
+    public RocksVertex getVertex(byte[] vertexId, RocksGraph rocksGraph) {
+        //System.out.println("get id for vertex" + new String(vertexId));
+        try {
+            if (this.rocksDB.get(vertexId) == null) {
+                return null;
+            }
+            return new RocksVertex(vertexId, getLabel(vertexId), rocksGraph);
+        } catch (RocksDBException ex) {
+            ex.printStackTrace();
         }
-        return new RocksVertex(vertexId, getLabel(vertexId), rocksGraph);
+        return null;
     }
 
 
