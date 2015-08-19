@@ -216,7 +216,7 @@ public class VertexDB extends StorageAbstractClass {
 
 
     public List<Vertex> vertices(List<byte[]> vertexIds, RocksGraph rocksGraph) throws RocksDBException {
-        List<Vertex> vertices = new ArrayList<>();
+        List<Vertex> vertices;
 
 
         if (vertexIds == null) {
@@ -233,13 +233,7 @@ public class VertexDB extends StorageAbstractClass {
             }
         }
 
-        vertexIds.parallelStream().map(bytes -> getVertex(bytes,rocksGraph)).collect(Collectors.toList());
-
-//        for (byte[] vertexId : vertexIds) {
-//            Vertex vertex = getVertex(vertexId, rocksGraph);
-//            if (vertex != null)
-//                vertices.add(vertex);
-//        }
+        vertices = vertexIds.stream().map(bytes -> getVertex(bytes, rocksGraph)).collect(Collectors.toList());
 
         return vertices;
     }
