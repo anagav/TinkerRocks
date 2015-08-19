@@ -81,6 +81,26 @@ public class VertexDB extends StorageAbstractClass {
             this.rocksDB.put(StorageConfigFactory.getWriteOptions(), key, value);
     }
 
+    private byte[] get(byte[] key) {
+        try {
+            return this.get(null, key);
+        } catch (RocksDBException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private byte[] get(ColumnFamilyHandle columnFamilyHandle, byte[] key) throws RocksDBException {
+        if (key == null) {
+            return null;
+        }
+        if (columnFamilyHandle != null)
+            return this.rocksDB.get(columnFamilyHandle, StorageConfigFactory.getReadOptions(), key);
+        else
+            return this.rocksDB.get(StorageConfigFactory.getReadOptions(), key);
+    }
+
+
     public <V> void addProperty(byte[] id, String key, V value) throws RocksDBException {
         put(Utils.merge(id, StorageConstants.PROPERTY_SEPERATOR.getBytes(), key.getBytes()), serialize(value));
     }
@@ -130,25 +150,6 @@ public class VertexDB extends StorageAbstractClass {
         }
         return edgeIds;
     }
-
-    private byte[] get(byte[] bytes) {
-        try {
-            return this.rocksDB.get(bytes);
-        } catch (RocksDBException e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
-//    private boolean contains(String[] edgeLabels, byte[] s) throws RocksDBException {
-//        for (String edge : edgeLabels) {
-//            if (Arrays.equals(edge.getBytes(), this.rocksDB.get(getColumn(VERTEX_COLUMNS.OUT_EDGE_LABELS), s))) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
 
     public RocksVertex vertex(byte[] id, RocksGraph rocksGraph) throws RocksDBException {
         return (RocksVertex) vertices(new ArrayList<byte[]>() {
@@ -245,13 +246,14 @@ public class VertexDB extends StorageAbstractClass {
 
     public RocksVertex getVertex(byte[] vertexId, RocksGraph rocksGraph) {
         try {
-            if (this.rocksDB.get(vertexId) == null) {
+            if (rocksDB.get(vertexId) == null) {
                 return null;
             }
             return new RocksVertex(vertexId, getLabel(vertexId), rocksGraph);
         } catch (RocksDBException ex) {
             ex.printStackTrace();
         }
+
         return null;
     }
 
