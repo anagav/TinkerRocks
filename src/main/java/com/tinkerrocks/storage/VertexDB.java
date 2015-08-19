@@ -1,6 +1,9 @@
 package com.tinkerrocks.storage;
 
-import com.tinkerrocks.structure.*;
+import com.tinkerrocks.structure.RocksElement;
+import com.tinkerrocks.structure.RocksGraph;
+import com.tinkerrocks.structure.RocksVertex;
+import com.tinkerrocks.structure.Utils;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Graph;
@@ -217,6 +220,7 @@ public class VertexDB extends StorageAbstractClass {
 
         if (vertexIds == null) {
             RocksIterator iterator = this.rocksDB.newIterator();
+
             iterator.seekToFirst();
             try {
                 while (iterator.isValid()) {
