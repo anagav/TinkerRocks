@@ -11,6 +11,7 @@ public class StorageConfigFactory {
     private static DBOptions dbOptions;
     private static ColumnFamilyOptions columnFamilyOptions;
     private static WriteOptions writeOptions;
+    private static CompressionType compressionType = CompressionType.SNAPPY_COMPRESSION;
 
 
     public static Options getOptions() {
@@ -28,7 +29,7 @@ public class StorageConfigFactory {
                 .setMaxBackgroundCompactions(8)
                 .setTargetFileSizeBase(64 * SizeUnit.MB)
                 .setMaxBytesForLevelBase(512 * SizeUnit.MB)
-                .setCompressionType(CompressionType.SNAPPY_COMPRESSION)
+                .setCompressionType(compressionType)
                 .setCompactionStyle(CompactionStyle.LEVEL)
                 .setIncreaseParallelism(10)
                 .setMemtablePrefixBloomBits(8 * 1024 * 1024)
@@ -100,7 +101,7 @@ public class StorageConfigFactory {
                 .setMaxGrandparentOverlapFactor(10)
                 .setTargetFileSizeBase(64 * SizeUnit.MB)
                 .setMaxBytesForLevelBase(512 * SizeUnit.MB)
-                .setCompressionType(CompressionType.ZLIB_COMPRESSION)
+                .setCompressionType(compressionType)
                 .setCompactionStyle(CompactionStyle.LEVEL)
                 .setMemtablePrefixBloomBits(8 * 1024 * 1024)
                 .setMemtablePrefixBloomProbes(6)
