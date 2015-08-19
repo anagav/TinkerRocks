@@ -240,7 +240,6 @@ public class VertexDB extends StorageAbstractClass {
 
 
     public RocksVertex getVertex(byte[] vertexId, RocksGraph rocksGraph) {
-        //System.out.println("get id for vertex" + new String(vertexId));
         try {
             if (this.rocksDB.get(vertexId) == null) {
                 return null;
