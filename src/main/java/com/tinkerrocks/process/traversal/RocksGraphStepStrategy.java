@@ -19,7 +19,6 @@ public class RocksGraphStepStrategy extends AbstractTraversalStrategy<TraversalS
     @SuppressWarnings("unchecked")
     @Override
     public void apply(Traversal.Admin<?, ?> traversal) {
-        System.out.println("graph step strategy called......");
         if (traversal.getEngine().isComputer())
             return;
 
