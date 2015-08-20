@@ -207,7 +207,7 @@ public class VertexDB extends StorageAbstractClass {
 
     public void addVertex(byte[] idValue, String label, Object[] keyValues) throws RocksDBException {
         if (exists(idValue)) {
-            throw Graph.Exceptions.vertexWithIdAlreadyExists(idValue);
+            throw Graph.Exceptions.vertexWithIdAlreadyExists(new String(idValue));
         }
 
         put(idValue, label.getBytes());
