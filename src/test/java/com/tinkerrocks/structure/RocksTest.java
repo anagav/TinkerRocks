@@ -176,22 +176,22 @@ public class RocksTest {
         graph.createIndex("age", Vertex.class);
         int i = 0;
         while (i < 5000) {
-            graph.addVertex(T.label, "person", T.id, i, "name", "marko", "age", 29);
+            graph.addVertex(T.label, "person", T.id, "index" + i, "name", "marko", "age", 29);
             i++;
         }
 
         while (i < 5000) {
-            graph.addVertex(T.label, "personal", T.id, i, "name", "marko", "age", 29);
+            graph.addVertex(T.label, "personal", T.id, "index" + (5000 + i), "name", "marko", "age", 29);
             i++;
         }
 
         while (i < 200000) {
-            graph.addVertex(T.label, "movie", T.id, "index"+i, "name", "marko");
+            graph.addVertex(T.label, "movie", T.id, "index" + (10000 + i), "name", "marko");
             i++;
         }
-        graph.addVertex(T.label, "personal", T.id, i, "name", "marko", "age", 30);
+        graph.addVertex(T.label, "personal", T.id, ++i, "name", "marko", "age", 30);
 
-        graph.addVertex(T.label, "personal", T.id, i, "name", "marko", "age", 31);
+        graph.addVertex(T.label, "personal", T.id, ++i, "name", "marko", "age", 31);
 
 
         GraphTraversalSource g = graph.traversal(GraphTraversalSource.build().engine(StandardTraversalEngine.build()));
