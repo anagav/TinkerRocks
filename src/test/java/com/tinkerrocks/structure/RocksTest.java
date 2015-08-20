@@ -40,10 +40,16 @@ public class RocksTest {
     @Test
     public void testMultiValues() {
         Vertex marko = graph.addVertex(T.label, "person", T.id, "jumbaho", "name", "marko", "age", 29);
-        marko.property("country", "usa");
+        marko.property(VertexProperty.Cardinality.list,"country", "usa");
+        marko.property(VertexProperty.Cardinality.list,"country", "uk");
+        marko.property(VertexProperty.Cardinality.list,"country", "japan");
 
 
-        marko.properties().forEachRemaining(System.out::println);
+
+        GraphTraversalSource g = graph.traversal(GraphTraversalSource.build().engine(StandardTraversalEngine.build()));
+        System.out.println(g.V("jumbaho").has("country","japan").properties().toList());
+
+       //marko.properties().forEachRemaining(System.out::println);
     }
 
 
