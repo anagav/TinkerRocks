@@ -86,7 +86,7 @@ public class RocksVertex extends RocksElement implements Vertex {
         ElementHelper.legalPropertyKeyValueArray(keyValues);
         try {
             this.rocksGraph.getStorageHandler().getVertexDB()
-                    .addProperty(String.valueOf(ElementHelper.getIdValue(keyValues)).getBytes(), key, value);
+                    .addProperty((byte[]) this.id(), key, value);
         } catch (RocksDBException e) {
             e.printStackTrace();
         }
