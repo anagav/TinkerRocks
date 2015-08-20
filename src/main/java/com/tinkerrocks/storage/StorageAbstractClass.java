@@ -10,6 +10,7 @@ import org.apache.tinkerpop.shaded.kryo.pool.KryoPool;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.HashSet;
+import java.util.List;
 
 /**
  * Created by ashishn on 8/13/15.
@@ -26,6 +27,7 @@ public abstract class StorageAbstractClass {
             kryo.register(Integer.class);
             kryo.register(HashSet.class);
             kryo.register(String.class);
+            kryo.register(List.class);
             return kryo;
         };
         pool = new KryoPool.Builder(factory).softReferences().build();
@@ -44,7 +46,7 @@ public abstract class StorageAbstractClass {
     }
 
 
-    public Object deserialize(byte[] inbBytes) {
+    private Object deserialize(byte[] inbBytes) {
         if (inbBytes == null) {
             return null;
         }

@@ -113,7 +113,7 @@ public class EdgeDB extends StorageAbstractClass {
 
             Utils.RocksIterUtil(rocksIterator, seek_key, (key, value) -> {
                 results.put(new String(Utils.slice(key, seek_key.length, key.length)),
-                        deserialize(value));
+                        deserialize(value, Object.class));
 
                 return true;
             });
@@ -136,7 +136,7 @@ public class EdgeDB extends StorageAbstractClass {
 
 
             if (val != null)
-                results.put(property, deserialize(val));
+                results.put(property, deserialize(val, Object.class));
             else
                 results.put(property, null);
 

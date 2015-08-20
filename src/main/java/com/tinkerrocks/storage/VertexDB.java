@@ -54,7 +54,7 @@ public class VertexDB extends StorageAbstractClass {
             Utils.RocksIterUtil(rocksIterator, seek_key, (key, value) -> {
                 if (value != null)
                     results.put(new String(Utils.slice(key, seek_key.length, key.length)),
-                            deserialize(value));
+                            deserialize(value, Object.class));
                 return true;
             });
             return results;
@@ -64,7 +64,7 @@ public class VertexDB extends StorageAbstractClass {
             byte[] key = rocksDB.get(getColumn(VERTEX_COLUMNS.PROPERTIES),
                     Utils.merge((byte[]) rocksVertex.id(), StorageConstants.PROPERTY_SEPERATOR.getBytes(),
                             property.getBytes()));
-            results.put(property, deserialize(key));
+            results.put(property, deserialize(key, Object.class));
         }
         return results;
     }
