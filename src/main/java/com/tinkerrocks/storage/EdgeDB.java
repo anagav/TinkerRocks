@@ -155,7 +155,6 @@ public class EdgeDB extends StorageAbstractClass {
             }
         }
 
-
         for (byte[] id : ids) {
             edges.add(getEdge(id, rocksGraph));
         }
