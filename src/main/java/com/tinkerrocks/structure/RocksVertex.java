@@ -94,7 +94,11 @@ public class RocksVertex extends RocksElement implements Vertex {
 
         this.rocksGraph.getStorageHandler().getVertexDB().setProperty((byte[]) this.id(), key, value, cardinality);
         //todo: add capablity to replace old value
-        this.rocksGraph.getVertexIndex().autoUpdate(key, value, null, this);
+        //if (property(key).isPresent())
+        //handle multi values
+        properties(key).forEachRemaining(objectVertexProperty -> this.rocksGraph.getVertexIndex().
+                autoUpdate(key, value, objectVertexProperty.value(), this));
+        //this.rocksGraph.getVertexIndex().autoUpdate(key, value, null, this);
 
         return new RocksVertexProperty<>(this, key, value);
         //throw VertexProperty.Exceptions.metaPropertiesNotSupported();
