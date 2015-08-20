@@ -13,7 +13,9 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 
 /**
@@ -34,6 +36,19 @@ public class RocksTest {
         graph = RocksGraph.open(configuration);
 
 
+    }
+
+
+    @Test
+    public void testMultiValues() {
+        Vertex marko = graph.addVertex(T.label, "person", T.id, 101, "name", "marko", "age", 29);
+        Set<Object> ages = new HashSet<>();
+        ages.add("test");
+        ages.add(2);
+        ages.add(3);
+        ages.add(3);
+        marko.property("age", ages);
+        System.out.println("vertex:" + marko.properties("age").next().value().getClass());
     }
 
 
@@ -179,7 +194,6 @@ public class RocksTest {
         graph.addVertex(T.label, "personal", T.id, i, "name", "marko", "age", 31);
 
 
-
         GraphTraversalSource g = graph.traversal(GraphTraversalSource.build().engine(StandardTraversalEngine.build()));
 
         long start = System.currentTimeMillis();
@@ -187,7 +201,6 @@ public class RocksTest {
         long end = System.currentTimeMillis();
         System.out.println("time taken to search:" + (end - start));
     }
-
 
 
     @After
