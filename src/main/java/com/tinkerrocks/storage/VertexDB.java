@@ -205,6 +205,9 @@ public class VertexDB extends StorageAbstractClass {
     }
 
     public void addVertex(byte[] idValue, String label, Object[] keyValues) throws RocksDBException {
+        if (exists(idValue)) {
+            throw Graph.Exceptions.vertexWithIdAlreadyExists(idValue);
+        }
 
         put(idValue, label.getBytes());
         if (keyValues == null || keyValues.length == 0) {
@@ -215,6 +218,10 @@ public class VertexDB extends StorageAbstractClass {
         for (Map.Entry<String, Object> property : properties.entrySet()) {
             setProperty(idValue, property.getKey(), property.getValue());
         }
+    }
+
+    private boolean exists(byte[] idValue) throws RocksDBException {
+        return (this.rocksDB.get(idValue) == null);
     }
 
 
