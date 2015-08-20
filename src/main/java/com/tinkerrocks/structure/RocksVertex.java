@@ -46,6 +46,8 @@ public class RocksVertex extends RocksElement implements Vertex {
 
     @Override
     public <V> VertexProperty<V> property(final String key, final V value) {
+        if (this.removed) throw Element.Exceptions.elementAlreadyRemoved(Vertex.class, this.id);
+
         this.rocksGraph.getStorageHandler().getVertexDB().setProperty((byte[]) this.id(), key, value);
         this.rocksGraph.getVertexIndex().autoUpdate(key, value, property(key).value(), this);
         return new RocksVertexProperty<>(this, key, value);
@@ -90,11 +92,15 @@ public class RocksVertex extends RocksElement implements Vertex {
 
     @Override
     public <V> VertexProperty<V> property(VertexProperty.Cardinality cardinality, String key, V value, Object... keyValues) {
+        if (this.removed) throw Element.Exceptions.elementAlreadyRemoved(Vertex.class, this.id);
+
         throw VertexProperty.Exceptions.metaPropertiesNotSupported();
     }
 
     @Override
     public Iterator<Edge> edges(Direction direction, String... edgeLabels) {
+        if (this.removed) throw Element.Exceptions.elementAlreadyRemoved(Vertex.class, this.id);
+
         HashSet<byte[]> edgeLabelsBytes = new HashSet<>(edgeLabels.length);
 
         for (String label : edgeLabels) {
