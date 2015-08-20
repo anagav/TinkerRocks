@@ -186,7 +186,7 @@ public class RocksTest {
         }
 
         while (i < 200000) {
-            graph.addVertex(T.label, "movie", T.id, i, "name", "marko");
+            graph.addVertex(T.label, "movie", T.id, "index"+i, "name", "marko");
             i++;
         }
         graph.addVertex(T.label, "personal", T.id, i, "name", "marko", "age", 30);
