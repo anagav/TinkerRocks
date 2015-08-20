@@ -41,7 +41,7 @@ public class RocksTest {
 
     @Test
     public void testMultiValues() {
-        Vertex marko = graph.addVertex(T.label, "person", T.id, 101, "name", "marko", "age", 29);
+        Vertex marko = graph.addVertex(T.label, "person", T.id, "jumbaho", "name", "marko", "age", 29);
         Set<Object> ages = new HashSet<>();
         ages.add("test");
         ages.add(2);
