@@ -46,11 +46,8 @@ public class RocksTest {
         marko.property(VertexProperty.Cardinality.list, "country", "usa");
         marko.property(VertexProperty.Cardinality.set, "country", "uk");
         marko.property(VertexProperty.Cardinality.list, "country", "japan");
-
         GraphTraversalSource g = graph.traversal(GraphTraversalSource.build().engine(StandardTraversalEngine.build()));
         System.out.println(g.V("jumbaho").has("country", "japan").properties().toList());
-
-        //marko.properties().forEachRemaining(System.out::println);
     }
 
 

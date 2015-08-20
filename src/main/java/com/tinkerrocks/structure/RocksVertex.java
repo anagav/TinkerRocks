@@ -29,8 +29,6 @@ public class RocksVertex extends RocksElement implements Vertex {
     @SuppressWarnings("unchecked")
     @Override
     public <V> Iterator<VertexProperty<V>> properties(String... propertyKeys) {
-        Map<String, Object> results;
-        List<VertexProperty<V>> props = new ArrayList<>();
         List<byte[]> propKeys = new ArrayList<>();
         for (String propertyKey : propertyKeys) {
             propKeys.add(propertyKey.getBytes());
@@ -41,8 +39,6 @@ public class RocksVertex extends RocksElement implements Vertex {
             e.printStackTrace();
             return (new ArrayList<VertexProperty<V>>()).iterator();
         }
-
-        //results.forEach((s, bytes) -> props.add(new RocksVertexProperty<>(this, s, (V) bytes)));
     }
 
     @Override
@@ -85,7 +81,6 @@ public class RocksVertex extends RocksElement implements Vertex {
     public <V> VertexProperty<V> property(String key, V value, Object... keyValues) {
         ElementHelper.legalPropertyKeyValueArray(keyValues);
         return this.property(key, value);
-        //return new RocksVertexProperty<>(this, key, value);
     }
 
     @Override
@@ -93,15 +88,9 @@ public class RocksVertex extends RocksElement implements Vertex {
         if (this.removed) throw Element.Exceptions.elementAlreadyRemoved(Vertex.class, this.id);
 
         this.rocksGraph.getStorageHandler().getVertexDB().setProperty((byte[]) this.id(), key, value, cardinality);
-        //todo: add capablity to replace old value
-        //if (property(key).isPresent())
-        //handle multi values
         properties(key).forEachRemaining(objectVertexProperty -> this.rocksGraph.getVertexIndex().
                 autoUpdate(key, value, objectVertexProperty.value(), this));
-        //this.rocksGraph.getVertexIndex().autoUpdate(key, value, null, this);
-
         return new RocksVertexProperty<>(this, key, value);
-        //throw VertexProperty.Exceptions.metaPropertiesNotSupported();
     }
 
     @Override
