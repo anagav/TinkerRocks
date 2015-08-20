@@ -36,7 +36,6 @@ public class RocksGraphStep<S extends Element> extends GraphStep<S> implements H
     private Iterator<? extends Edge> edges() {
         final RocksGraph graph = (RocksGraph) this.getTraversal().getGraph().get();
         final HasContainer indexedContainer = getIndexKey(Edge.class);
-        // ids are present, filter on them first
         if (this.ids != null && this.ids.length > 0)
             return this.iteratorList(graph.edges(this.ids));
         else
