@@ -32,9 +32,10 @@ public class EdgeDB extends StorageAbstractClass {
         this.rocksDB.close();
     }
 
-    public <V> void setProperty(String id, String key, V value) {
+    public <V> void setProperty(byte[] id, String key, V value) {
         try {
-            put(getColumn(EDGE_COLUMNS.PROPERTIES), (id + key).getBytes(), serialize(value));
+            put(getColumn(EDGE_COLUMNS.PROPERTIES),
+                    Utils.merge(id, StorageConstants.PROPERTY_SEPERATOR.getBytes(), key.getBytes()), serialize(value));
         } catch (RocksDBException e) {
             e.printStackTrace();
         }
@@ -73,9 +74,11 @@ public class EdgeDB extends StorageAbstractClass {
 
         Map<String, Object> properties = ElementHelper.asMap(keyValues);
         for (Map.Entry<String, Object> entry : properties.entrySet()) {
-            put(getColumn(EDGE_COLUMNS.PROPERTIES),
-                    Utils.merge(edge_id, StorageConstants.PROPERTY_SEPERATOR.getBytes(), entry.getKey().getBytes()),
-                    serialize(entry.getValue()));
+            setProperty(edge_id, entry.getKey(), entry.getValue());
+
+//            put(getColumn(EDGE_COLUMNS.PROPERTIES),
+//                    Utils.merge(edge_id, StorageConstants.PROPERTY_SEPERATOR.getBytes(), entry.getKey().getBytes()),
+//                    serialize(entry.getValue()));
         }
     }
 
@@ -226,7 +229,8 @@ public class EdgeDB extends StorageAbstractClass {
     Cache<byte[], RocksEdge> edgeCache;
 
 
-    public EdgeDB() throws RocksDBException {
+    public EdgeDB(RocksGraph rocksGraph) throws RocksDBException {
+        super(rocksGraph);
         columnFamilyDescriptors = new ArrayList<>(EDGE_COLUMNS.values().length);
         columnFamilyHandleList = new ArrayList<>(EDGE_COLUMNS.values().length);
         columnFamilyDescriptors.add(new ColumnFamilyDescriptor(RocksDB.DEFAULT_COLUMN_FAMILY));
@@ -236,7 +240,6 @@ public class EdgeDB extends StorageAbstractClass {
         }
         this.rocksDB = RocksDB.open(StorageConfigFactory.getDBOptions(), StorageConstants.DATABASE_PREFIX + "/edges", columnFamilyDescriptors, columnFamilyHandleList);
         this.edgeCache = CacheBuilder.newBuilder().maximumSize(1000000).concurrencyLevel(1000).build();
-
     }
 
 

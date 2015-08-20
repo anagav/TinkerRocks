@@ -54,7 +54,7 @@ public final class RocksGraph implements Graph {
         configuration.setProperty(Graph.GRAPH, RocksGraph.class.getName());
         this.configuration = configuration;
         try {
-            this.storageHandler = new StorageHandler();
+            this.storageHandler = new StorageHandler(this);
         } catch (RocksDBException e) {
             e.printStackTrace();
             throw Exceptions.idArgsMustBeEitherIdOrElement();

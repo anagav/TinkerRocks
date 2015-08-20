@@ -1,5 +1,6 @@
 package com.tinkerrocks.storage;
 
+import com.tinkerrocks.structure.RocksGraph;
 import org.rocksdb.RocksDBException;
 
 /**
@@ -11,10 +12,10 @@ public class StorageHandler {
     EdgeDB edgeDB;
     IndexDB indexDB;
 
-    public StorageHandler() throws RocksDBException {
-        vertexDB = new VertexDB();
-        edgeDB = new EdgeDB();
-        indexDB = new IndexDB();
+    public StorageHandler(RocksGraph rocksGraph) throws RocksDBException {
+        vertexDB = new VertexDB(rocksGraph);
+        edgeDB = new EdgeDB(rocksGraph);
+        indexDB = new IndexDB(rocksGraph);
     }
 
 

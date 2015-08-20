@@ -68,6 +68,7 @@ public class RocksEdge extends RocksElement implements Edge {
      */
     @Override
     public <V> Property<V> property(String key, V value) {
+        this.rocksGraph.getEdgeIndex().autoUpdate(key, value, property(key).value(), this);
         return super.property(key, value);
     }
 

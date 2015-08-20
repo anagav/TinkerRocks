@@ -1,6 +1,7 @@
 package com.tinkerrocks.storage;
 
 import com.google.common.base.Preconditions;
+import com.tinkerrocks.structure.RocksGraph;
 import com.tinkerrocks.structure.Utils;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.rocksdb.*;
@@ -11,7 +12,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/** <p>
+/**
+ * <p>
  * Class for handling indexes -> Creation, Update and deleting index keys
  * </p>
  * Created by ashishn on 8/13/15.
@@ -58,7 +60,8 @@ public class IndexDB extends StorageAbstractClass {
     List<ColumnFamilyDescriptor> columnFamilyDescriptors;
 
 
-    public IndexDB() throws RocksDBException {
+    public IndexDB(RocksGraph rocksGraph) throws RocksDBException {
+        super(rocksGraph);
 
         columnFamilyDescriptors = new ArrayList<>(INDEX_COLUMNS.values().length);
         columnFamilyHandleList = new ArrayList<>(INDEX_COLUMNS.values().length);

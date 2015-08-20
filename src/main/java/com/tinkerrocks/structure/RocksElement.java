@@ -55,7 +55,7 @@ public abstract class RocksElement implements Element {
         if (this instanceof Vertex) {
             this.rocksGraph.getStorageHandler().getVertexDB().setProperty((byte[]) this.id(), key, value);
         } else {
-            this.rocksGraph.getStorageHandler().getEdgeDB().setProperty((String) this.id(), key, value);
+            this.rocksGraph.getStorageHandler().getEdgeDB().setProperty((byte[]) this.id(), key, value);
         }
         return new RocksProperty<>(this, key, value);
     }

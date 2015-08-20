@@ -1,5 +1,6 @@
 package com.tinkerrocks.storage;
 
+import com.tinkerrocks.structure.RocksGraph;
 import org.apache.tinkerpop.shaded.kryo.Kryo;
 import org.apache.tinkerpop.shaded.kryo.io.Input;
 import org.apache.tinkerpop.shaded.kryo.io.Output;
@@ -15,9 +16,11 @@ import java.util.HashSet;
  */
 public abstract class StorageAbstractClass {
 
-    protected KryoPool pool;
 
-    public StorageAbstractClass() {
+    protected KryoPool pool;
+    protected RocksGraph rocksGraph;
+
+    public StorageAbstractClass(RocksGraph rocksGraph) {
         KryoFactory factory = () -> {
             Kryo kryo = new Kryo();
             kryo.register(Integer.class);
@@ -26,6 +29,7 @@ public abstract class StorageAbstractClass {
             return kryo;
         };
         pool = new KryoPool.Builder(factory).softReferences().build();
+        this.rocksGraph = rocksGraph;
     }
 
     public byte[] serialize(Object inObject) {

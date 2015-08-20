@@ -188,7 +188,8 @@ public class VertexDB extends StorageAbstractClass {
     List<ColumnFamilyHandle> columnFamilyHandleList;
     List<ColumnFamilyDescriptor> columnFamilyDescriptors;
 
-    public VertexDB() throws RocksDBException {
+    public VertexDB(RocksGraph rocksGraph) throws RocksDBException {
+        super(rocksGraph);
         columnFamilyDescriptors = new ArrayList<>(VERTEX_COLUMNS.values().length);
         columnFamilyHandleList = new ArrayList<>(VERTEX_COLUMNS.values().length);
         columnFamilyDescriptors.add(new ColumnFamilyDescriptor(RocksDB.DEFAULT_COLUMN_FAMILY));
