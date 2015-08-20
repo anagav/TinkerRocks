@@ -13,9 +13,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 
 
 /**
@@ -42,13 +40,10 @@ public class RocksTest {
     @Test
     public void testMultiValues() {
         Vertex marko = graph.addVertex(T.label, "person", T.id, "jumbaho", "name", "marko", "age", 29);
-        Set<Object> ages = new HashSet<>();
-        ages.add("test");
-        ages.add(2);
-        ages.add(3);
-        ages.add(3);
-        marko.property("age", ages);
-        System.out.println("vertex:" + marko.properties("age").next().value().getClass());
+        marko.property("country", "usa");
+
+
+        marko.properties().forEachRemaining(System.out::println);
     }
 
 

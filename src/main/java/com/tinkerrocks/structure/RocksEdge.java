@@ -3,7 +3,8 @@ package com.tinkerrocks.structure;
 import org.apache.tinkerpop.gremlin.structure.*;
 import org.rocksdb.RocksDBException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * Created by ashishn on 8/5/15.
@@ -91,31 +92,7 @@ public class RocksEdge extends RocksElement implements Edge {
     @SuppressWarnings("unchecked")
     @Override
     public <V> Iterator<Property<V>> properties(String... propertyKeys) {
-
-        Map<String, Object> properties = new HashMap<>();
-        try {
-            if (this instanceof Vertex) {
-                properties = this.rocksGraph.getStorageHandler().getVertexDB().getProperties(this, propertyKeys);
-            } else {
-                properties = this.rocksGraph.getStorageHandler().getEdgeDB().getProperties(this, propertyKeys);
-            }
-        } catch (RocksDBException ex) {
-            ex.printStackTrace();
-        }
-
-        List<Property<V>> propertiesList = new ArrayList<>(properties.size());
-
-
-        for (Map.Entry<String, Object> property : properties.entrySet()) {
-            if (property.getValue() == null) {
-                continue;
-            }
-            propertiesList.add(new RocksVertexProperty<>(this,
-                    property.getKey(),
-                    (V) property.getValue()));
-        }
-
-        return propertiesList.iterator();
+        return (Iterator) super.properties(propertyKeys);
     }
 
     protected void checkRemoved() {

@@ -1,13 +1,7 @@
 package com.tinkerrocks.storage;
 
-import com.tinkerrocks.structure.RocksElement;
-import com.tinkerrocks.structure.RocksGraph;
-import com.tinkerrocks.structure.RocksVertex;
-import com.tinkerrocks.structure.Utils;
-import org.apache.tinkerpop.gremlin.structure.Direction;
-import org.apache.tinkerpop.gremlin.structure.Edge;
-import org.apache.tinkerpop.gremlin.structure.Graph;
-import org.apache.tinkerpop.gremlin.structure.Vertex;
+import com.tinkerrocks.structure.*;
+import org.apache.tinkerpop.gremlin.structure.*;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 import org.rocksdb.*;
 
@@ -27,10 +21,31 @@ public class VertexDB extends StorageAbstractClass {
             this.rocksDB.close();
     }
 
-    public <V> void setProperty(byte[] id, String key, V value) {
+    @SuppressWarnings("unchecked")
+    public <V> void setProperty(byte[] id, String key, V value, VertexProperty.Cardinality cardinality) {
+        byte[] record_key = Utils.merge(id, StorageConstants.PROPERTY_SEPERATOR.getBytes(), key.getBytes());
         try {
-            put(getColumn(VERTEX_COLUMNS.PROPERTIES),
-                    Utils.merge(id, StorageConstants.PROPERTY_SEPERATOR.getBytes(), key.getBytes()), serialize(value));
+            if (cardinality == VertexProperty.Cardinality.single) {
+                put(getColumn(VERTEX_COLUMNS.PROPERTIES), record_key, serialize(value));
+                put(getColumn(VERTEX_COLUMNS.PROPERTY_TYPE), record_key, StorageConstants.V_PROPERTY_SINGLE_TYPE);
+            }
+            if (cardinality == VertexProperty.Cardinality.list || cardinality == VertexProperty.Cardinality.set) {
+                byte[] oldData = this.rocksDB.get(getColumn(VERTEX_COLUMNS.PROPERTIES), record_key);
+                byte[] oldType = this.rocksDB.get(getColumn(VERTEX_COLUMNS.PROPERTY_TYPE), record_key);
+                ArrayList<V> results;
+                if (!Utils.compare(oldType, StorageConstants.V_PROPERTY_LIST_TYPE)) {
+                    results = new ArrayList<>();
+                } else {
+                    results = (ArrayList<V>) deserialize(oldData, ArrayList.class);
+                }
+                if (cardinality == VertexProperty.Cardinality.set && results.contains(value)) {
+                    return;
+                }
+                results.add(value);
+                put(getColumn(VERTEX_COLUMNS.PROPERTIES), record_key, serialize(results));
+                put(getColumn(VERTEX_COLUMNS.PROPERTY_TYPE), record_key, StorageConstants.V_PROPERTY_LIST_TYPE);
+            }
+
         } catch (RocksDBException e) {
             e.printStackTrace();
         }
@@ -45,26 +60,37 @@ public class VertexDB extends StorageAbstractClass {
         put(getColumn(VERTEX_COLUMNS.OUT_EDGE_LABELS), (byte[]) edge.id(), edge.label().getBytes());
     }
 
-    public Map<String, Object> getProperties(RocksElement rocksVertex, String[] propertyKeys) throws RocksDBException {
-        Map<String, Object> results = new HashMap<>();
-
-        if (propertyKeys == null || propertyKeys.length == 0) {
+    @SuppressWarnings("unchecked")
+    public <V> List<VertexProperty<V>> getProperties(RocksElement rocksVertex, List<byte[]> propertyKeys) throws RocksDBException {
+        List<VertexProperty<V>> results = new ArrayList<>();
+        if (propertyKeys == null) {
+            propertyKeys = new ArrayList<>();
+        }
+        if (propertyKeys.size() == 0) {
             RocksIterator rocksIterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.PROPERTIES));
             byte[] seek_key = Utils.merge((byte[]) rocksVertex.id(), StorageConstants.PROPERTY_SEPERATOR.getBytes());
+            final List<byte[]> finalPropertyKeys = propertyKeys;
             Utils.RocksIterUtil(rocksIterator, seek_key, (key, value) -> {
                 if (value != null)
-                    results.put(new String(Utils.slice(key, seek_key.length, key.length)),
-                            deserialize(value, Object.class));
+                    finalPropertyKeys.add(Utils.slice(key, seek_key.length, key.length));
                 return true;
             });
-            return results;
         }
 
-        for (String property : propertyKeys) {
-            byte[] key = rocksDB.get(getColumn(VERTEX_COLUMNS.PROPERTIES),
-                    Utils.merge((byte[]) rocksVertex.id(), StorageConstants.PROPERTY_SEPERATOR.getBytes(),
-                            property.getBytes()));
-            results.put(property, deserialize(key, Object.class));
+        for (byte[] property : propertyKeys) {
+            byte[] lookup_key = Utils.merge((byte[]) rocksVertex.id(), StorageConstants.PROPERTY_SEPERATOR.getBytes(),
+                    property);
+            byte[] type = rocksDB.get(getColumn(VERTEX_COLUMNS.PROPERTY_TYPE), lookup_key);
+            byte[] value = rocksDB.get(getColumn(VERTEX_COLUMNS.PROPERTIES), lookup_key);
+
+            if (Utils.compare(type, StorageConstants.V_PROPERTY_SINGLE_TYPE)) {
+                results.add(new RocksVertexProperty<>(rocksVertex, new String(property), (V) deserialize(value, Object.class)));
+            }
+            if (Utils.compare(type, StorageConstants.V_PROPERTY_LIST_TYPE)) {
+                List<V> values = deserialize(value, List.class);
+                results.addAll(values.stream().map(inner_value -> new RocksVertexProperty<V>(rocksVertex, new String(property), inner_value))
+                        .collect(Collectors.toList()));
+            }
         }
         return results;
     }
@@ -168,6 +194,7 @@ public class VertexDB extends StorageAbstractClass {
 
     public enum VERTEX_COLUMNS {
         PROPERTIES("PROPERTIES"),
+        PROPERTY_TYPE("PROPERTY_TYPE"),
         OUT_EDGES("OUT_EDGES"),
         IN_EDGES("IN_EDGES"),
         OUT_EDGE_LABELS("OUT_EDGE_LABELS"),
@@ -217,7 +244,7 @@ public class VertexDB extends StorageAbstractClass {
         Map<String, Object> properties = ElementHelper.asMap(keyValues);
 
         for (Map.Entry<String, Object> property : properties.entrySet()) {
-            setProperty(idValue, property.getKey(), property.getValue());
+            setProperty(idValue, property.getKey(), property.getValue(), VertexProperty.Cardinality.single);
         }
     }
 

@@ -55,7 +55,7 @@ public abstract class RocksElement implements Element {
 
         if (this instanceof Vertex) {
             this.rocksGraph.getVertexIndex().autoUpdate(key, value, property(key).value(), (Vertex) this);
-            this.rocksGraph.getStorageHandler().getVertexDB().setProperty((byte[]) this.id(), key, value);
+            this.rocksGraph.vertices(this.id()).next().property(key, value);
         } else {
             this.rocksGraph.getEdgeIndex().autoUpdate(key, value, property(key).value(), (Edge) this);
             this.rocksGraph.getStorageHandler().getEdgeDB().setProperty((byte[]) this.id(), key, value);
@@ -80,7 +80,7 @@ public abstract class RocksElement implements Element {
 
         try {
             if (this instanceof Vertex) {
-                properties = this.rocksGraph.getStorageHandler().getVertexDB().getProperties(this, propertyKeys);
+                return ((RocksVertex) this).properties(propertyKeys);
             } else {
                 properties = this.rocksGraph.getStorageHandler().getEdgeDB().getProperties(this, propertyKeys);
             }

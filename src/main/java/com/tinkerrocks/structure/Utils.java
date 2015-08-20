@@ -67,4 +67,7 @@ public class Utils {
     }
 
 
+    public static boolean compare(byte[] data1, byte[] data2) {
+        return Arrays.equals(data1, data2);
+    }
 }

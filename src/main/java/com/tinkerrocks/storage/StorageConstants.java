@@ -6,5 +6,6 @@ package com.tinkerrocks.storage;
 public class StorageConstants {
     public static final String PROPERTY_SEPERATOR = "#";
     public static final String DATABASE_PREFIX = "/tmp/databases";
-
+    public static final byte[] V_PROPERTY_LIST_TYPE = "LIST".getBytes();
+    public static final byte[] V_PROPERTY_SINGLE_TYPE = "SINGLE".getBytes();
 }

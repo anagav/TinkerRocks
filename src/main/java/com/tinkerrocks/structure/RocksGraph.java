@@ -85,7 +85,7 @@ public final class RocksGraph implements Graph {
 
             for (Map.Entry<String, Object> property : properties.entrySet()) {
                 vertexIndex.autoUpdate(property.getKey(), property.getValue(), null, vertex);
-                storageHandler.getVertexDB().setProperty(idValue, property.getKey(), property.getValue());
+                vertex.property(property.getKey(), property.getValue());
             }
         } catch (RocksDBException e) {
             e.printStackTrace();

@@ -31,26 +31,24 @@ public class RocksVertex extends RocksElement implements Vertex {
     public <V> Iterator<VertexProperty<V>> properties(String... propertyKeys) {
         Map<String, Object> results;
         List<VertexProperty<V>> props = new ArrayList<>();
+        List<byte[]> propKeys = new ArrayList<>();
+        for (String propertyKey : propertyKeys) {
+            propKeys.add(propertyKey.getBytes());
+        }
         try {
-            results = this.rocksGraph.getStorageHandler().getVertexDB().getProperties(this, propertyKeys);
+            return this.rocksGraph.getStorageHandler().getVertexDB().<V>getProperties(this, propKeys).iterator();
         } catch (RocksDBException e) {
             e.printStackTrace();
-            return null;
+            return (new ArrayList<VertexProperty<V>>()).iterator();
         }
 
-        results.forEach((s, bytes) -> props.add(new RocksVertexProperty<>(this, s, (V) bytes)));
-
-        return props.iterator();
-
+        //results.forEach((s, bytes) -> props.add(new RocksVertexProperty<>(this, s, (V) bytes)));
     }
 
     @Override
     public <V> VertexProperty<V> property(final String key, final V value) {
         if (this.removed) throw Element.Exceptions.elementAlreadyRemoved(Vertex.class, this.id);
-
-        this.rocksGraph.getStorageHandler().getVertexDB().setProperty((byte[]) this.id(), key, value);
-        this.rocksGraph.getVertexIndex().autoUpdate(key, value, property(key).value(), this);
-        return new RocksVertexProperty<>(this, key, value);
+        return this.property(VertexProperty.Cardinality.single, key, value);
     }
 
     @Override
@@ -86,15 +84,20 @@ public class RocksVertex extends RocksElement implements Vertex {
     @Override
     public <V> VertexProperty<V> property(String key, V value, Object... keyValues) {
         ElementHelper.legalPropertyKeyValueArray(keyValues);
-        this.property(key, value);
-        return new RocksVertexProperty<>(this, key, value);
+        return this.property(key, value);
+        //return new RocksVertexProperty<>(this, key, value);
     }
 
     @Override
     public <V> VertexProperty<V> property(VertexProperty.Cardinality cardinality, String key, V value, Object... keyValues) {
         if (this.removed) throw Element.Exceptions.elementAlreadyRemoved(Vertex.class, this.id);
 
-        throw VertexProperty.Exceptions.metaPropertiesNotSupported();
+        this.rocksGraph.getStorageHandler().getVertexDB().setProperty((byte[]) this.id(), key, value, cardinality);
+        //todo: add capablity to replace old value
+        this.rocksGraph.getVertexIndex().autoUpdate(key, value, null, this);
+
+        return new RocksVertexProperty<>(this, key, value);
+        //throw VertexProperty.Exceptions.metaPropertiesNotSupported();
     }
 
     @Override
