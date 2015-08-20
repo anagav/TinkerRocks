@@ -109,9 +109,11 @@ public class VertexDB extends StorageAbstractClass {
         List<byte[]> edgeIds = new ArrayList<>(50);
         RocksIterator iterator = null;
         byte[] seek_key = Utils.merge(id, StorageConstants.PROPERTY_SEPERATOR.getBytes());
-        Set<byte[]> results = new HashSet<>(edgeLabels.size());
-
-        results.addAll(edgeLabels.stream().map(this::get).collect(Collectors.toSet()));
+        Set<byte[]> results;
+        if (edgeLabels.size() == 0)
+            results = edgeLabels.stream().map(this::get).collect(Collectors.toSet());
+        else
+            results = null;
 
 
         try {
@@ -121,7 +123,7 @@ public class VertexDB extends StorageAbstractClass {
                     if (edgeLabels.size() == 0) {
                         edgeIds.add(Utils.slice(key, seek_key.length));
                     } else {
-                        if (results.contains(key)) {
+                        if (results != null && results.contains(key)) {
                             edgeIds.add(Utils.slice(key, seek_key.length));
                         }
                     }
@@ -134,7 +136,7 @@ public class VertexDB extends StorageAbstractClass {
                     if (edgeLabels.size() == 0) {
                         edgeIds.add(Utils.slice(key, seek_key.length));
                     } else {
-                        if (results.contains(key)) {
+                        if (results != null && results.contains(key)) {
                             edgeIds.add(Utils.slice(key, seek_key.length));
                         }
                     }

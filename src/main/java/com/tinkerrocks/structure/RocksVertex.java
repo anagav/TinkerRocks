@@ -21,6 +21,11 @@ public class RocksVertex extends RocksElement implements Vertex {
     }
 
 
+    /**
+     * @param propertyKeys
+     * @param <V>
+     * @return
+     */
     @SuppressWarnings("unchecked")
     @Override
     public <V> Iterator<VertexProperty<V>> properties(String... propertyKeys) {
@@ -128,7 +133,7 @@ public class RocksVertex extends RocksElement implements Vertex {
         }
 
         List<byte[]> edgeIds = this.rocksGraph.getStorageHandler().getVertexDB().getEdgeIDs((byte[]) this.id(), direction, edgeLabelsBytes);
-        List<byte[]> vertexIds = new ArrayList<>(100);
+        List<byte[]> vertexIds = new ArrayList<>();
 
 
         for (byte[] edgeId : edgeIds) {

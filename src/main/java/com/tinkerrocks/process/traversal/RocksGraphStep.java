@@ -25,12 +25,10 @@ public class RocksGraphStep<S extends Element> extends GraphStep<S> implements H
     public RocksGraphStep(final GraphStep<S> originalGraphStep) {
         super(originalGraphStep.getTraversal(), originalGraphStep.getReturnClass(), originalGraphStep.getIds());
 
-        System.out.println("traversal strategy called....");
-
         originalGraphStep.getLabels().forEach(this::addLabel);
         if ((this.ids.length == 0 || !(this.ids[0] instanceof Element))) {
             this.setIteratorSupplier(() -> Vertex.class.isAssignableFrom(this.returnClass) ?
-                    (Iterator<S>) this.vertices() : (Iterator<S>) this.edges());
+                    (Iterator) this.vertices() : (Iterator) this.edges());
         }
 
     }
