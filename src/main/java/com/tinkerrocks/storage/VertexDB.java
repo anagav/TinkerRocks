@@ -222,7 +222,7 @@ public class VertexDB extends StorageAbstractClass {
     }
 
     private boolean exists(byte[] idValue) throws RocksDBException {
-        return (this.rocksDB.get(idValue) == null);
+        return (this.rocksDB.get(idValue) != null);
     }
 
 
