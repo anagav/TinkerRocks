@@ -2,6 +2,7 @@ package com.tinkerrocks.structure; /**
  * Created by ashishn on 8/4/15.
  */
 
+import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Property;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -53,8 +54,10 @@ public abstract class RocksElement implements Element {
         ElementHelper.validateProperty(key, value);
 
         if (this instanceof Vertex) {
+            this.rocksGraph.getVertexIndex().autoUpdate(key, value, property(key).value(), (Vertex) this);
             this.rocksGraph.getStorageHandler().getVertexDB().setProperty((byte[]) this.id(), key, value);
         } else {
+            this.rocksGraph.getEdgeIndex().autoUpdate(key, value, property(key).value(), (Edge) this);
             this.rocksGraph.getStorageHandler().getEdgeDB().setProperty((byte[]) this.id(), key, value);
         }
         return new RocksProperty<>(this, key, value);

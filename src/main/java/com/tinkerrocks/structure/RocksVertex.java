@@ -84,12 +84,7 @@ public class RocksVertex extends RocksElement implements Vertex {
     @Override
     public <V> VertexProperty<V> property(String key, V value, Object... keyValues) {
         ElementHelper.legalPropertyKeyValueArray(keyValues);
-        try {
-            this.rocksGraph.getStorageHandler().getVertexDB()
-                    .addProperty((byte[]) this.id(), key, value);
-        } catch (RocksDBException e) {
-            e.printStackTrace();
-        }
+        this.property(key, value);
         return new RocksVertexProperty<>(this, key, value);
     }
 
