@@ -14,6 +14,7 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.stream.IntStream;
 
 
 /**
@@ -199,6 +200,36 @@ public class RocksTest {
         System.out.println(g.V().has("age", 31).toList().size());
         long end = System.currentTimeMillis();
         System.out.println("time taken to search:" + (end - start));
+    }
+
+
+    @Test
+    public void edgeIndexTest() {
+
+        //graph.createIndex("directed", Edge.class);
+
+        Vertex v = graph.addVertex(T.label, "personal", T.id, 1, "name", "marko", "age", 30);
+        Vertex outV = graph.addVertex(T.label, "personal", T.id, 2, "name", "polo", "age", 30);
+
+
+        IntStream.range(0, 100000).forEach(value -> {
+            v.addEdge("movie", outV, T.id, value, "directed", "test1" + (value % 1000));
+        });
+
+        graph.createIndex("directed", Edge.class);
+
+        GraphTraversalSource g = graph.traversal(GraphTraversalSource.build().engine(StandardTraversalEngine.build()));
+        long start = System.currentTimeMillis();
+        g.E().has("directed", "test1" + 0).toList();
+        System.out.println("time taken to search:" + (System.currentTimeMillis() - start));
+
+//
+//        GraphTraversalSource g = graph.traversal(GraphTraversalSource.build().engine(StandardTraversalEngine.build()));
+//
+//        long start = System.currentTimeMillis();
+//        System.out.println(g.V().has("age", 31).toList().size());
+//        long end = System.currentTimeMillis();
+//        System.out.println("time taken to search:" + (end - start));
     }
 
 

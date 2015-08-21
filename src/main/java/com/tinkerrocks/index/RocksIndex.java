@@ -26,12 +26,7 @@ public class RocksIndex<T extends Element> {
 
     public void put(final String key, final Object value, final T element) {
         try {
-            if (element instanceof Vertex) {
-                this.rocksGraph.getStorageHandler().getIndexDB().putIndex(indexClass, key, value, (byte[]) element.id());
-            }
-            if (element instanceof Edge) {
-                this.rocksGraph.getStorageHandler().getIndexDB().putIndex(indexClass, key, value, (byte[]) element.id());
-            }
+            this.rocksGraph.getStorageHandler().getIndexDB().putIndex(indexClass, key, value, (byte[]) element.id());
         } catch (RocksDBException ex) {
             ex.printStackTrace();
         }
@@ -73,24 +68,25 @@ public class RocksIndex<T extends Element> {
     @SuppressWarnings("unchecked")
     public void createKeyIndex(final String key) {
 
-        Iterator<? extends Element> iterator;
+        Iterator<? extends Element> iterator = null;
         boolean hasKey;
 
         if (Vertex.class.isAssignableFrom(this.indexClass)) {
-            this.rocksGraph.getStorageHandler().getIndexDB().createIndex(Vertex.class, key);
-            iterator = this.rocksGraph.vertices();
             hasKey = this.rocksGraph.getVertexIndex().getIndexedKeys().contains(key);
+            if (!hasKey)
+                iterator = this.rocksGraph.vertices();
+            this.rocksGraph.getStorageHandler().getIndexDB().createIndex(Vertex.class, key);
         } else {
-            this.rocksGraph.getStorageHandler().getIndexDB().createIndex(Edge.class, key);
-            iterator = this.rocksGraph.edges();
             hasKey = this.rocksGraph.getEdgeIndex().getIndexedKeys().contains(key);
-
+            if (!hasKey) {
+                iterator = this.rocksGraph.edges();
+            }
+            this.rocksGraph.getStorageHandler().getIndexDB().createIndex(Edge.class, key);
         }
 
-        if (hasKey) {
+        if (hasKey || iterator == null) {
             return;
         }
-
 
         iterator.forEachRemaining(element -> {
             if (element.property(key).isPresent()) {
@@ -128,11 +124,11 @@ public class RocksIndex<T extends Element> {
     }
 
     public static List<Vertex> queryVertexIndex(final RocksGraph graph, final String key, final Object value) {
-        return null == graph.vertexIndex ? Collections.emptyList() : graph.vertexIndex.get(key, value);
+        return null == graph.getVertexIndex() ? Collections.emptyList() : graph.getVertexIndex().get(key, value);
     }
 
     public static List<Edge> queryEdgeIndex(final RocksGraph graph, final String key, final Object value) {
-        return null == graph.edgeIndex ? Collections.emptyList() : graph.edgeIndex.get(key, value);
+        return null == graph.getEdgeIndex() ? Collections.emptyList() : graph.getEdgeIndex().get(key, value);
     }
 
 

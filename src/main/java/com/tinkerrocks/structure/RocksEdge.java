@@ -1,10 +1,12 @@
 package com.tinkerrocks.structure;
 
 import org.apache.tinkerpop.gremlin.structure.*;
+import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 import org.rocksdb.RocksDBException;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Created by ashishn on 8/5/15.
@@ -21,6 +23,25 @@ public class RocksEdge extends RocksElement implements Edge {
         super(id, label, rocksGraph);
         this.inVertex = inVertex;
         this.outVertex = outVertex;
+    }
+
+
+    public RocksEdge(byte[] id, String label, RocksGraph rocksGraph,
+                     Vertex inVertex, Vertex outVertex, Object[] keyValues) {
+        super(id, label, rocksGraph);
+        this.inVertex = inVertex;
+        this.outVertex = outVertex;
+        try {
+            this.rocksGraph.getStorageHandler().getEdgeDB().addEdge(id, label, (RocksElement) inVertex, (RocksElement) outVertex, keyValues);
+        } catch (RocksDBException e) {
+            e.printStackTrace();
+        }
+
+        Map<String, Object> properties = ElementHelper.asMap(keyValues);
+        for (Map.Entry<String, Object> property : properties.entrySet()) {
+            property(property.getKey(), property.getValue());
+        }
+
     }
 
     public RocksEdge(byte[] id, RocksGraph rocksGraph) throws RocksDBException {

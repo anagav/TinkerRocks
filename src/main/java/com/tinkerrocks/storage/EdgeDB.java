@@ -6,7 +6,6 @@ import com.tinkerrocks.structure.*;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Graph;
-import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 import org.rocksdb.*;
 
@@ -14,7 +13,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 
 /**
@@ -74,6 +72,7 @@ public class EdgeDB extends StorageAbstractClass {
 
         Map<String, Object> properties = ElementHelper.asMap(keyValues);
         for (Map.Entry<String, Object> entry : properties.entrySet()) {
+
             setProperty(edge_id, entry.getKey(), entry.getValue());
 
 //            put(getColumn(EDGE_COLUMNS.PROPERTIES),
@@ -90,14 +89,14 @@ public class EdgeDB extends StorageAbstractClass {
             rocksIterator = this.rocksDB.newIterator(getColumn(EDGE_COLUMNS.IN_VERTICES));
 
             Utils.RocksIterUtil(rocksIterator, seek_key, (key, value) -> {
-                vertexIDs.add(Utils.slice(value, seek_key.length));
+                vertexIDs.add(Utils.slice(key, seek_key.length));
                 return true;
             });
         }
         if (direction == Direction.BOTH || direction == Direction.OUT) {
             rocksIterator = this.rocksDB.newIterator(getColumn(EDGE_COLUMNS.OUT_VERTICES));
             Utils.RocksIterUtil(rocksIterator, seek_key, (key, value) -> {
-                vertexIDs.add(Utils.slice(value, seek_key.length));
+                vertexIDs.add(Utils.slice(key, seek_key.length));
                 return true;
             });
         }
@@ -163,21 +162,11 @@ public class EdgeDB extends StorageAbstractClass {
 
 
     public RocksEdge getEdge(byte[] id, RocksGraph rocksGraph) throws RocksDBException {
-
-        try {
-            return edgeCache.get(id, () -> {
-                byte[] in_vertex_id = getVertex(id, Direction.IN);
-                byte[] out_vertex_id = getVertex(id, Direction.OUT);
-
-                RocksVertex inVertex = rocksGraph.getStorageHandler().getVertexDB().vertex(in_vertex_id, rocksGraph);
-                RocksVertex outVertex = rocksGraph.getStorageHandler().getVertexDB().vertex(out_vertex_id, rocksGraph);
-
-                return new RocksEdge(id, getLabel(id), rocksGraph, inVertex, outVertex);
-            });
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-            throw Vertex.Exceptions.edgeAdditionsNotSupported();
-        }
+        byte[] in_vertex_id = getVertex(id, Direction.IN);
+        byte[] out_vertex_id = getVertex(id, Direction.OUT);
+        RocksVertex inVertex = rocksGraph.getStorageHandler().getVertexDB().vertex(in_vertex_id, rocksGraph);
+        RocksVertex outVertex = rocksGraph.getStorageHandler().getVertexDB().vertex(out_vertex_id, rocksGraph);
+        return new RocksEdge(id, getLabel(id), rocksGraph, inVertex, outVertex);
     }
 
     private byte[] getVertex(byte[] id, Direction direction) {
@@ -238,7 +227,7 @@ public class EdgeDB extends StorageAbstractClass {
                     StorageConfigFactory.getColumnFamilyOptions()));
         }
         this.rocksDB = RocksDB.open(StorageConfigFactory.getDBOptions(), StorageConstants.DATABASE_PREFIX + "/edges", columnFamilyDescriptors, columnFamilyHandleList);
-        this.edgeCache = CacheBuilder.newBuilder().maximumSize(1000000).concurrencyLevel(1000).build();
+        this.edgeCache = CacheBuilder.newBuilder().maximumSize(1000).concurrencyLevel(1000).build();
     }
 
 

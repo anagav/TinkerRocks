@@ -35,8 +35,8 @@ public final class RocksGraph implements Graph {
     private final Configuration configuration;
     private final StorageHandler storageHandler;
 
-    public RocksIndex<Vertex> vertexIndex = null;
-    public RocksIndex<Edge> edgeIndex = null;
+    private RocksIndex<Vertex> vertexIndex = null;
+    private RocksIndex<Edge> edgeIndex = null;
 
     public static RocksGraph open() {
         return new RocksGraph(new BaseConfiguration());
@@ -176,7 +176,6 @@ public final class RocksGraph implements Graph {
         for (Object vertexId : edgeIds) {
             ids.add(String.valueOf(vertexId).getBytes());
         }
-
         try {
             return storageHandler.getEdgeDB().edges(ids, this).iterator();
         } catch (RocksDBException e) {
