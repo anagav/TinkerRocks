@@ -208,8 +208,8 @@ public class RocksTest {
 
         //graph.createIndex("directed", Edge.class);
 
-        Vertex v = graph.addVertex(T.label, "personal", T.id, 1, "name", "marko", "age", 30);
-        Vertex outV = graph.addVertex(T.label, "personal", T.id, 2, "name", "polo", "age", 30);
+        Vertex v = graph.addVertex(T.label, "personal", T.id, "indextest" + 1, "name", "marko", "age", 30);
+        Vertex outV = graph.addVertex(T.label, "personal", T.id, "indextest" + 2, "name", "polo", "age", 30);
 
 
         IntStream.range(0, 100000).forEach(value -> {
