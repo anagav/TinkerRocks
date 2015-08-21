@@ -255,7 +255,6 @@ public class VertexDB extends StorageAbstractClass {
 
     public List<Vertex> vertices(List<byte[]> vertexIds, RocksGraph rocksGraph) throws RocksDBException {
 
-
         if (vertexIds == null) {
             RocksIterator iterator = this.rocksDB.newIterator();
             vertexIds = new ArrayList<>();
@@ -269,6 +268,7 @@ public class VertexDB extends StorageAbstractClass {
                 iterator.dispose();
             }
         }
+
         return vertexIds.stream().map(bytes -> getVertex(bytes, rocksGraph)).filter(rocksVertex -> rocksVertex != null).collect(Collectors.toList());
     }
 

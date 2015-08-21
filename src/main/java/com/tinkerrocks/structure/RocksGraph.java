@@ -139,6 +139,7 @@ public final class RocksGraph implements Graph {
             if (vertexId instanceof RocksElement) {
                 ids.add((byte[]) ((RocksElement) vertexId).id());
             } else {
+
                 ids.add(String.valueOf(vertexId).getBytes());
             }
         }
