@@ -210,17 +210,22 @@ public class RocksTest {
         Vertex v = graph.addVertex(T.label, "personal", T.id, "indextest" + 1, "name", "marko", "age", 30);
         Vertex outV = graph.addVertex(T.label, "personal", T.id, "indextest" + 2, "name", "polo", "age", 30);
 
-
-        IntStream.range(0, 100000).forEach(value -> {
-            v.addEdge("movie", outV, T.id, value, "directed", "test1" + (value % 1000));
-        });
-
         graph.createIndex("directed", Edge.class);
 
+        IntStream.range(0, 1000000).forEach(value -> {
+            v.addEdge("movie", outV, T.id, value, "directed", "test1" + (value % 10000));
+        });
+
+
         GraphTraversalSource g = graph.traversal(GraphTraversalSource.build().engine(StandardTraversalEngine.build()));
-        long start = System.currentTimeMillis();
-        System.out.println(g.E().has("directed", "test1" + 0).toList());
-        System.out.println("time taken to search:" + (System.currentTimeMillis() - start));
+
+        long start;
+        String value = "test1" + 10;
+        for (int i = 0; i < 10; i++) {
+            start = System.currentTimeMillis();
+            g.E().has("directed", value).toList();
+            System.out.println("time taken to search:" + (System.currentTimeMillis() - start));
+        }
     }
 
 
