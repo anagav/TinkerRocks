@@ -206,7 +206,6 @@ public class RocksTest {
     @Test
     public void edgeIndexTest() {
 
-        //graph.createIndex("directed", Edge.class);
 
         Vertex v = graph.addVertex(T.label, "personal", T.id, "indextest" + 1, "name", "marko", "age", 30);
         Vertex outV = graph.addVertex(T.label, "personal", T.id, "indextest" + 2, "name", "polo", "age", 30);
@@ -220,16 +219,8 @@ public class RocksTest {
 
         GraphTraversalSource g = graph.traversal(GraphTraversalSource.build().engine(StandardTraversalEngine.build()));
         long start = System.currentTimeMillis();
-        g.E().has("directed", "test1" + 0).toList();
+        System.out.println(g.E().has("directed", "test1" + 0).toList());
         System.out.println("time taken to search:" + (System.currentTimeMillis() - start));
-
-//
-//        GraphTraversalSource g = graph.traversal(GraphTraversalSource.build().engine(StandardTraversalEngine.build()));
-//
-//        long start = System.currentTimeMillis();
-//        System.out.println(g.V().has("age", 31).toList().size());
-//        long end = System.currentTimeMillis();
-//        System.out.println("time taken to search:" + (end - start));
     }
 
 
