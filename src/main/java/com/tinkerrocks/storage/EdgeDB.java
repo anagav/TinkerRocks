@@ -5,7 +5,6 @@ import com.google.common.cache.CacheBuilder;
 import com.tinkerrocks.structure.*;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Edge;
-import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 import org.rocksdb.*;
 
@@ -52,9 +51,10 @@ public class EdgeDB extends StorageAbstractClass {
 
 
     public void addEdge(byte[] edge_id, String label, RocksElement inVertex, RocksElement outVertex, Object[] keyValues) throws RocksDBException {
-        if (this.rocksDB.get(edge_id) != null) {
-            throw Graph.Exceptions.edgeWithIdAlreadyExists(edge_id);
-        }
+        //todo temp disable edge check
+//        if (this.rocksDB.get(edge_id) != null) {
+//            throw Graph.Exceptions.edgeWithIdAlreadyExists(edge_id);
+//        }
         if (label == null) {
             throw Edge.Exceptions.labelCanNotBeNull();
         }
