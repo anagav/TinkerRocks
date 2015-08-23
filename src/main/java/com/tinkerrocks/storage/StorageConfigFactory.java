@@ -47,7 +47,6 @@ public class StorageConfigFactory {
                 .setMaxBackgroundFlushes(3)
                 .setDisableDataSync(true)
                 .setMaxOpenFiles(20000)
-                .setNumLevels(8)
                 .setAllowOsBuffer(true)
                 .setSourceCompactionFactor(1)
                 .setAllowMmapReads(false)
@@ -102,7 +101,6 @@ public class StorageConfigFactory {
                 .setMaxGrandparentOverlapFactor(10)
                 .setTargetFileSizeBase(64 * SizeUnit.MB)
                 .setMaxBytesForLevelBase(512 * SizeUnit.MB)
-                .setCompressionType(compressionType)
                 .setCompactionStyle(CompactionStyle.LEVEL)
                 .setMemtablePrefixBloomBits(8 * 1024 * 1024)
                 .setMemtablePrefixBloomProbes(6)
@@ -111,15 +109,10 @@ public class StorageConfigFactory {
                 .setTargetFileSizeMultiplier(1)
                 .setMaxBytesForLevelMultiplier(10)
                 .setLevelZeroFileNumCompactionTrigger(10)
-                .setLevelZeroSlowdownWritesTrigger(20)
-                .setLevelZeroStopWritesTrigger(12)
-                .setNumLevels(8)
-                .useFixedLengthPrefixExtractor(0)
-
-                .setSourceCompactionFactor(1)
-                .setFilterDeletes(false)
-                .setDisableAutoCompactions(false)
                 .setHardRateLimit(2)
+                .setInplaceUpdateSupport(true)
+                .setOptimizeFiltersForHits(true)
+                .setCompressionType(compressionType)
                 .optimizeLevelStyleCompaction();
 
 
@@ -151,7 +144,6 @@ public class StorageConfigFactory {
         }
         writeOptions = new WriteOptions();
         writeOptions.setSync(false);
-        writeOptions.setDisableWAL(true);
         return writeOptions;
     }
 
@@ -161,7 +153,6 @@ public class StorageConfigFactory {
             return readOptions;
         }
         readOptions = new ReadOptions();
-        readOptions.setFillCache(true);
         readOptions.setVerifyChecksums(false);
 
         return readOptions;

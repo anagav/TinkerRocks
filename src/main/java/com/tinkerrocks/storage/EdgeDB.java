@@ -219,9 +219,11 @@ public class EdgeDB extends StorageAbstractClass {
 
     public EdgeDB(RocksGraph rocksGraph) throws RocksDBException {
         super(rocksGraph);
+        RocksDB.loadLibrary();
+
         columnFamilyDescriptors = new ArrayList<>(EDGE_COLUMNS.values().length);
         columnFamilyHandleList = new ArrayList<>(EDGE_COLUMNS.values().length);
-        columnFamilyDescriptors.add(new ColumnFamilyDescriptor(RocksDB.DEFAULT_COLUMN_FAMILY));
+        columnFamilyDescriptors.add(new ColumnFamilyDescriptor(RocksDB.DEFAULT_COLUMN_FAMILY, StorageConfigFactory.getColumnFamilyOptions()));
         for (EDGE_COLUMNS vertex_columns : EDGE_COLUMNS.values()) {
             columnFamilyDescriptors.add(new ColumnFamilyDescriptor(vertex_columns.getValue().getBytes(),
                     StorageConfigFactory.getColumnFamilyOptions()));

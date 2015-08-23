@@ -211,15 +211,18 @@ public class VertexDB extends StorageAbstractClass {
         }
     }
 
+
     RocksDB rocksDB;
     List<ColumnFamilyHandle> columnFamilyHandleList;
     List<ColumnFamilyDescriptor> columnFamilyDescriptors;
 
     public VertexDB(RocksGraph rocksGraph) throws RocksDBException {
         super(rocksGraph);
+        RocksDB.loadLibrary();
+
         columnFamilyDescriptors = new ArrayList<>(VERTEX_COLUMNS.values().length);
         columnFamilyHandleList = new ArrayList<>(VERTEX_COLUMNS.values().length);
-        columnFamilyDescriptors.add(new ColumnFamilyDescriptor(RocksDB.DEFAULT_COLUMN_FAMILY));
+        columnFamilyDescriptors.add(new ColumnFamilyDescriptor(RocksDB.DEFAULT_COLUMN_FAMILY, StorageConfigFactory.getColumnFamilyOptions()));
         for (VERTEX_COLUMNS vertex_columns : VERTEX_COLUMNS.values()) {
             columnFamilyDescriptors.add(new ColumnFamilyDescriptor(vertex_columns.getValue().getBytes(),
                     StorageConfigFactory.getColumnFamilyOptions()));

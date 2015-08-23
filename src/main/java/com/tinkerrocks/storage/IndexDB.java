@@ -63,9 +63,11 @@ public class IndexDB extends StorageAbstractClass {
     public IndexDB(RocksGraph rocksGraph) throws RocksDBException {
         super(rocksGraph);
 
+        RocksDB.loadLibrary();
+
         columnFamilyDescriptors = new ArrayList<>(INDEX_COLUMNS.values().length);
         columnFamilyHandleList = new ArrayList<>(INDEX_COLUMNS.values().length);
-        columnFamilyDescriptors.add(new ColumnFamilyDescriptor(RocksDB.DEFAULT_COLUMN_FAMILY));
+        columnFamilyDescriptors.add(new ColumnFamilyDescriptor(RocksDB.DEFAULT_COLUMN_FAMILY, StorageConfigFactory.getColumnFamilyOptions()));
         for (INDEX_COLUMNS vertex_columns : INDEX_COLUMNS.values()) {
             columnFamilyDescriptors.add(new ColumnFamilyDescriptor(vertex_columns.getValue().getBytes(),
                     StorageConfigFactory.getColumnFamilyOptions()));

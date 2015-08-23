@@ -124,7 +124,9 @@ public class RocksIndex<T extends Element> {
     }
 
     public static List<Vertex> queryVertexIndex(final RocksGraph graph, final String key, final Object value) {
-        return null == graph.getVertexIndex() ? Collections.emptyList() : graph.getVertexIndex().get(key, value);
+        List<Vertex> data = null == graph.getVertexIndex() ? Collections.emptyList() : graph.getVertexIndex().get(key, value);
+        System.out.println("indexed size:" + data.size());
+        return data;
     }
 
     public static List<Edge> queryEdgeIndex(final RocksGraph graph, final String key, final Object value) {
