@@ -1,4 +1,5 @@
 .idea/
 target/
+/src/main/java/com/yahoo
 *.iml
 src/test/java/com/tinkerrocks/structure/RocksTest1.java
