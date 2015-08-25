@@ -3,6 +3,9 @@ package com.tinkerrocks.storage;
 import org.rocksdb.*;
 import org.rocksdb.util.SizeUnit;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by ashishn on 8/12/15.
  */
@@ -56,8 +59,10 @@ public class StorageConfigFactory {
                 .setBytesPerSync(2 << 20)
                 .setUseAdaptiveMutex(true)
                 .setHardRateLimit(2)
-                .setParanoidChecks(false)
-                .optimizeLevelStyleCompaction();
+                .setNumLevels(8)
+                .setParanoidChecks(false);
+        //.optimizeLevelStyleCompaction();
+
 
         return options;
     }
@@ -113,10 +118,21 @@ public class StorageConfigFactory {
                 .setMinWriteBufferNumberToMerge(2)
                 .setMaxWriteBufferNumber(6)
                 .setInplaceUpdateSupport(true)
-                .setOptimizeFiltersForHits(true)
-                .setCompressionType(compressionType);
+                .setOptimizeFiltersForHits(true);
+        //.setCompressionType(compressionType)
         //.optimizeLevelStyleCompaction();
 
+        List<CompressionType> compressionTypeList = new ArrayList<>(columnFamilyOptions.numLevels());
+
+        for (int i = 0; i < columnFamilyOptions.numLevels(); i++) {
+            if (i == 0) {
+                compressionTypeList.add(CompressionType.NO_COMPRESSION);
+                continue;
+            }
+            compressionTypeList.add(compressionType);
+        }
+
+        columnFamilyOptions.setCompressionPerLevel(compressionTypeList);
 
         columnFamilyOptions.setMemTableConfig(new SkipListMemTableConfig());
 
