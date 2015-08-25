@@ -9,7 +9,7 @@ import org.rocksdb.util.SizeUnit;
 public class StorageConfigFactory {
     private static Options options;
     private static DBOptions dbOptions;
-    //private static ColumnFamilyOptions columnFamilyOptions;
+    private static ColumnFamilyOptions columnFamilyOptions;
     private static WriteOptions writeOptions;
     private static ReadOptions readOptions;
     private static CompressionType compressionType = CompressionType.LZ4_COMPRESSION;
@@ -91,11 +91,11 @@ public class StorageConfigFactory {
 
 
     public static ColumnFamilyOptions getColumnFamilyOptions() {
-//        if (columnFamilyOptions != null) {
-//            return columnFamilyOptions;
-//        }
+        if (columnFamilyOptions != null) {
+            return columnFamilyOptions;
+        }
 
-        ColumnFamilyOptions columnFamilyOptions = new ColumnFamilyOptions()
+        columnFamilyOptions = new ColumnFamilyOptions()
                 .setWriteBufferSize(1024 * SizeUnit.MB)
                 .setMaxWriteBufferNumber(30)
                 .setMaxGrandparentOverlapFactor(10)
