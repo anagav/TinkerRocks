@@ -130,10 +130,6 @@ public class VertexDB extends StorageAbstractClass {
     }
 
 
-    public <V> void addProperty(byte[] id, String key, V value) throws RocksDBException {
-        put(Utils.merge(id, StorageConstants.PROPERTY_SEPERATOR.getBytes(), key.getBytes()), serialize(value));
-    }
-
     public List<byte[]> getEdgeIDs(byte[] id, Direction direction, HashSet<String> edgeLabels) {
         List<byte[]> edgeIds = new ArrayList<>(50);
         RocksIterator iterator = null;
