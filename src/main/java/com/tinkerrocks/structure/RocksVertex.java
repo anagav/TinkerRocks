@@ -98,14 +98,17 @@ public class RocksVertex extends RocksElement implements Vertex {
     public Iterator<Edge> edges(Direction direction, String... edgeLabels) {
         if (this.removed) throw Element.Exceptions.elementAlreadyRemoved(Vertex.class, this.id);
 
-        HashSet<byte[]> edgeLabelsBytes = new HashSet<>(edgeLabels.length);
+        HashSet<String> edgeLabelsBytes = new HashSet<>(edgeLabels.length);
 
-        for (String label : edgeLabels) {
-            edgeLabelsBytes.add(label.getBytes());
+        Collections.addAll(edgeLabelsBytes, edgeLabels);
+
+        List<byte[]> edgeIds = this.rocksGraph.getStorageHandler().getVertexDB().getEdgeIDs((byte[]) this.id(),
+                direction, edgeLabelsBytes);
+
+        if (edgeIds.size() == 0) {
+            return new ArrayList<Edge>().iterator();
         }
 
-
-        List<byte[]> edgeIds = this.rocksGraph.getStorageHandler().getVertexDB().getEdgeIDs((byte[]) this.id(), direction, edgeLabelsBytes);
         try {
             List<Edge> edges = this.rocksGraph.getStorageHandler().getEdgeDB().edges(edgeIds, this.rocksGraph);
             return edges.iterator();
@@ -124,13 +127,14 @@ public class RocksVertex extends RocksElement implements Vertex {
      */
     @Override
     public Iterator<Vertex> vertices(Direction direction, String... edgeLabels) {
-        HashSet<byte[]> edgeLabelsBytes = new HashSet<>(edgeLabels.length);
+        HashSet<String> edgeLabelsBytes = new HashSet<>(edgeLabels.length);
 
-        for (String label : edgeLabels) {
-            edgeLabelsBytes.add(label.getBytes());
-        }
+        Collections.addAll(edgeLabelsBytes, edgeLabels);
 
         List<byte[]> edgeIds = this.rocksGraph.getStorageHandler().getVertexDB().getEdgeIDs((byte[]) this.id(), direction, edgeLabelsBytes);
+        if (edgeIds.size() == 0) {
+            return new ArrayList<Vertex>().iterator();
+        }
         List<byte[]> vertexIds = new ArrayList<>();
 
 

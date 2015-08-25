@@ -151,11 +151,14 @@ public class IndexDB extends StorageAbstractClass {
         Set<String> indexes = new HashSet<>();
         RocksIterator iterator = this.rocksDB.newIterator(getColumn(INDEX_COLUMNS.INDEX_KEYS));
         byte[] seek_key = (getIndexClass(indexClass) + StorageConstants.PROPERTY_SEPERATOR).getBytes();
-
-        Utils.RocksIterUtil(iterator, seek_key, (key, value) -> {
-            indexes.add(new String(Utils.slice(key, seek_key.length)));
-            return true;
-        });
+        try {
+            Utils.RocksIterUtil(iterator, seek_key, (key, value) -> {
+                indexes.add(new String(Utils.slice(key, seek_key.length)));
+                return true;
+            });
+        } catch (RocksDBException ex) {
+            ex.printStackTrace();
+        }
 
         return indexes;
     }

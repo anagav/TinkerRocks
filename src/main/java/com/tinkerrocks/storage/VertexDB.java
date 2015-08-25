@@ -5,7 +5,10 @@ import org.apache.tinkerpop.gremlin.structure.*;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 import org.rocksdb.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -131,16 +134,10 @@ public class VertexDB extends StorageAbstractClass {
         put(Utils.merge(id, StorageConstants.PROPERTY_SEPERATOR.getBytes(), key.getBytes()), serialize(value));
     }
 
-    public List<byte[]> getEdgeIDs(byte[] id, Direction direction, HashSet<byte[]> edgeLabels) {
+    public List<byte[]> getEdgeIDs(byte[] id, Direction direction, HashSet<String> edgeLabels) {
         List<byte[]> edgeIds = new ArrayList<>(50);
         RocksIterator iterator = null;
         byte[] seek_key = Utils.merge(id, StorageConstants.PROPERTY_SEPERATOR.getBytes());
-        Set<byte[]> results;
-        if (edgeLabels.size() == 0)
-            results = edgeLabels.stream().map(this::get).collect(Collectors.toSet());
-        else
-            results = null;
-
 
         try {
             if (direction == Direction.BOTH || direction == Direction.IN) {
@@ -149,8 +146,10 @@ public class VertexDB extends StorageAbstractClass {
                     if (edgeLabels.size() == 0) {
                         edgeIds.add(Utils.slice(key, seek_key.length));
                     } else {
-                        if (results != null && results.contains(key)) {
-                            edgeIds.add(Utils.slice(key, seek_key.length));
+                        byte[] edgeId = Utils.slice(key, seek_key.length);
+                        byte[] edgeLabel = this.rocksDB.get(getColumn(VERTEX_COLUMNS.OUT_EDGE_LABELS), edgeId);
+                        if (edgeLabels.contains(new String(edgeLabel))) {
+                            edgeIds.add(edgeId);
                         }
                     }
                     return true;
@@ -162,8 +161,10 @@ public class VertexDB extends StorageAbstractClass {
                     if (edgeLabels.size() == 0) {
                         edgeIds.add(Utils.slice(key, seek_key.length));
                     } else {
-                        if (results != null && results.contains(key)) {
-                            edgeIds.add(Utils.slice(key, seek_key.length));
+                        byte[] edgeId = Utils.slice(key, seek_key.length);
+                        byte[] edgeLabel = this.rocksDB.get(getColumn(VERTEX_COLUMNS.OUT_EDGE_LABELS), edgeId);
+                        if (edgeLabels.contains(new String(edgeLabel))) {
+                            edgeIds.add(edgeId);
                         }
                     }
                     return true;
@@ -171,6 +172,8 @@ public class VertexDB extends StorageAbstractClass {
 
             }
 
+        } catch (RocksDBException ignored) {
+            ignored.printStackTrace();
         } finally {
             if (iterator != null) {
                 iterator.dispose();
@@ -272,7 +275,9 @@ public class VertexDB extends StorageAbstractClass {
             }
         }
 
-        return vertexIds.stream().map(bytes -> getVertex(bytes, rocksGraph)).filter(rocksVertex -> rocksVertex != null).collect(Collectors.toList());
+
+        return vertexIds.stream().map(bytes -> getVertex(bytes, rocksGraph)).
+                filter(rocksVertex -> rocksVertex != null).collect(Collectors.toList());
     }
 
 

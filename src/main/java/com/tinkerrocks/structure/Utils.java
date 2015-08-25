@@ -3,6 +3,7 @@ package com.tinkerrocks.structure;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.commons.lang.ArrayUtils;
+import org.rocksdb.RocksDBException;
 import org.rocksdb.RocksIterator;
 
 import java.util.Arrays;
@@ -54,13 +55,15 @@ public class Utils {
     }
 
 
-    public static void RocksIterUtil(RocksIterator rocksIterator, byte[] seek_key, RocksIteratorCallback rocksIteratorCallback) {
+    public static void RocksIterUtil(RocksIterator rocksIterator, byte[] seek_key, RocksIteratorCallback rocksIteratorCallback) throws RocksDBException {
         boolean returnValue = true;
         try {
             for (rocksIterator.seek(seek_key); returnValue && rocksIterator.isValid() &&
                     startsWith(rocksIterator.key(), 0, seek_key); rocksIterator.next()) {
                 returnValue = rocksIteratorCallback.process(rocksIterator.key(), rocksIterator.value());
             }
+        } catch (RocksDBException e) {
+            throw e;
         } finally {
             rocksIterator.dispose();
         }
