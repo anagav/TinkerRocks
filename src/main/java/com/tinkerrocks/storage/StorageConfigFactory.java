@@ -9,10 +9,10 @@ import org.rocksdb.util.SizeUnit;
 public class StorageConfigFactory {
     private static Options options;
     private static DBOptions dbOptions;
-    private static ColumnFamilyOptions columnFamilyOptions;
+    //private static ColumnFamilyOptions columnFamilyOptions;
     private static WriteOptions writeOptions;
     private static ReadOptions readOptions;
-    private static CompressionType compressionType = CompressionType.SNAPPY_COMPRESSION;
+    private static CompressionType compressionType = CompressionType.LZ4_COMPRESSION;
 
 
     public static Options getOptions() {
@@ -91,12 +91,12 @@ public class StorageConfigFactory {
 
 
     public static ColumnFamilyOptions getColumnFamilyOptions() {
-        if (columnFamilyOptions != null) {
-            return columnFamilyOptions;
-        }
+//        if (columnFamilyOptions != null) {
+//            return columnFamilyOptions;
+//        }
 
-        columnFamilyOptions = new ColumnFamilyOptions()
-                .setWriteBufferSize(512 * SizeUnit.MB)
+        ColumnFamilyOptions columnFamilyOptions = new ColumnFamilyOptions()
+                .setWriteBufferSize(1024 * SizeUnit.MB)
                 .setMaxWriteBufferNumber(30)
                 .setMaxGrandparentOverlapFactor(10)
                 .setTargetFileSizeBase(64 * SizeUnit.MB)
@@ -110,10 +110,12 @@ public class StorageConfigFactory {
                 .setMaxBytesForLevelMultiplier(10)
                 .setLevelZeroFileNumCompactionTrigger(10)
                 .setHardRateLimit(2)
+                .setMinWriteBufferNumberToMerge(2)
+                .setMaxWriteBufferNumber(6)
                 .setInplaceUpdateSupport(true)
                 .setOptimizeFiltersForHits(true)
-                .setCompressionType(compressionType)
-                .optimizeLevelStyleCompaction();
+                .setCompressionType(compressionType);
+        //.optimizeLevelStyleCompaction();
 
 
         columnFamilyOptions.setMemTableConfig(new SkipListMemTableConfig());
