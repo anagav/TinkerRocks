@@ -227,6 +227,8 @@ public class VertexDB extends StorageAbstractClass {
                     StorageConfigFactory.getColumnFamilyOptions()));
         }
         this.rocksDB = RocksDB.open(StorageConfigFactory.getDBOptions(), StorageConstants.DATABASE_PREFIX + "/vertices", columnFamilyDescriptors, columnFamilyHandleList);
+        this.rocksDB.enableFileDeletions(true);
+
     }
 
 

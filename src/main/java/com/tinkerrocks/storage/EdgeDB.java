@@ -241,6 +241,7 @@ public class EdgeDB extends StorageAbstractClass {
                     StorageConfigFactory.getColumnFamilyOptions()));
         }
         this.rocksDB = RocksDB.open(StorageConfigFactory.getDBOptions(), StorageConstants.DATABASE_PREFIX + "/edges", columnFamilyDescriptors, columnFamilyHandleList);
+        this.rocksDB.enableFileDeletions(true);
         this.edgeCache = CacheBuilder.newBuilder().maximumSize(1000).concurrencyLevel(1000).build();
     }
 
