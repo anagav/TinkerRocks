@@ -27,9 +27,10 @@ public class StorageConfigFactory {
                 .setTableCacheNumshardbits(10)
                 .setMaxBackgroundFlushes(3)
                 .setWalTtlSeconds(5 * 60)
+
                 .setMaxOpenFiles(-1)
                 .setDisableDataSync(true)
-                .setDeleteObsoleteFilesPeriodMicros(2 * 60 * 1000 * 1000)
+                .setDeleteObsoleteFilesPeriodMicros(5 * 60 * 1000 * 1000)
                 .setAllowOsBuffer(true)
                 .setBytesPerSync(2 << 20)
                 .setUseAdaptiveMutex(true);
@@ -65,6 +66,7 @@ public class StorageConfigFactory {
                 .setMaxWriteBufferNumber(10)
                 .setMinWriteBufferNumberToMerge(2)
                 .setMaxWriteBufferNumber(6)
+
                 .setMaxGrandparentOverlapFactor(10)
                 .setTargetFileSizeBase(128 * SizeUnit.MB)
                 .setMaxBytesForLevelBase(512 * SizeUnit.MB)
@@ -73,6 +75,7 @@ public class StorageConfigFactory {
                 .setMemtablePrefixBloomProbes(6)
                 .setBloomLocality(1)
                 .setDisableAutoCompactions(false)
+
                 .setInplaceUpdateSupport(true)
                 .setLevelCompactionDynamicLevelBytes(true)
                 .setMaxBytesForLevelMultiplier(10)
