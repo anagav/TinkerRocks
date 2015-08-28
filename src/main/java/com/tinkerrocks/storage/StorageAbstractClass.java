@@ -11,6 +11,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.UUID;
 
 /**
  * Created by ashishn on 8/13/15.
@@ -26,6 +27,7 @@ public abstract class StorageAbstractClass {
             Kryo kryo = new Kryo();
             kryo.register(Integer.class);
             kryo.register(HashSet.class);
+            kryo.register(UUID.class);
             kryo.register(String.class);
             kryo.register(ArrayList.class);
             return kryo;

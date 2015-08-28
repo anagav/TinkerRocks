@@ -27,7 +27,8 @@ public class StorageConfigFactory {
                 .setTableCacheNumshardbits(10)
                 .setMaxBackgroundFlushes(3)
                 .setWalTtlSeconds(5 * 60)
-
+                //todo check later for performance
+                .setMaxTotalWalSize(10 * SizeUnit.GB)
                 .setMaxOpenFiles(-1)
                 .setDisableDataSync(true)
                 .setDeleteObsoleteFilesPeriodMicros(5 * 60 * 1000 * 1000)
