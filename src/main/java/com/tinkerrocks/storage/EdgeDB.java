@@ -73,12 +73,7 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
 
         Map<String, Object> properties = ElementHelper.asMap(keyValues);
         for (Map.Entry<String, Object> entry : properties.entrySet()) {
-
             setProperty(edge_id, entry.getKey(), entry.getValue());
-
-//            put(getColumn(EDGE_COLUMNS.PROPERTIES),
-//                    Utils.merge(edge_id, StorageConstants.PROPERTY_SEPERATOR.getBytes(), entry.getKey().getBytes()),
-//                    serialize(entry.getValue()));
         }
     }
 
@@ -245,7 +240,6 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
         if (rocksGraph.getConfiguration().containsKey(StorageConstants.TEST_DATABASE_PREFIX))
             dbPath = StorageConstants.TEST_DATABASE_PREFIX;
         this.rocksDB = RocksDB.open(StorageConfigFactory.getDBOptions(), dbPath + "/edges", columnFamilyDescriptors, columnFamilyHandleList);
-
         this.rocksDB.enableFileDeletions(true);
         this.edgeCache = CacheBuilder.newBuilder().maximumSize(1000).concurrencyLevel(1000).build();
     }
