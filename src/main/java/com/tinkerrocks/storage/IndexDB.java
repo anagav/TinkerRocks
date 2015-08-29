@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  * </p>
  * Created by ashishn on 8/13/15.
  */
-public class IndexDB extends StorageAbstractClass {
+public class IndexDB extends StorageAbstractClass implements IndexStorage {
 
     public <T extends Element> void removeIndex(Class<T> indexClass, String key, Object value, byte[] id) {
         try {
@@ -79,11 +79,11 @@ public class IndexDB extends StorageAbstractClass {
     }
 
 
-    void put(byte[] key, byte[] value) throws RocksDBException {
+    public void put(byte[] key, byte[] value) throws Exception {
         this.put(null, key, value);
     }
 
-    void put(ColumnFamilyHandle columnFamilyHandle, byte[] key, byte[] value) throws RocksDBException {
+    private void put(ColumnFamilyHandle columnFamilyHandle, byte[] key, byte[] value) throws RocksDBException {
         if (columnFamilyHandle != null)
             this.rocksDB.put(columnFamilyHandle, StorageConfigFactory.getWriteOptions(), key, value);
         else
@@ -106,7 +106,7 @@ public class IndexDB extends StorageAbstractClass {
 
 
     @SuppressWarnings("unchecked")
-    public <T extends Element> void putIndex(Class<T> indexClass, String key, Object value, byte[] id) throws RocksDBException {
+    public <T extends Element> void putIndex(Class<T> indexClass, String key, Object value, byte[] id) throws Exception {
         Preconditions.checkNotNull(indexClass);
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(key);
