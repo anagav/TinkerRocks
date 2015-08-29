@@ -61,6 +61,7 @@ public class RocksGraphStep<S extends Element> extends GraphStep<S> implements H
 
     }
 
+    @SuppressWarnings("EqualsBetweenInconvertibleTypes")
     private HasContainer getIndexKey(final Class<? extends Element> indexedClass) {
         final Set<String> indexedKeys = ((RocksGraph) this.getTraversal().getGraph().get()).getIndexedKeys(indexedClass);
 
