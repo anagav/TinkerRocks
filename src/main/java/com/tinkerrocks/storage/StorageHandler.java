@@ -1,6 +1,7 @@
 package com.tinkerrocks.storage;
 
 import com.tinkerrocks.structure.RocksGraph;
+import com.tinkerrocks.structure.RocksVertex;
 import org.rocksdb.RocksDBException;
 
 /**
@@ -35,6 +36,11 @@ public class StorageHandler {
         vertexDB.close();
         edgeDB.close();
         indexDB.close();
+    }
+
+
+    public RocksVertex getVertex(byte[] id, RocksGraph rocksGraph) throws Exception {
+        return this.getVertexDB().vertex(id, rocksGraph);
     }
 
 

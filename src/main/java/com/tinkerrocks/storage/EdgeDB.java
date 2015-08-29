@@ -250,7 +250,7 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
     }
 
 
-    public String getLabel(byte[] id) throws RocksDBException {
+    public String getLabel(byte[] id) throws Exception {
         return new String(this.rocksDB.get(id));
     }
 

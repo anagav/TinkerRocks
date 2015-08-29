@@ -28,4 +28,5 @@ public interface EdgeStorage extends CommonStorage {
 
     void remove(RocksEdge rocksEdge) throws Exception;
 
+    String getLabel(byte[] id) throws Exception;
 }

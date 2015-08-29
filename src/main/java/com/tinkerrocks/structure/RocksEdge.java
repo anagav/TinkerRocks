@@ -2,7 +2,6 @@ package com.tinkerrocks.structure;
 
 import org.apache.tinkerpop.gremlin.structure.*;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
-import org.rocksdb.RocksDBException;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -33,7 +32,7 @@ public class RocksEdge extends RocksElement implements Edge {
         this.outVertex = outVertex;
         try {
             this.rocksGraph.getStorageHandler().getEdgeDB().addEdge(id, label, (RocksElement) inVertex, (RocksElement) outVertex, keyValues);
-        } catch (RocksDBException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -100,7 +99,7 @@ public class RocksEdge extends RocksElement implements Edge {
     public void remove() {
         try {
             this.rocksGraph.getStorageHandler().getEdgeDB().remove(this);
-        } catch (RocksDBException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
