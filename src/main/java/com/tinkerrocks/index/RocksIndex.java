@@ -27,7 +27,7 @@ public class RocksIndex<T extends Element> {
     public void put(final String key, final Object value, final T element) {
         try {
             this.rocksGraph.getStorageHandler().getIndexDB().putIndex(indexClass, key, value, (byte[]) element.id());
-        } catch (RocksDBException ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
@@ -49,7 +49,7 @@ public class RocksIndex<T extends Element> {
                     results.add((T) new RocksEdge(id, rocksGraph));
                 }
             }
-        } catch (RocksDBException ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
         return results;
