@@ -11,7 +11,4 @@ public class Predicate<V> extends P<V> {
     public Predicate(BiPredicate<V, V> biPredicate, V value) {
         super(biPredicate, value);
     }
-
-
-
 }
