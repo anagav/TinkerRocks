@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  */
 
 
-public class VertexDB extends StorageAbstractClass {
+public class VertexDB extends StorageAbstractClass implements VertexStorage {
 
 
     public void close() {
@@ -64,7 +64,7 @@ public class VertexDB extends StorageAbstractClass {
     }
 
     @SuppressWarnings("unchecked")
-    public <V> List<VertexProperty<V>> getProperties(RocksElement rocksVertex, List<byte[]> propertyKeys) throws RocksDBException {
+    public <V> List<VertexProperty<V>> getProperties(RocksElement rocksVertex, List<byte[]> propertyKeys) throws Exception {
         List<VertexProperty<V>> results = new ArrayList<>();
         if (propertyKeys == null) {
             propertyKeys = new ArrayList<>();
@@ -99,11 +99,11 @@ public class VertexDB extends StorageAbstractClass {
     }
 
 
-    void put(byte[] key, byte[] value) throws RocksDBException {
+    private void put(byte[] key, byte[] value) throws RocksDBException {
         this.put(null, key, value);
     }
 
-    void put(ColumnFamilyHandle columnFamilyHandle, byte[] key, byte[] value) throws RocksDBException {
+    private void put(ColumnFamilyHandle columnFamilyHandle, byte[] key, byte[] value) throws RocksDBException {
         if (columnFamilyHandle != null)
             this.rocksDB.put(columnFamilyHandle, StorageConfigFactory.getWriteOptions(), key, value);
         else
@@ -178,7 +178,7 @@ public class VertexDB extends StorageAbstractClass {
         return edgeIds;
     }
 
-    public RocksVertex vertex(byte[] id, RocksGraph rocksGraph) throws RocksDBException {
+    public RocksVertex vertex(byte[] id, RocksGraph rocksGraph) throws Exception {
         return (RocksVertex) vertices(new ArrayList<byte[]>() {
             {
                 add(id);
@@ -293,7 +293,7 @@ public class VertexDB extends StorageAbstractClass {
     }
 
 
-    public String getLabel(byte[] vertexid) throws RocksDBException {
+    private String getLabel(byte[] vertexid) throws RocksDBException {
         byte[] result = this.rocksDB.get(vertexid);
         if (result == null) {
             throw Graph.Exceptions.elementNotFound(Vertex.class, new String(vertexid));
