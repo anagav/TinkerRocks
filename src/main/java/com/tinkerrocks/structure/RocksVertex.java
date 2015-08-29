@@ -37,7 +37,7 @@ public class RocksVertex extends RocksElement implements Vertex {
             return this.rocksGraph.getStorageHandler().getVertexDB().<V>getProperties(this, propKeys).iterator();
         } catch (Exception e) {
             e.printStackTrace();
-            return (new ArrayList<VertexProperty<V>>()).iterator();
+            throw Property.Exceptions.propertyDoesNotExist();
         }
     }
 
@@ -49,8 +49,7 @@ public class RocksVertex extends RocksElement implements Vertex {
 
     @Override
     public Edge addEdge(String label, Vertex inVertex, Object... keyValues) {
-        if (null == inVertex) throw Graph.Exceptions.argumentCanNotBeNull("vertex");
-
+        if (null == inVertex) throw Graph.Exceptions.argumentCanNotBeNull("inVertex");
         ElementHelper.legalPropertyKeyValueArray(keyValues);
         checkRemoved();
         if (label == null) {
