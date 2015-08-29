@@ -8,7 +8,7 @@ import java.util.Set;
 /**
  * Created by ashishn on 8/28/15.
  */
-public interface IndexStorage {
+public interface IndexStorage extends CommonStorage {
 
     <T extends Element> void removeIndex(Class<T> indexClass, String key, Object value, byte[] id);
 

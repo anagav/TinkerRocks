@@ -8,9 +8,9 @@ import org.rocksdb.RocksDBException;
  * Created by ashishn on 8/4/15.
  */
 public class StorageHandler {
-    VertexDB vertexDB;
-    EdgeDB edgeDB;
-    IndexDB indexDB;
+    VertexStorage vertexDB;
+    EdgeStorage edgeDB;
+    IndexStorage indexDB;
 
     public StorageHandler(RocksGraph rocksGraph) throws RocksDBException {
         vertexDB = new VertexDB(rocksGraph);
@@ -19,15 +19,15 @@ public class StorageHandler {
     }
 
 
-    public VertexDB getVertexDB() {
+    public VertexStorage getVertexDB() {
         return vertexDB;
     }
 
-    public EdgeDB getEdgeDB() {
+    public EdgeStorage getEdgeDB() {
         return edgeDB;
     }
 
-    public IndexDB getIndexDB() {
+    public IndexStorage getIndexDB() {
         return indexDB;
     }
 

@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Created by ashishn on 8/28/15.
  */
-public interface VertexStorage {
+public interface VertexStorage extends CommonStorage{
     <V> void setProperty(byte[] id, String key, V value, VertexProperty.Cardinality cardinality);
 
     void addEdge(byte[] vertexId, Edge edge, Vertex inVertex) throws Exception;
@@ -32,5 +32,6 @@ public interface VertexStorage {
     List<Vertex> vertices(List<byte[]> vertexIds, RocksGraph rocksGraph) throws Exception;
 
     RocksVertex getVertex(byte[] vertexId, RocksGraph rocksGraph);
+
 
 }

@@ -12,7 +12,7 @@ import java.util.Map;
 /**
  * Created by ashishn on 8/28/15.
  */
-public interface EdgeStorage {
+public interface EdgeStorage extends CommonStorage {
     public <V> void setProperty(byte[] id, String key, V value);
 
     void addEdge(byte[] edge_id, String label, RocksElement inVertex, RocksElement outVertex, Object[] keyValues)
