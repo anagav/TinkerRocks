@@ -22,7 +22,7 @@ import java.util.Map;
  */
 
 
-public class EdgeDB extends StorageAbstractClass {
+public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
 
 
     public void close() {
@@ -38,11 +38,11 @@ public class EdgeDB extends StorageAbstractClass {
         }
     }
 
-    void put(byte[] key, byte[] value) throws RocksDBException {
+    private void put(byte[] key, byte[] value) throws RocksDBException {
         this.put(null, key, value);
     }
 
-    void put(ColumnFamilyHandle columnFamilyHandle, byte[] key, byte[] value) throws RocksDBException {
+    private void put(ColumnFamilyHandle columnFamilyHandle, byte[] key, byte[] value) throws RocksDBException {
         if (columnFamilyHandle != null)
             this.rocksDB.put(columnFamilyHandle, StorageConfigFactory.getWriteOptions(), key, value);
         else
@@ -50,7 +50,8 @@ public class EdgeDB extends StorageAbstractClass {
     }
 
 
-    public void addEdge(byte[] edge_id, String label, RocksElement inVertex, RocksElement outVertex, Object[] keyValues) throws RocksDBException {
+    public void addEdge(byte[] edge_id, String label, RocksElement inVertex, RocksElement outVertex, Object[] keyValues)
+            throws RocksDBException {
         //todo temp disable edge check
 //        if (this.rocksDB.get(edge_id) != null) {
 //            throw Graph.Exceptions.edgeWithIdAlreadyExists(edge_id);
@@ -246,7 +247,7 @@ public class EdgeDB extends StorageAbstractClass {
     }
 
 
-    public ColumnFamilyHandle getColumn(EDGE_COLUMNS edge_column) {
+    private ColumnFamilyHandle getColumn(EDGE_COLUMNS edge_column) {
         return columnFamilyHandleList.get(edge_column.ordinal() + 1);
     }
 

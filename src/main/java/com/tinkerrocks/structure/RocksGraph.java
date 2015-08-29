@@ -178,7 +178,7 @@ public final class RocksGraph implements Graph {
         }
         try {
             return storageHandler.getEdgeDB().edges(ids, this).iterator();
-        } catch (RocksDBException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

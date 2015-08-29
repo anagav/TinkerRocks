@@ -293,7 +293,7 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
     }
 
 
-    private String getLabel(byte[] vertexid) throws RocksDBException {
+    public String getLabel(byte[] vertexid) throws RocksDBException {
         byte[] result = this.rocksDB.get(vertexid);
         if (result == null) {
             throw Graph.Exceptions.elementNotFound(Vertex.class, new String(vertexid));

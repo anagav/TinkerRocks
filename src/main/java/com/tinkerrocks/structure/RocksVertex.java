@@ -35,7 +35,7 @@ public class RocksVertex extends RocksElement implements Vertex {
         }
         try {
             return this.rocksGraph.getStorageHandler().getVertexDB().<V>getProperties(this, propKeys).iterator();
-        } catch (RocksDBException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return (new ArrayList<VertexProperty<V>>()).iterator();
         }
@@ -112,7 +112,7 @@ public class RocksVertex extends RocksElement implements Vertex {
         try {
             List<Edge> edges = this.rocksGraph.getStorageHandler().getEdgeDB().edges(edgeIds, this.rocksGraph);
             return edges.iterator();
-        } catch (RocksDBException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return new ArrayList<Edge>().iterator();
