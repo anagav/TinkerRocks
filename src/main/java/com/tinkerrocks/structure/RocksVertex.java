@@ -66,7 +66,6 @@ public class RocksVertex extends RocksElement implements Vertex {
 
         Edge edge = new RocksEdge(edge_id, label, this.rocksGraph, this, inVertex, keyValues);
 
-
         try {
             this.rocksGraph.getStorageHandler().getVertexDB().addEdge((byte[]) this.id(), edge, inVertex);
         } catch (RocksDBException e) {
