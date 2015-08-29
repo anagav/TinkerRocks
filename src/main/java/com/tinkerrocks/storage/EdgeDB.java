@@ -78,7 +78,7 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
     }
 
     public List<byte[]> getVertexIDs(byte[] edgeId, Direction direction) {
-        List<byte[]> vertexIDs = new ArrayList<>(16);
+        List<byte[]> vertexIDs = new ArrayList<>();
         RocksIterator rocksIterator;
 
         byte[] seek_key = Utils.merge(edgeId, StorageConstants.PROPERTY_SEPERATOR.getBytes());
