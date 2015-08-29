@@ -226,7 +226,12 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
             columnFamilyDescriptors.add(new ColumnFamilyDescriptor(vertex_columns.getValue().getBytes(),
                     StorageConfigFactory.getColumnFamilyOptions()));
         }
-        this.rocksDB = RocksDB.open(StorageConfigFactory.getDBOptions(), StorageConstants.DATABASE_PREFIX + "/vertices", columnFamilyDescriptors, columnFamilyHandleList);
+        if (rocksGraph.getConfiguration().containsKey(StorageConstants.TEST_DATABASE_PREFIX)) {
+            System.out.println("opening database at:" + StorageConstants.TEST_DATABASE_PREFIX + "/vertices");
+            this.rocksDB = RocksDB.open(StorageConfigFactory.getDBOptions(), StorageConstants.TEST_DATABASE_PREFIX + "/vertices", columnFamilyDescriptors, columnFamilyHandleList);
+        } else {
+            this.rocksDB = RocksDB.open(StorageConfigFactory.getDBOptions(), StorageConstants.DATABASE_PREFIX + "/vertices", columnFamilyDescriptors, columnFamilyHandleList);
+        }
         this.rocksDB.enableFileDeletions(true);
 
     }

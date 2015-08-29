@@ -32,6 +32,10 @@ public final class RocksGraph implements Graph {
     }
 
 
+    public Configuration getConfiguration() {
+        return configuration;
+    }
+
     private final Configuration configuration;
     private final StorageHandler storageHandler;
 
