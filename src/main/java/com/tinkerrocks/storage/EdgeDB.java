@@ -149,7 +149,7 @@ public class EdgeDB extends StorageAbstractClass {
         return results;
     }
 
-    public List<Edge> edges(List<byte[]> ids, RocksGraph rocksGraph) throws RocksDBException {
+    public List<Edge> edges(List<byte[]> ids, RocksGraph rocksGraph) throws Exception {
         List<Edge> edges = new ArrayList<>();
         if (ids.size() == 0) {
             RocksIterator iterator = this.rocksDB.newIterator();
@@ -167,7 +167,7 @@ public class EdgeDB extends StorageAbstractClass {
     }
 
 
-    public RocksEdge getEdge(byte[] id, RocksGraph rocksGraph) throws RocksDBException {
+    public RocksEdge getEdge(byte[] id, RocksGraph rocksGraph) throws Exception {
         byte[] in_vertex_id = getVertex(id, Direction.IN);
         byte[] out_vertex_id = getVertex(id, Direction.OUT);
         RocksVertex inVertex = rocksGraph.getStorageHandler().getVertexDB().vertex(in_vertex_id, rocksGraph);
