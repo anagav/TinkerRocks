@@ -91,7 +91,7 @@ public final class RocksGraph implements Graph {
                 vertexIndex.autoUpdate(property.getKey(), property.getValue(), null, vertex);
                 vertex.property(property.getKey(), property.getValue());
             }
-        } catch (RocksDBException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -128,7 +128,7 @@ public final class RocksGraph implements Graph {
         if (vertexIds == null || vertexIds.length == 0) {
             try {
                 return storageHandler.getVertexDB().vertices(null, this).iterator();
-            } catch (RocksDBException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 throw Exceptions.elementNotFound(Vertex.class, "all ids");
             }
@@ -153,7 +153,7 @@ public final class RocksGraph implements Graph {
 
         try {
             return storageHandler.getVertexDB().vertices(ids, this).iterator();
-        } catch (RocksDBException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw Exceptions.elementNotFound(Vertex.class, ids.get(0));
         }
