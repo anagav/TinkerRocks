@@ -22,8 +22,8 @@ public class IndexDB extends StorageAbstractClass implements IndexStorage {
 
     public <T extends Element> void removeIndex(Class<T> indexClass, String key, Object value, byte[] id) {
         try {
-            this.rocksDB.remove((getIndexClass(indexClass) + StorageConstants.PROPERTY_SEPERATOR +
-                    key + StorageConstants.PROPERTY_SEPERATOR + value + StorageConstants.PROPERTY_SEPERATOR
+            this.rocksDB.remove((getIndexClass(indexClass) + StorageConstants.PROPERTY_SEPARATOR +
+                    key + StorageConstants.PROPERTY_SEPARATOR + value + StorageConstants.PROPERTY_SEPARATOR
                     + new String(id)).getBytes());
         } catch (RocksDBException e) {
             e.printStackTrace();
@@ -33,7 +33,7 @@ public class IndexDB extends StorageAbstractClass implements IndexStorage {
     public void createIndex(Class indexClass, String key) {
         try {
             put(getColumn(INDEX_COLUMNS.INDEX_KEYS), (getIndexClass(indexClass) +
-                    StorageConstants.PROPERTY_SEPERATOR + key).getBytes(), "".getBytes());
+                    StorageConstants.PROPERTY_SEPARATOR + key).getBytes(), "".getBytes());
         } catch (RocksDBException e) {
             e.printStackTrace();
         }
@@ -116,9 +116,9 @@ public class IndexDB extends StorageAbstractClass implements IndexStorage {
 
         String className = getIndexClass(indexClass);
         byte[] key1 = (className +
-                StorageConstants.PROPERTY_SEPERATOR + key + StorageConstants.PROPERTY_SEPERATOR + value).getBytes();
+                StorageConstants.PROPERTY_SEPARATOR + key + StorageConstants.PROPERTY_SEPARATOR + value).getBytes();
 
-        //key1 = ByteUtil.merge(key1, StorageConstants.PROPERTY_SEPERATOR.getBytes(), id);
+        //key1 = ByteUtil.merge(key1, StorageConstants.PROPERTY_SEPARATOR.getBytes(), id);
         HashSet<byte[]> hashSet = (HashSet<byte[]>) deserialize(this.rocksDB.get(key1), HashSet.class);
         if (hashSet == null) {
             hashSet = new HashSet<>();
@@ -133,7 +133,7 @@ public class IndexDB extends StorageAbstractClass implements IndexStorage {
         List<byte[]> results = new ArrayList<>();
         try {
             byte[] key1 = (getIndexClass(indexClass) +
-                    StorageConstants.PROPERTY_SEPERATOR + key + StorageConstants.PROPERTY_SEPERATOR + value).getBytes();
+                    StorageConstants.PROPERTY_SEPARATOR + key + StorageConstants.PROPERTY_SEPARATOR + value).getBytes();
             HashSet<byte[]> hashSet = (HashSet<byte[]>) deserialize(this.rocksDB.get(key1), HashSet.class);
             if (hashSet == null) {
                 hashSet = new HashSet<>();
@@ -147,7 +147,7 @@ public class IndexDB extends StorageAbstractClass implements IndexStorage {
 
 
     public <T extends Element> void dropIndex(Class<T> indexClass, String key) throws RocksDBException {
-        byte[] seek_key = (getIndexClass(indexClass) + StorageConstants.PROPERTY_SEPERATOR + key).getBytes();
+        byte[] seek_key = (getIndexClass(indexClass) + StorageConstants.PROPERTY_SEPARATOR + key).getBytes();
         this.rocksDB.remove(getColumn(INDEX_COLUMNS.INDEX_KEYS), seek_key);
     }
 
@@ -155,7 +155,7 @@ public class IndexDB extends StorageAbstractClass implements IndexStorage {
     public <T extends Element> Set<String> getIndexedKeys(Class<T> indexClass) {
         Set<String> indexes = new HashSet<>();
         RocksIterator iterator = this.rocksDB.newIterator(getColumn(INDEX_COLUMNS.INDEX_KEYS));
-        byte[] seek_key = (getIndexClass(indexClass) + StorageConstants.PROPERTY_SEPERATOR).getBytes();
+        byte[] seek_key = (getIndexClass(indexClass) + StorageConstants.PROPERTY_SEPARATOR).getBytes();
         try {
             Utils.RocksIterUtil(iterator, seek_key, (key, value) -> {
                 indexes.add(new String(Utils.slice(key, seek_key.length)));

@@ -26,7 +26,7 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
 
     @SuppressWarnings("unchecked")
     public <V> void setProperty(byte[] id, String key, V value, VertexProperty.Cardinality cardinality) {
-        byte[] record_key = Utils.merge(id, StorageConstants.PROPERTY_SEPERATOR.getBytes(), key.getBytes());
+        byte[] record_key = Utils.merge(id, StorageConstants.PROPERTY_SEPARATOR.getBytes(), key.getBytes());
         try {
             if (cardinality == VertexProperty.Cardinality.single) {
                 put(getColumn(VERTEX_COLUMNS.PROPERTIES), record_key, serialize(value));
@@ -57,9 +57,9 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
 
     public void addEdge(byte[] vertexId, Edge edge, Vertex inVertex) throws RocksDBException {
         put(getColumn(VERTEX_COLUMNS.OUT_EDGES), Utils.merge(vertexId,
-                StorageConstants.PROPERTY_SEPERATOR.getBytes(), (byte[]) edge.id()), (byte[]) inVertex.id());
+                StorageConstants.PROPERTY_SEPARATOR.getBytes(), (byte[]) edge.id()), (byte[]) inVertex.id());
         put(getColumn(VERTEX_COLUMNS.IN_EDGES), Utils.merge((byte[]) inVertex.id(),
-                StorageConstants.PROPERTY_SEPERATOR.getBytes(), (byte[]) edge.id()), vertexId);
+                StorageConstants.PROPERTY_SEPARATOR.getBytes(), (byte[]) edge.id()), vertexId);
         put(getColumn(VERTEX_COLUMNS.OUT_EDGE_LABELS), (byte[]) edge.id(), edge.label().getBytes());
     }
 
@@ -71,7 +71,7 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
         }
         if (propertyKeys.size() == 0) {
             RocksIterator rocksIterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.PROPERTIES));
-            byte[] seek_key = Utils.merge((byte[]) rocksVertex.id(), StorageConstants.PROPERTY_SEPERATOR.getBytes());
+            byte[] seek_key = Utils.merge((byte[]) rocksVertex.id(), StorageConstants.PROPERTY_SEPARATOR.getBytes());
             final List<byte[]> finalPropertyKeys = propertyKeys;
             Utils.RocksIterUtil(rocksIterator, seek_key, (key, value) -> {
                 if (value != null)
@@ -81,7 +81,7 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
         }
 
         for (byte[] property : propertyKeys) {
-            byte[] lookup_key = Utils.merge((byte[]) rocksVertex.id(), StorageConstants.PROPERTY_SEPERATOR.getBytes(),
+            byte[] lookup_key = Utils.merge((byte[]) rocksVertex.id(), StorageConstants.PROPERTY_SEPARATOR.getBytes(),
                     property);
             byte[] type = rocksDB.get(getColumn(VERTEX_COLUMNS.PROPERTY_TYPE), lookup_key);
             byte[] value = rocksDB.get(getColumn(VERTEX_COLUMNS.PROPERTIES), lookup_key);
@@ -133,7 +133,7 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
     public List<byte[]> getEdgeIDs(byte[] id, Direction direction, HashSet<String> edgeLabels) {
         List<byte[]> edgeIds = new ArrayList<>(50);
         RocksIterator iterator = null;
-        byte[] seek_key = Utils.merge(id, StorageConstants.PROPERTY_SEPERATOR.getBytes());
+        byte[] seek_key = Utils.merge(id, StorageConstants.PROPERTY_SEPARATOR.getBytes());
 
         try {
             if (direction == Direction.BOTH || direction == Direction.IN) {
