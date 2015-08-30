@@ -6,7 +6,6 @@ import com.tinkerrocks.structure.RocksVertex;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.rocksdb.RocksDBException;
 
 import java.util.*;
 
@@ -97,7 +96,7 @@ public class RocksIndex<T extends Element> {
     }
 
 
-    public void dropKeyIndex(final String key) throws RocksDBException {
+    public void dropKeyIndex(final String key) throws Exception {
         this.rocksGraph.getStorageHandler().getIndexDB().dropIndex(indexClass, key);
     }
 

@@ -33,5 +33,8 @@ public interface VertexStorage extends CommonStorage{
 
     RocksVertex getVertex(byte[] vertexId, RocksGraph rocksGraph);
 
+    String getLabel(byte[] id) throws Exception;
 
+    @Override
+    void close();
 }

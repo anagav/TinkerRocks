@@ -2,7 +2,6 @@ package com.tinkerrocks.structure;
 
 import org.apache.tinkerpop.gremlin.structure.*;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
-import org.rocksdb.RocksDBException;
 
 import java.util.*;
 
@@ -16,7 +15,7 @@ public class RocksVertex extends RocksElement implements Vertex {
         super(id, label, rocksGraph);
     }
 
-    public RocksVertex(byte[] id, RocksGraph rocksGraph) throws RocksDBException {
+    public RocksVertex(byte[] id, RocksGraph rocksGraph) throws Exception {
         super(id, rocksGraph.getStorageHandler().getVertexDB().getLabel(id), rocksGraph);
     }
 
@@ -68,7 +67,7 @@ public class RocksVertex extends RocksElement implements Vertex {
 
         try {
             this.rocksGraph.getStorageHandler().getVertexDB().addEdge((byte[]) this.id(), edge, inVertex);
-        } catch (RocksDBException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
@@ -140,7 +139,7 @@ public class RocksVertex extends RocksElement implements Vertex {
         }
         try {
             return this.rocksGraph.getStorageHandler().getVertexDB().vertices(vertexIds, this.rocksGraph).iterator();
-        } catch (RocksDBException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return new ArrayList<Vertex>().iterator();
@@ -157,7 +156,7 @@ public class RocksVertex extends RocksElement implements Vertex {
         edges(Direction.BOTH).forEachRemaining(Element::remove);
         try {
             this.rocksGraph.getStorageHandler().getVertexDB().remove(this);
-        } catch (RocksDBException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

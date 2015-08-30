@@ -7,7 +7,6 @@ import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Property;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
-import org.rocksdb.RocksDBException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -84,7 +83,7 @@ public abstract class RocksElement implements Element {
             } else {
                 properties = this.rocksGraph.getStorageHandler().getEdgeDB().getProperties(this, propertyKeys);
             }
-        } catch (RocksDBException ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
         List<Property<V>> propertiesList = new ArrayList<>(properties.size());
