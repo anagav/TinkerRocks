@@ -62,8 +62,6 @@ public class Utils {
                     startsWith(rocksIterator.key(), 0, seek_key); rocksIterator.next()) {
                 returnValue = rocksIteratorCallback.process(rocksIterator.key(), rocksIterator.value());
             }
-        } catch (RocksDBException e) {
-            throw e;
         } finally {
             rocksIterator.dispose();
         }

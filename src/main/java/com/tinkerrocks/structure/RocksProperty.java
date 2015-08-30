@@ -6,6 +6,7 @@ import org.apache.tinkerpop.gremlin.structure.util.StringFactory;
 import java.util.NoSuchElementException;
 
 /**
+ * <p>property class</p>
  * Created by ashishn on 8/5/15.
  */
 public class RocksProperty<V> implements Property<V> {
@@ -68,7 +69,7 @@ public class RocksProperty<V> implements Property<V> {
      */
     @Override
     public void remove() {
-      //todo: handle removes
+        //todo: handle removes
 
     }
 
