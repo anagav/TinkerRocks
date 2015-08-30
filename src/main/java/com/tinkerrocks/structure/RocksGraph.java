@@ -74,10 +74,11 @@ public final class RocksGraph implements Graph {
     @Override
     public Vertex addVertex(Object... keyValues) {
         ElementHelper.legalPropertyKeyValueArray(keyValues);
-        Object id = ElementHelper.getIdValue(keyValues).orElse(null);
-        if (id == null) {
-            throw Exceptions.idArgsMustBeEitherIdOrElement();
-        }
+//        Object id = ElementHelper.getIdValue(keyValues).orElse(null);
+//        if (id == null) {
+//            id = UUID.randomUUID().toString();
+//            //throw Exceptions.idArgsMustBeEitherIdOrElement();
+//        }
         byte[] idValue = String.valueOf(ElementHelper.getIdValue(keyValues).orElse(UUID.randomUUID().toString().getBytes())).getBytes();  //UUID.randomUUID().toString().getBytes();
         final String label = ElementHelper.getLabelValue(keyValues).orElse(Vertex.DEFAULT_LABEL);
 
@@ -270,6 +271,31 @@ public final class RocksGraph implements Graph {
      */
     @Override
     public Features features() {
-        return null;
+        return new Features() {
+            @Override
+            public GraphFeatures graph() {
+                return new GraphFeatures() {
+                    @Override
+                    public boolean supportsComputer() {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean supportsTransactions() {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean supportsThreadedTransactions() {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean supportsPersistence() {
+                        return true;
+                    }
+                };
+            }
+        };
     }
 }
