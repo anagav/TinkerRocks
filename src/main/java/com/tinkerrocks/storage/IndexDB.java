@@ -72,11 +72,7 @@ public class IndexDB extends StorageAbstractClass implements IndexStorage {
             columnFamilyDescriptors.add(new ColumnFamilyDescriptor(vertex_columns.getValue().getBytes(),
                     StorageConfigFactory.getColumnFamilyOptions()));
         }
-        String dbPath = StorageConstants.DATABASE_PREFIX;
-        if (rocksGraph.getConfiguration().containsKey(StorageConstants.TEST_DATABASE_PREFIX))
-            dbPath = StorageConstants.TEST_DATABASE_PREFIX;
-        rocksDB = RocksDB.open(StorageConfigFactory.getDBOptions(), dbPath + "/indexes", columnFamilyDescriptors, columnFamilyHandleList);
-
+        rocksDB = RocksDB.open(StorageConfigFactory.getDBOptions(), getDbPath() + "/indexes", columnFamilyDescriptors, columnFamilyHandleList);
         this.rocksDB.enableFileDeletions(true);
 
     }

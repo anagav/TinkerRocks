@@ -1,6 +1,5 @@
 package com.tinkerrocks.structure;
 
-import com.tinkerrocks.storage.StorageConstants;
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.io.FileUtils;
@@ -28,10 +27,13 @@ public class RocksTest {
 
     @Before
     public void setup() throws IOException, InstantiationException {
+
+        String path = "/tmp/databases_1";
+
         Configuration configuration = new BaseConfiguration();
-        configuration.setProperty(StorageConstants.TEST_DATABASE_PREFIX, "true");
-        FileUtils.deleteDirectory(new File("/tmp/databases"));
-        FileUtils.forceMkdir(new File("/tmp/databases"));
+        configuration.setProperty("com.tinkerrocks.storage.dir", path);
+        FileUtils.deleteDirectory(new File(path));
+        FileUtils.forceMkdir(new File(path));
         graph = RocksGraph.open(configuration);
 
 

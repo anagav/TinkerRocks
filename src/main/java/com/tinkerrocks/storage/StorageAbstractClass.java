@@ -66,6 +66,10 @@ public abstract class StorageAbstractClass {
         return _clazz.cast(deserialize(inbBytes));
     }
 
+    protected String getDbPath() {
+        return rocksGraph.getConfiguration().getString("com.tinkerrocks.storage.dir");
+    }
+
 
 }
 

@@ -236,10 +236,7 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
             columnFamilyDescriptors.add(new ColumnFamilyDescriptor(vertex_columns.getValue().getBytes(),
                     StorageConfigFactory.getColumnFamilyOptions()));
         }
-        String dbPath = StorageConstants.DATABASE_PREFIX;
-        if (rocksGraph.getConfiguration().containsKey(StorageConstants.TEST_DATABASE_PREFIX))
-            dbPath = StorageConstants.TEST_DATABASE_PREFIX;
-        this.rocksDB = RocksDB.open(StorageConfigFactory.getDBOptions(), dbPath + "/edges", columnFamilyDescriptors, columnFamilyHandleList);
+        this.rocksDB = RocksDB.open(StorageConfigFactory.getDBOptions(), getDbPath() + "/edges", columnFamilyDescriptors, columnFamilyHandleList);
         this.rocksDB.enableFileDeletions(true);
         this.edgeCache = CacheBuilder.newBuilder().maximumSize(1000).concurrencyLevel(1000).build();
     }

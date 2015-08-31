@@ -14,6 +14,8 @@ public class StorageHandler {
     IndexStorage indexDB;
 
     public StorageHandler(RocksGraph rocksGraph) throws RocksDBException {
+
+
         vertexDB = new VertexDB(rocksGraph);
         edgeDB = new EdgeDB(rocksGraph);
         indexDB = new IndexDB(rocksGraph);

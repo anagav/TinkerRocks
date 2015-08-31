@@ -2,6 +2,7 @@ package com.tinkerrocks.structure;
 
 import com.tinkerrocks.index.RocksIndex;
 import com.tinkerrocks.process.traversal.RocksGraphStepStrategy;
+import com.tinkerrocks.storage.StorageConstants;
 import com.tinkerrocks.storage.StorageHandler;
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
@@ -43,13 +44,15 @@ public final class RocksGraph implements Graph {
     private RocksIndex<Edge> edgeIndex = null;
 
     public static RocksGraph open() {
-        return new RocksGraph(new BaseConfiguration());
+        Configuration configuration = new BaseConfiguration();
+        configuration.addProperty("com.tinkerrocks.storage.dir", StorageConstants.TEST_DATABASE_PREFIX);
+        return new RocksGraph(configuration);
     }
 
 
     public static RocksGraph open(Configuration configuration) throws InstantiationException {
         if (configuration == null) {
-            configuration = new BaseConfiguration();
+            throw new InstantiationException("cannot pass null configuration");
         }
         return new RocksGraph(configuration);
     }
@@ -57,6 +60,9 @@ public final class RocksGraph implements Graph {
     public RocksGraph(Configuration configuration) {
         configuration.setProperty(Graph.GRAPH, RocksGraph.class.getName());
         this.configuration = configuration;
+        if (!this.configuration.containsKey("com.tinkerrocks.storage.dir")) {
+            this.configuration.addProperty("com.tinkerrocks.storage.dir", StorageConstants.TEST_DATABASE_PREFIX);
+        }
         try {
             this.storageHandler = new StorageHandler(this);
         } catch (RocksDBException e) {
