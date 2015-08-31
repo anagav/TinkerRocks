@@ -20,9 +20,11 @@ public class StorageConfigFactory {
 
         dbOptions = new DBOptions()
                 .setCreateIfMissing(true)
+                .setIncreaseParallelism(16)
+                .setParanoidChecks(false)
+                .setAdviseRandomOnOpen(true)
                 .setMaxBackgroundCompactions(10)
                 .setCreateMissingColumnFamilies(true)
-                .setIncreaseParallelism(16)
                 .setAllowOsBuffer(true)
                 .setTableCacheNumshardbits(10)
                 .setMaxBackgroundFlushes(3)
@@ -52,7 +54,7 @@ public class StorageConfigFactory {
 
         Filter bloomFilter = new BloomFilter(10, true);
 
-        table_options.setBlockCacheSize(512 * SizeUnit.MB)
+        table_options.setBlockCacheSize(1 * SizeUnit.GB)
                 .setBlockCacheCompressedNumShardBits(8)
                 .setHashIndexAllowCollision(false)
                 .setFilter(bloomFilter)
@@ -67,7 +69,6 @@ public class StorageConfigFactory {
                 .setMaxWriteBufferNumber(10)
                 .setMinWriteBufferNumberToMerge(2)
                 .setMaxWriteBufferNumber(6)
-
                 .setMaxGrandparentOverlapFactor(10)
                 .setTargetFileSizeBase(128 * SizeUnit.MB)
                 .setMaxBytesForLevelBase(512 * SizeUnit.MB)
@@ -76,7 +77,7 @@ public class StorageConfigFactory {
                 .setMemtablePrefixBloomProbes(6)
                 .setBloomLocality(1)
                 .setDisableAutoCompactions(false)
-
+                .setFilterDeletes(true)
                 .setInplaceUpdateSupport(true)
                 .setLevelCompactionDynamicLevelBytes(true)
                 .setMaxBytesForLevelMultiplier(10)
