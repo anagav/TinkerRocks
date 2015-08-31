@@ -67,7 +67,7 @@ public abstract class StorageAbstractClass {
     }
 
     protected String getDbPath() {
-        return rocksGraph.getConfiguration().getString("com.tinkerrocks.storage.dir");
+        return rocksGraph.getConfiguration().getString(StorageConstants.STORAGE_DIR_PROPERTY);
     }
 
 
