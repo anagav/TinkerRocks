@@ -50,10 +50,6 @@ public class Utils {
         return ArrayUtils.addAll(ArrayUtils.addAll(arr1, arr2), arr3);
     }
 
-    public static String toString(Object object) {
-        return gson.toJson(object);
-    }
-
 
     public static void RocksIterUtil(RocksIterator rocksIterator, byte[] seek_key, RocksIteratorCallback rocksIteratorCallback) throws RocksDBException {
         boolean returnValue = true;
