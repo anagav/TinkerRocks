@@ -45,7 +45,7 @@ public final class RocksGraph implements Graph {
 
     public static RocksGraph open() {
         Configuration configuration = new BaseConfiguration();
-        configuration.addProperty("com.tinkerrocks.storage.dir", StorageConstants.TEST_DATABASE_PREFIX);
+        configuration.addProperty(StorageConstants.STORAGE_DIR_PROPERTY, StorageConstants.TEST_DATABASE_PREFIX);
         return new RocksGraph(configuration);
     }
 
@@ -60,8 +60,8 @@ public final class RocksGraph implements Graph {
     public RocksGraph(Configuration configuration) {
         configuration.setProperty(Graph.GRAPH, RocksGraph.class.getName());
         this.configuration = configuration;
-        if (!this.configuration.containsKey("com.tinkerrocks.storage.dir")) {
-            this.configuration.addProperty("com.tinkerrocks.storage.dir", StorageConstants.TEST_DATABASE_PREFIX);
+        if (!this.configuration.containsKey(StorageConstants.STORAGE_DIR_PROPERTY)) {
+            this.configuration.addProperty(StorageConstants.STORAGE_DIR_PROPERTY, StorageConstants.TEST_DATABASE_PREFIX);
         }
         try {
             this.storageHandler = new StorageHandler(this);

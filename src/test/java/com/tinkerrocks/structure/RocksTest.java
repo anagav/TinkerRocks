@@ -1,5 +1,6 @@
 package com.tinkerrocks.structure;
 
+import com.tinkerrocks.storage.StorageConstants;
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.io.FileUtils;
@@ -31,7 +32,7 @@ public class RocksTest {
         String path = "/tmp/databases_1";
 
         Configuration configuration = new BaseConfiguration();
-        configuration.setProperty("com.tinkerrocks.storage.dir", path);
+        configuration.setProperty(StorageConstants.STORAGE_DIR_PROPERTY, path);
         FileUtils.deleteDirectory(new File(path));
         FileUtils.forceMkdir(new File(path));
         graph = RocksGraph.open(configuration);
