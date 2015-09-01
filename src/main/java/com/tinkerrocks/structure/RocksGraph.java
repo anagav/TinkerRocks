@@ -80,12 +80,11 @@ public final class RocksGraph implements Graph {
     @Override
     public Vertex addVertex(Object... keyValues) {
         ElementHelper.legalPropertyKeyValueArray(keyValues);
-//        Object id = ElementHelper.getIdValue(keyValues).orElse(null);
-//        if (id == null) {
-//            id = UUID.randomUUID().toString();
-//            //throw Exceptions.idArgsMustBeEitherIdOrElement();
-//        }
-        byte[] idValue = String.valueOf(ElementHelper.getIdValue(keyValues).orElse(UUID.randomUUID().toString().getBytes())).getBytes();  //UUID.randomUUID().toString().getBytes();
+        Object id = String.valueOf(ElementHelper.getIdValue(keyValues).orElse(null));  //UUID.randomUUID().toString().getBytes();
+        if (id == null) {
+            throw Vertex.Exceptions.userSuppliedIdsOfThisTypeNotSupported();
+        }
+        byte[] idValue = String.valueOf(id).getBytes();
         final String label = ElementHelper.getLabelValue(keyValues).orElse(Vertex.DEFAULT_LABEL);
 
         RocksVertex vertex = new RocksVertex(idValue, label, this);
