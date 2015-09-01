@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 /**
@@ -156,19 +157,26 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
             }
         }
 
-        for (byte[] id : ids) {
-            edges.add(getEdge(id, rocksGraph));
-        }
+        edges = ids.stream().map(bytes -> getEdge(bytes, rocksGraph)).filter(r -> r != null).collect(Collectors.toList());
+
+//        for (byte[] id : ids) {
+//            edges.add(getEdge(id, rocksGraph));
+//        }
         return edges;
     }
 
-
-    public RocksEdge getEdge(byte[] id, RocksGraph rocksGraph) throws Exception {
-        byte[] in_vertex_id = getVertex(id, Direction.IN);
-        byte[] out_vertex_id = getVertex(id, Direction.OUT);
-        RocksVertex inVertex = rocksGraph.getStorageHandler().getVertexDB().vertex(in_vertex_id, rocksGraph);
-        RocksVertex outVertex = rocksGraph.getStorageHandler().getVertexDB().vertex(out_vertex_id, rocksGraph);
-        return new RocksEdge(id, getLabel(id), rocksGraph, inVertex, outVertex);
+    @Override
+    public RocksEdge getEdge(byte[] id, RocksGraph rocksGraph) {
+        try {
+            byte[] in_vertex_id = getVertex(id, Direction.IN);
+            byte[] out_vertex_id = getVertex(id, Direction.OUT);
+            RocksVertex inVertex = rocksGraph.getStorageHandler().getVertexDB().vertex(in_vertex_id, rocksGraph);
+            RocksVertex outVertex = rocksGraph.getStorageHandler().getVertexDB().vertex(out_vertex_id, rocksGraph);
+            return new RocksEdge(id, getLabel(id), rocksGraph, inVertex, outVertex);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     private byte[] getVertex(byte[] id, Direction direction) {
