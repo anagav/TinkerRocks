@@ -60,7 +60,6 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
                 StorageConstants.PROPERTY_SEPARATOR.getBytes(), (byte[]) edge.id()), (byte[]) inVertex.id());
         put(getColumn(VERTEX_COLUMNS.IN_EDGES), Utils.merge((byte[]) inVertex.id(),
                 StorageConstants.PROPERTY_SEPARATOR.getBytes(), (byte[]) edge.id()), vertexId);
-        put(getColumn(VERTEX_COLUMNS.OUT_EDGE_LABELS), (byte[]) edge.id(), edge.label().getBytes());
     }
 
     @SuppressWarnings("unchecked")
