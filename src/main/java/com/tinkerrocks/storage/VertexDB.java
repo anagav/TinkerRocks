@@ -143,8 +143,8 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
                         edgeIds.add(Utils.slice(key, seek_key.length));
                     } else {
                         byte[] edgeId = Utils.slice(key, seek_key.length);
-                        byte[] edgeLabel = this.rocksDB.get(getColumn(VERTEX_COLUMNS.OUT_EDGE_LABELS), edgeId);
-                        if (edgeLabels.contains(new String(edgeLabel))) {
+                        String edgeLabel = this.rocksGraph.getStorageHandler().getEdgeDB().getLabel(edgeId);
+                        if (edgeLabels.contains(edgeLabel)) {
                             edgeIds.add(edgeId);
                         }
                     }
@@ -158,8 +158,8 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
                         edgeIds.add(Utils.slice(key, seek_key.length));
                     } else {
                         byte[] edgeId = Utils.slice(key, seek_key.length);
-                        byte[] edgeLabel = this.rocksDB.get(getColumn(VERTEX_COLUMNS.OUT_EDGE_LABELS), edgeId);
-                        if (edgeLabels.contains(new String(edgeLabel))) {
+                        String edgeLabel = this.rocksGraph.getStorageHandler().getEdgeDB().getLabel(edgeId);
+                        if (edgeLabels.contains(edgeLabel)) {
                             edgeIds.add(edgeId);
                         }
                     }
@@ -168,7 +168,7 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
 
             }
 
-        } catch (RocksDBException ignored) {
+        } catch (Exception ignored) {
             ignored.printStackTrace();
         } finally {
             if (iterator != null) {
