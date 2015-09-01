@@ -80,7 +80,7 @@ public final class RocksGraph implements Graph {
     @Override
     public Vertex addVertex(Object... keyValues) {
         ElementHelper.legalPropertyKeyValueArray(keyValues);
-        Object id = String.valueOf(ElementHelper.getIdValue(keyValues).orElse(null));  //UUID.randomUUID().toString().getBytes();
+        Object id = String.valueOf(ElementHelper.getIdValue(keyValues).orElse(null));
         if (id == null) {
             throw Vertex.Exceptions.userSuppliedIdsOfThisTypeNotSupported();
         }
