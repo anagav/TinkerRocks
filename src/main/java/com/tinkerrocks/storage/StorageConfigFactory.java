@@ -54,7 +54,7 @@ public class StorageConfigFactory {
 
         Filter bloomFilter = new BloomFilter(10, true);
 
-        table_options.setBlockCacheSize(1 * SizeUnit.GB)
+        table_options.setBlockCacheSize(512 * SizeUnit.GB)
                 .setBlockCacheCompressedNumShardBits(8)
                 .setHashIndexAllowCollision(false)
                 .setFilter(bloomFilter)
@@ -79,6 +79,7 @@ public class StorageConfigFactory {
                 .setDisableAutoCompactions(false)
                 .setFilterDeletes(true)
                 .setInplaceUpdateSupport(true)
+                .setPurgeRedundantKvsWhileFlush(true)
                 .setLevelCompactionDynamicLevelBytes(true)
                 .setMaxBytesForLevelMultiplier(10)
                 .setLevelZeroFileNumCompactionTrigger(10)

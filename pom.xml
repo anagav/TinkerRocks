@@ -6,7 +6,11 @@
 
     <groupId>org.tinkerrocks</groupId>
     <artifactId>tinker-rocks</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0</version>
+
+    <properties>
+        <apache.tinkerpop.gremlin.core.version>3.0.0.M9-incubating</apache.tinkerpop.gremlin.core.version>
+    </properties>
 
 
     <profiles>
@@ -169,7 +173,7 @@
         <dependency>
             <groupId>org.apache.tinkerpop</groupId>
             <artifactId>gremlin-core</artifactId>
-            <version>3.0.0.M9-incubating</version>
+            <version>${apache.tinkerpop.gremlin.core.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -181,7 +185,7 @@
         <dependency>
             <groupId>org.apache.tinkerpop</groupId>
             <artifactId>gremlin-test</artifactId>
-            <version>3.0.0.M9-incubating</version>
+            <version>${apache.tinkerpop.gremlin.core.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
