@@ -174,11 +174,7 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
     }
 
     public RocksVertex vertex(byte[] id, RocksGraph rocksGraph) throws Exception {
-        return (RocksVertex) vertices(new ArrayList<byte[]>() {
-            {
-                add(id);
-            }
-        }, rocksGraph).get(0);
+        return getVertex(id, rocksGraph);
     }
 
     public void remove(RocksVertex rocksVertex) throws RocksDBException {
