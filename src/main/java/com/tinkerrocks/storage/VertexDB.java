@@ -130,7 +130,7 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
 
 
     public List<byte[]> getEdgeIDs(byte[] id, Direction direction, HashSet<String> edgeLabels) {
-        List<byte[]> edgeIds = new ArrayList<>(50);
+        List<byte[]> edgeIds = new ArrayList<>();
         RocksIterator iterator;
         byte[] seek_key = Utils.merge(id, StorageConstants.PROPERTY_SEPARATOR.getBytes());
 
