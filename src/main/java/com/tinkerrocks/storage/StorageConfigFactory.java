@@ -29,15 +29,15 @@ public class StorageConfigFactory {
                 .setTableCacheNumshardbits(10)
                 .setMaxBackgroundFlushes(3)
                 .setWalTtlSeconds(5 * 60)
-                //todo check later for performance
-                .setMaxTotalWalSize(10 * SizeUnit.GB)
+                        //todo check later for performance
+                .setMaxTotalWalSize(30 * SizeUnit.GB)
                 .setMaxOpenFiles(-1)
+                .setUseFsync(false)
                 .setDisableDataSync(true)
                 .setDeleteObsoleteFilesPeriodMicros(5 * 60 * 1000 * 1000)
                 .setAllowOsBuffer(true)
                 .setBytesPerSync(2 << 20)
                 .setUseAdaptiveMutex(true);
-
 
         return dbOptions;
 
@@ -66,7 +66,7 @@ public class StorageConfigFactory {
 
         columnFamilyOptions = new ColumnFamilyOptions()
                 .setWriteBufferSize(512 * SizeUnit.MB)
-                .setMaxWriteBufferNumber(10)
+                .setMaxWriteBufferNumber(20)
                 .setMinWriteBufferNumberToMerge(2)
                 .setMaxWriteBufferNumber(6)
                 .setMaxGrandparentOverlapFactor(10)
@@ -76,6 +76,8 @@ public class StorageConfigFactory {
                 .setMemtablePrefixBloomBits(8 * 1024 * 1024)
                 .setMemtablePrefixBloomProbes(6)
                 .setBloomLocality(1)
+                .setInplaceUpdateSupport(true)
+                .setPurgeRedundantKvsWhileFlush(true)
                 .setDisableAutoCompactions(false)
                 .setFilterDeletes(true)
                 .setLevelCompactionDynamicLevelBytes(true)
