@@ -205,7 +205,6 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
         } catch (Exception ignored) {
             ignored.printStackTrace();
         }
-        System.out.println("edgeids size:" + edgeIds.size());
         return edgeIds;
     }
 
