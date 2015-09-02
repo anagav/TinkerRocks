@@ -222,9 +222,7 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
         PROPERTIES("PROPERTIES"),
         PROPERTY_TYPE("PROPERTY_TYPE"),
         OUT_EDGES("OUT_EDGES"),
-        IN_EDGES("IN_EDGES"),
-        OUT_EDGE_LABELS("OUT_EDGE_LABELS"),
-        IN_EDGE_LABELS("IN_EDGE_LABELS");
+        IN_EDGES("IN_EDGES");
 
         String value;
 
