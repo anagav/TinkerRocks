@@ -15,6 +15,7 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.stream.IntStream;
 
 
 /**
@@ -209,15 +210,15 @@ public class RocksTest {
     @Test
     public void edgeIndexTest() {
 
-//
-//        Vertex v = graph.addVertex(T.label, "personal", T.id, "indextest" + 1, "name", "marko", "age", 30);
-//        Vertex outV = graph.addVertex(T.label, "personal", T.id, "indextest" + 2, "name", "polo", "age", 30);
-//
-//        graph.createIndex("directed", Edge.class);
-//
-//        IntStream.range(0, 1000000).forEach(value -> {
-//            v.addEdge("movie", outV, T.id, value, "directed", "test1" + (value % 10000));
-//        });
+
+        Vertex v = graph.addVertex(T.label, "personal", T.id, "indextest" + 1, "name", "marko", "age", 30);
+        Vertex outV = graph.addVertex(T.label, "personal", T.id, "indextest" + 2, "name", "polo", "age", 30);
+
+        //graph.createIndex("directed", Edge.class);
+
+        IntStream.range(0, 1000000).forEach(value -> {
+            v.addEdge("movie", outV, T.id, value, "directed", "test1" + (value % 10000));
+        });
 
 
         GraphTraversalSource g = graph.traversal(GraphTraversalSource.build().engine(StandardTraversalEngine.build()));
@@ -230,6 +231,41 @@ public class RocksTest {
         System.out.println("time taken to search:" + (System.currentTimeMillis() - start));
         //}
     }
+
+
+    @Test
+    public void edgeLabelsTest() {
+
+        Vertex v = graph.addVertex(T.label, "personal", T.id, "edgeTest" + 1, "name", "marko", "age", 30);
+        Vertex outV = graph.addVertex(T.label, "personal", T.id, "edgeTest" + 2, "name", "polo", "age", 30);
+
+        int i = 0;
+        while (i < 2) {
+            v.addEdge("person", outV, T.id, "index" + i);
+            i++;
+        }
+
+        while (i < 10000) {
+            v.addEdge("person1", outV, T.id, "index" + i);
+            i++;
+        }
+
+        while (i < 200000) {
+            v.addEdge("person2", outV, T.id, "index" + i);
+            i++;
+        }
+
+        GraphTraversalSource g = graph.traversal(GraphTraversalSource.build().engine(StandardTraversalEngine.build()));
+        long start = System.currentTimeMillis();
+        g.V("edgeTest" + 1).outE("person").toList();
+        long end = System.currentTimeMillis() - start;
+        System.out.println("time taken:" + end);
+
+
+
+    }
+
+
 
 
     @After

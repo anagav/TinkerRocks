@@ -33,7 +33,7 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
     public <V> void setProperty(byte[] id, String key, V value) {
         try {
             put(getColumn(EDGE_COLUMNS.PROPERTIES),
-                    Utils.merge(id, StorageConstants.PROPERTY_SEPARATOR.getBytes(), key.getBytes()), serialize(value));
+                    Utils.merge(id, new byte[]{StorageConstants.PROPERTY_SEPARATOR}, key.getBytes()), serialize(value));
         } catch (RocksDBException e) {
             e.printStackTrace();
         }
@@ -63,14 +63,13 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
         if (label.isEmpty()) {
             throw Edge.Exceptions.labelCanNotBeEmpty();
         }
-
         put(edge_id, label.getBytes());
 
         put(getColumn(EDGE_COLUMNS.IN_VERTICES), Utils.merge(edge_id,
-                StorageConstants.PROPERTY_SEPARATOR.getBytes(), (byte[]) inVertex.id()), (byte[]) inVertex.id());
+                new byte[]{StorageConstants.PROPERTY_SEPARATOR}, (byte[]) inVertex.id()), (byte[]) inVertex.id());
 
         put(getColumn(EDGE_COLUMNS.OUT_VERTICES), Utils.merge(edge_id,
-                StorageConstants.PROPERTY_SEPARATOR.getBytes(), (byte[]) outVertex.id()), (byte[]) outVertex.id());
+                new byte[]{StorageConstants.PROPERTY_SEPARATOR}, (byte[]) outVertex.id()), (byte[]) outVertex.id());
 
         Map<String, Object> properties = ElementHelper.asMap(keyValues);
         for (Map.Entry<String, Object> entry : properties.entrySet()) {
@@ -82,7 +81,7 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
         List<byte[]> vertexIDs = new ArrayList<>();
         RocksIterator rocksIterator;
 
-        byte[] seek_key = Utils.merge(edgeId, StorageConstants.PROPERTY_SEPARATOR.getBytes());
+        byte[] seek_key = Utils.merge(edgeId, new byte[]{StorageConstants.PROPERTY_SEPARATOR});
 
         try {
             if (direction == Direction.BOTH || direction == Direction.IN) {
@@ -100,18 +99,18 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
                     return true;
                 });
             }
-        } catch (RocksDBException ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
         return vertexIDs;
     }
 
-    public Map<String, Object> getProperties(RocksElement element, String[] propertyKeys) throws RocksDBException {
+    public Map<String, Object> getProperties(RocksElement element, String[] propertyKeys) throws Exception {
         Map<String, Object> results = new HashMap<>();
 
         if (propertyKeys == null || propertyKeys.length == 0) {
             RocksIterator rocksIterator = this.rocksDB.newIterator(getColumn(EDGE_COLUMNS.PROPERTIES));
-            byte[] seek_key = Utils.merge((byte[]) element.id(), StorageConstants.PROPERTY_SEPARATOR.getBytes());
+            byte[] seek_key = Utils.merge((byte[]) element.id(), new byte[]{StorageConstants.PROPERTY_SEPARATOR});
 
             Utils.RocksIterUtil(rocksIterator, seek_key, (key, value) -> {
                 results.put(new String(Utils.slice(key, seek_key.length, key.length)),
@@ -133,7 +132,7 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
 
 
             byte[] val = rocksDB.get(getColumn(EDGE_COLUMNS.PROPERTIES),
-                    Utils.merge((byte[]) element.id(), StorageConstants.PROPERTY_SEPARATOR.getBytes(),
+                    Utils.merge((byte[]) element.id(), new byte[]{StorageConstants.PROPERTY_SEPARATOR},
                             property.getBytes()));
 
 
@@ -187,7 +186,7 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
             iterator = this.rocksDB.newIterator(getColumn(EDGE_COLUMNS.IN_VERTICES));
         }
 
-        byte[] seek_key = Utils.merge(id, StorageConstants.PROPERTY_SEPARATOR.getBytes());
+        byte[] seek_key = Utils.merge(id, new byte[]{StorageConstants.PROPERTY_SEPARATOR});
 
         final byte[][] returnValue = new byte[1][1];
 
@@ -197,7 +196,7 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
                 returnValue[0] = Utils.slice(iterator.key(), seek_key.length);
                 return false;
             });
-        } catch (RocksDBException ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
 

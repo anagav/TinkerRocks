@@ -1,5 +1,6 @@
 package com.tinkerrocks.structure;
 
+import com.google.common.primitives.Bytes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.commons.lang.ArrayUtils;
@@ -60,6 +61,11 @@ public class Utils {
         } finally {
             rocksIterator.dispose();
         }
+    }
+
+
+    public static int findLastInArray(byte[] arr, byte toFind) {
+        return Bytes.lastIndexOf(arr, toFind) + 1;
     }
 
 

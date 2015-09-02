@@ -23,7 +23,7 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
 
     @SuppressWarnings("unchecked")
     public <V> void setProperty(byte[] id, String key, V value, VertexProperty.Cardinality cardinality) {
-        byte[] record_key = Utils.merge(id, StorageConstants.PROPERTY_SEPARATOR.getBytes(), key.getBytes());
+        byte[] record_key = Utils.merge(id, new byte[]{StorageConstants.PROPERTY_SEPARATOR}, key.getBytes());
         try {
             if (cardinality == VertexProperty.Cardinality.single) {
                 put(getColumn(VERTEX_COLUMNS.PROPERTIES), record_key, serialize(value));
@@ -53,10 +53,27 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
 
 
     public void addEdge(byte[] vertexId, Edge edge, Vertex inVertex) throws RocksDBException {
+
+        byte[] insert_label = Utils.merge(new byte[]{StorageConstants.PROPERTY_SEPARATOR}, edge.label().getBytes(), new byte[]{StorageConstants.PROPERTY_SEPARATOR});
+
         put(getColumn(VERTEX_COLUMNS.OUT_EDGES), Utils.merge(vertexId,
-                StorageConstants.PROPERTY_SEPARATOR.getBytes(), (byte[]) edge.id()), (byte[]) inVertex.id());
+                insert_label, (byte[]) edge.id()), (byte[]) inVertex.id());
+
         put(getColumn(VERTEX_COLUMNS.IN_EDGES), Utils.merge((byte[]) inVertex.id(),
-                StorageConstants.PROPERTY_SEPARATOR.getBytes(), (byte[]) edge.id()), vertexId);
+                insert_label, (byte[]) edge.id()), vertexId);
+
+
+//        put(getColumn(VERTEX_COLUMNS.OUT_EDGE_LABELS),
+//                Utils.merge(vertexId, StorageConstants.PROPERTY_SEPARATOR.getBytes(),
+//                        Utils.merge(edge.label().getBytes(), StorageConstants.PROPERTY_SEPARATOR.getBytes(),
+//                                (byte[]) edge.id())), new byte[0]);
+//
+//
+//        put(getColumn(VERTEX_COLUMNS.IN_EDGE_LABELS),
+//                Utils.merge((byte[]) inVertex.id(), StorageConstants.PROPERTY_SEPARATOR.getBytes(),
+//                        Utils.merge(edge.label().getBytes(), StorageConstants.PROPERTY_SEPARATOR.getBytes(),
+//                                (byte[]) edge.id())), new byte[0]);
+
     }
 
     @SuppressWarnings("unchecked")
@@ -67,7 +84,7 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
         }
         if (propertyKeys.size() == 0) {
             RocksIterator rocksIterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.PROPERTIES));
-            byte[] seek_key = Utils.merge((byte[]) rocksVertex.id(), StorageConstants.PROPERTY_SEPARATOR.getBytes());
+            byte[] seek_key = Utils.merge((byte[]) rocksVertex.id(), new byte[]{StorageConstants.PROPERTY_SEPARATOR});
             final List<byte[]> finalPropertyKeys = propertyKeys;
             Utils.RocksIterUtil(rocksIterator, seek_key, (key, value) -> {
                 if (value != null)
@@ -77,7 +94,7 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
         }
 
         for (byte[] property : propertyKeys) {
-            byte[] lookup_key = Utils.merge((byte[]) rocksVertex.id(), StorageConstants.PROPERTY_SEPARATOR.getBytes(),
+            byte[] lookup_key = Utils.merge((byte[]) rocksVertex.id(), new byte[]{StorageConstants.PROPERTY_SEPARATOR},
                     property);
             byte[] type = rocksDB.get(getColumn(VERTEX_COLUMNS.PROPERTY_TYPE), lookup_key);
             byte[] value = rocksDB.get(getColumn(VERTEX_COLUMNS.PROPERTIES), lookup_key);
@@ -129,16 +146,42 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
     public List<byte[]> getEdgeIDs(byte[] id, Direction direction, HashSet<String> edgeLabels) {
         List<byte[]> edgeIds = new ArrayList<>();
         RocksIterator iterator;
-        byte[] seek_key = Utils.merge(id, StorageConstants.PROPERTY_SEPARATOR.getBytes());
+        byte[] seek_key = Utils.merge(id, new byte[]{StorageConstants.PROPERTY_SEPARATOR});
+
 
         try {
+
+            if (edgeLabels.size() > 0) {
+                for (String edgeLabel : edgeLabels) {
+                    byte[] inner_seek_key = Utils.merge(seek_key, edgeLabel.getBytes(), new byte[]{StorageConstants.PROPERTY_SEPARATOR});
+                    if (direction == Direction.BOTH || direction == Direction.IN) {
+                        iterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.IN_EDGES));
+                        Utils.RocksIterUtil(iterator, inner_seek_key, (key, value) -> {
+                            edgeIds.add(Utils.slice(key, inner_seek_key.length));
+                            return true;
+                        });
+                    }
+                    if (direction == Direction.BOTH || direction == Direction.OUT) {
+                        iterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.OUT_EDGES));
+                        Utils.RocksIterUtil(iterator, inner_seek_key, (key, value) -> {
+                            edgeIds.add(Utils.slice(key, inner_seek_key.length));
+                            return true;
+                        });
+                    }
+                }
+                return edgeIds;
+            }
+
+
             if (direction == Direction.BOTH || direction == Direction.IN) {
                 iterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.IN_EDGES));
+                System.out.println("seeking ..");
                 Utils.RocksIterUtil(iterator, seek_key, (key, value) -> {
                     if (edgeLabels.size() == 0) {
                         edgeIds.add(Utils.slice(key, seek_key.length));
                     } else {
-                        byte[] edgeId = Utils.slice(key, seek_key.length);
+                        byte[] edgeId = Utils.slice(key, Utils.findLastInArray(key, StorageConstants.PROPERTY_SEPARATOR), seek_key.length);
+                        System.out.println("adding id:" + new String(edgeId));
                         String edgeLabel = this.rocksGraph.getStorageHandler().getEdgeDB().getLabel(edgeId);
                         if (edgeLabels.contains(edgeLabel)) {
                             edgeIds.add(edgeId);
@@ -149,16 +192,11 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
             }
             if (direction == Direction.BOTH || direction == Direction.OUT) {
                 iterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.OUT_EDGES));
+                System.out.println("seeking .. out");
+
                 Utils.RocksIterUtil(iterator, seek_key, (key, value) -> {
-                    if (edgeLabels.size() == 0) {
-                        edgeIds.add(Utils.slice(key, seek_key.length));
-                    } else {
-                        byte[] edgeId = Utils.slice(key, seek_key.length);
-                        String edgeLabel = this.rocksGraph.getStorageHandler().getEdgeDB().getLabel(edgeId);
-                        if (edgeLabels.contains(edgeLabel)) {
-                            edgeIds.add(edgeId);
-                        }
-                    }
+                    byte[] edgeId = Utils.slice(key, Utils.findLastInArray(key, StorageConstants.PROPERTY_SEPARATOR));
+                    edgeIds.add(edgeId);
                     return true;
                 });
 
@@ -167,6 +205,7 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
         } catch (Exception ignored) {
             ignored.printStackTrace();
         }
+        System.out.println("edgeids size:" + edgeIds.size());
         return edgeIds;
     }
 
@@ -282,10 +321,10 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
     }
 
 
-    public String getLabel(byte[] vertexid) throws RocksDBException {
-        byte[] result = this.rocksDB.get(vertexid);
+    public String getLabel(byte[] vertexId) throws RocksDBException {
+        byte[] result = this.rocksDB.get(vertexId);
         if (result == null) {
-            throw Graph.Exceptions.elementNotFound(Vertex.class, new String(vertexid));
+            throw Graph.Exceptions.elementNotFound(Vertex.class, new String(vertexId));
         }
         return new String(result);
     }

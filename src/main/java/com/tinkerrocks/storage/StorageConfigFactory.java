@@ -78,8 +78,6 @@ public class StorageConfigFactory {
                 .setBloomLocality(1)
                 .setDisableAutoCompactions(false)
                 .setFilterDeletes(true)
-                .setInplaceUpdateSupport(true)
-                .setPurgeRedundantKvsWhileFlush(true)
                 .setLevelCompactionDynamicLevelBytes(true)
                 .setMaxBytesForLevelMultiplier(10)
                 .setLevelZeroFileNumCompactionTrigger(10)
