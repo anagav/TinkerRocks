@@ -45,9 +45,34 @@ public class Utils {
         return ArrayUtils.addAll(arr1, arr2);
     }
 
+    public static byte[] merge(byte[] arr1, byte arr2) {
+        return ArrayUtils.add(arr1, arr2);
+    }
+
 
     public static byte[] merge(byte[] arr1, byte[] arr2, byte[] arr3) {
         return ArrayUtils.addAll(ArrayUtils.addAll(arr1, arr2), arr3);
+    }
+
+    public static byte[] merge(byte arr1, byte[] arr2, byte[] arr3) {
+        return ArrayUtils.addAll(ArrayUtils.add(arr2, 0, arr1), arr3);
+    }
+
+    public static byte[] merge(byte[] arr1, byte arr2, byte[] arr3) {
+        return ArrayUtils.addAll(ArrayUtils.add(arr1, arr2), arr3);
+    }
+
+    public static byte[] merge(byte arr1, byte[] arr2, byte arr3) {
+        return ArrayUtils.add(ArrayUtils.add(arr2, 0, arr1), arr3);
+    }
+
+
+    public static byte[] merge(byte[] arr1, byte arr2, byte arr3) {
+        return ArrayUtils.add(ArrayUtils.add(arr1, arr2), arr3);
+    }
+
+    public static byte[] merge(byte[] arr1, byte[] arr2, byte arr3) {
+        return ArrayUtils.add(ArrayUtils.addAll(arr1, arr2), arr3);
     }
 
 
