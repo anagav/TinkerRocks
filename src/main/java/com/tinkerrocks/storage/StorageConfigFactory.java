@@ -27,7 +27,7 @@ public class StorageConfigFactory {
                 .setCreateMissingColumnFamilies(true)
                 .setAllowOsBuffer(true)
                 .setTableCacheNumshardbits(10)
-                .setMaxBackgroundFlushes(3)
+                .setMaxBackgroundFlushes(10)
                 .setWalTtlSeconds(5 * 60)
                         //todo check later for performance
                 .setMaxTotalWalSize(30 * SizeUnit.GB)
