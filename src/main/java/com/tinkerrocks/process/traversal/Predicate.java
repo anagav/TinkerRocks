@@ -12,6 +12,13 @@ public class Predicate<V> extends P<V> {
         super(biPredicate, value);
     }
 
+    /** <p>
+     *  method to check if HasContainer string is part of the property.
+     * </p>
+     * @param value incoming value
+     * @param <V> type of value
+     * @return Predicate to match string contains
+     */
     @SuppressWarnings("unchecked")
     public static <V> P<V> stringContains(final V value) {
         if (!(value instanceof String)) {
