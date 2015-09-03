@@ -11,6 +11,12 @@ public enum StringContains implements BiPredicate<String, String> {
         public boolean test(final String first, final String second) {
             return second.contains(first);
         }
+    },
+    notSubString {
+        @Override
+        public boolean test(String o, String s) {
+            return !s.contains(o);
+        }
     };
 
     @Override
@@ -18,7 +24,7 @@ public enum StringContains implements BiPredicate<String, String> {
 
     @Override
     public BiPredicate<String, String> negate() {
-        return this.equals(subString) ? subString : null;
+        return this.equals(subString) ? subString : notSubString;
     }
 
 }
