@@ -72,12 +72,15 @@ public class RocksIndex<T extends Element> {
 
         if (Vertex.class.isAssignableFrom(this.indexClass)) {
             hasKey = this.rocksGraph.getVertexIndex().getIndexedKeys().contains(key);
-            if (!hasKey)
+            if (!hasKey) {
+                //todo: move to stream and try parallel stream
                 iterator = this.rocksGraph.vertices();
+            }
             this.rocksGraph.getStorageHandler().getIndexDB().createIndex(Vertex.class, key);
         } else {
             hasKey = this.rocksGraph.getEdgeIndex().getIndexedKeys().contains(key);
             if (!hasKey) {
+                //todo: move to stream and try parallel stream
                 iterator = this.rocksGraph.edges();
             }
             this.rocksGraph.getStorageHandler().getIndexDB().createIndex(Edge.class, key);
