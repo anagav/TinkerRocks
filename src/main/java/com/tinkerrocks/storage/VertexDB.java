@@ -161,13 +161,11 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
 
             if (direction == Direction.BOTH || direction == Direction.IN) {
                 iterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.IN_EDGES));
-                System.out.println("seeking ..");
                 Utils.RocksIterUtil(iterator, seek_key, (key, value) -> {
                     if (edgeLabels.size() == 0) {
                         edgeIds.add(Utils.slice(key, seek_key.length));
                     } else {
                         byte[] edgeId = Utils.slice(key, Utils.findLastInArray(key, StorageConstants.PROPERTY_SEPARATOR), seek_key.length);
-                        System.out.println("adding id:" + new String(edgeId));
                         String edgeLabel = this.rocksGraph.getStorageHandler().getEdgeDB().getLabel(edgeId);
                         if (edgeLabels.contains(edgeLabel)) {
                             edgeIds.add(edgeId);
@@ -178,7 +176,6 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
             }
             if (direction == Direction.BOTH || direction == Direction.OUT) {
                 iterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.OUT_EDGES));
-                System.out.println("seeking .. out");
 
                 Utils.RocksIterUtil(iterator, seek_key, (key, value) -> {
                     byte[] edgeId = Utils.slice(key, Utils.findLastInArray(key, StorageConstants.PROPERTY_SEPARATOR));
