@@ -9,13 +9,13 @@ public enum StringContains implements BiPredicate<String, String> {
     subString {
         @Override
         public boolean test(final String first, final String second) {
-            return second.contains(first);
+            return first.toLowerCase().contains(second.toLowerCase());
         }
     },
     notSubString {
         @Override
         public boolean test(String o, String s) {
-            return !s.contains(o);
+            return !subString.test(o, s);
         }
     };
 

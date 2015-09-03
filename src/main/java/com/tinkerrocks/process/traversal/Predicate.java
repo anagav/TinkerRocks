@@ -17,6 +17,7 @@ public class Predicate<V> extends P<V> {
         if (!(value instanceof String)) {
             throw new IllegalArgumentException("cannot compare String and class: " + value.getClass());
         }
+        System.out.println("comparing values:" + value);
         return new P(StringContains.subString, value);
     }
 
