@@ -1,6 +1,5 @@
 package com.tinkerrocks.process.traversal;
 
-import org.apache.tinkerpop.gremlin.process.traversal.Compare;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 
 import java.util.function.BiPredicate;
@@ -15,8 +14,10 @@ public class Predicate<V> extends P<V> {
 
     @SuppressWarnings("unchecked")
     public static <V> P<V> stringContains(final V value) {
-
-        return new P(Compare.eq, value);
+        if (!(value instanceof String)) {
+            throw new IllegalArgumentException("cannot compare String and class: " + value.getClass());
+        }
+        return new P(StringContains.subString, value);
     }
 
 
