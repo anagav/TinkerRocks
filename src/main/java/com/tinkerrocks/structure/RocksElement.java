@@ -8,7 +8,10 @@ import org.apache.tinkerpop.gremlin.structure.Property;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public abstract class RocksElement implements Element {
@@ -86,10 +89,8 @@ public abstract class RocksElement implements Element {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        List<Property<V>> propertiesList = new ArrayList<>(properties.size());
-        propertiesList.addAll(properties.entrySet().stream()
-                .map(property -> new RocksProperty<>(this,
-                        property.getKey(), (V) property.getValue())).collect(Collectors.toList()));
+        List<Property<V>> propertiesList = properties.entrySet().stream().map(property -> new RocksProperty<>(this,
+                property.getKey(), (V) property.getValue())).collect(Collectors.toList());
 
         return propertiesList.iterator();
     }
