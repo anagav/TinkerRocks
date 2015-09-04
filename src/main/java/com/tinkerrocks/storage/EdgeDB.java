@@ -191,7 +191,6 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
         final byte[][] returnValue = new byte[1][1];
 
         try {
-
             Utils.RocksIterUtil(iterator, seek_key, (key, value) -> {
                 returnValue[0] = Utils.slice(iterator.key(), seek_key.length);
                 return false;
