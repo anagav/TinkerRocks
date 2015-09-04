@@ -5,7 +5,10 @@ import org.apache.tinkerpop.gremlin.structure.*;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 import org.rocksdb.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -129,7 +132,7 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
     }
 
 
-    public List<byte[]> getEdgeIDs(byte[] id, Direction direction, HashSet<String> edgeLabels) {
+    public List<byte[]> getEdgeIDs(byte[] id, Direction direction, String[] edgeLabels) {
         List<byte[]> edgeIds = new ArrayList<>();
         RocksIterator iterator;
         byte[] seek_key = Utils.merge(id, StorageConstants.PROPERTY_SEPARATOR);
@@ -137,7 +140,7 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
 
         try {
 
-            if (edgeLabels.size() > 0) {
+            if (edgeLabels.length > 0) {
                 for (String edgeLabel : edgeLabels) {
                     byte[] inner_seek_key = Utils.merge(seek_key, edgeLabel.getBytes(), StorageConstants.PROPERTY_SEPARATOR);
                     if (direction == Direction.BOTH || direction == Direction.IN) {
@@ -162,21 +165,13 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
             if (direction == Direction.BOTH || direction == Direction.IN) {
                 iterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.IN_EDGES));
                 Utils.RocksIterUtil(iterator, seek_key, (key, value) -> {
-                    if (edgeLabels.size() == 0) {
-                        edgeIds.add(Utils.slice(key, seek_key.length));
-                    } else {
-                        byte[] edgeId = Utils.slice(key, Utils.findLastInArray(key, StorageConstants.PROPERTY_SEPARATOR), seek_key.length);
-                        String edgeLabel = this.rocksGraph.getStorageHandler().getEdgeDB().getLabel(edgeId);
-                        if (edgeLabels.contains(edgeLabel)) {
-                            edgeIds.add(edgeId);
-                        }
-                    }
+                    byte[] edgeId = Utils.slice(key, Utils.findLastInArray(key, StorageConstants.PROPERTY_SEPARATOR));
+                    edgeIds.add(edgeId);
                     return true;
                 });
             }
             if (direction == Direction.BOTH || direction == Direction.OUT) {
                 iterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.OUT_EDGES));
-
                 Utils.RocksIterUtil(iterator, seek_key, (key, value) -> {
                     byte[] edgeId = Utils.slice(key, Utils.findLastInArray(key, StorageConstants.PROPERTY_SEPARATOR));
                     edgeIds.add(edgeId);

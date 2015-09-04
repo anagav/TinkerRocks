@@ -3,7 +3,10 @@ package com.tinkerrocks.structure;
 import org.apache.tinkerpop.gremlin.structure.*;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by ashishn on 8/5/15.
@@ -94,12 +97,12 @@ public class RocksVertex extends RocksElement implements Vertex {
     public Iterator<Edge> edges(Direction direction, String... edgeLabels) {
         if (this.removed) throw Element.Exceptions.elementAlreadyRemoved(Vertex.class, this.id);
 
-        HashSet<String> edgeLabelsBytes = new HashSet<>(edgeLabels.length);
+        //HashSet<String> edgeLabelsBytes = new HashSet<>(edgeLabels.length);
 
-        Collections.addAll(edgeLabelsBytes, edgeLabels);
+        //Collections.addAll(edgeLabelsBytes, edgeLabels);
 
         List<byte[]> edgeIds = this.rocksGraph.getStorageHandler().getVertexDB().getEdgeIDs((byte[]) this.id(),
-                direction, edgeLabelsBytes);
+                direction, edgeLabels);
 
         if (edgeIds.size() == 0) {
             return new ArrayList<Edge>().iterator();
@@ -123,11 +126,11 @@ public class RocksVertex extends RocksElement implements Vertex {
      */
     @Override
     public Iterator<Vertex> vertices(Direction direction, String... edgeLabels) {
-        HashSet<String> edgeLabelsBytes = new HashSet<>(edgeLabels.length);
+        //HashSet<String> edgeLabelsBytes = new HashSet<>(edgeLabels.length);
 
-        Collections.addAll(edgeLabelsBytes, edgeLabels);
+        //Collections.addAll(edgeLabelsBytes, edgeLabels);
 
-        List<byte[]> edgeIds = this.rocksGraph.getStorageHandler().getVertexDB().getEdgeIDs((byte[]) this.id(), direction, edgeLabelsBytes);
+        List<byte[]> edgeIds = this.rocksGraph.getStorageHandler().getVertexDB().getEdgeIDs((byte[]) this.id(), direction, edgeLabels);
         if (edgeIds.size() == 0) {
             return new ArrayList<Vertex>().iterator();
         }

@@ -8,20 +8,19 @@ import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 
-import java.util.HashSet;
 import java.util.List;
 
 /**
  * Created by ashishn on 8/28/15.
  */
-public interface VertexStorage extends CommonStorage{
+public interface VertexStorage extends CommonStorage {
     <V> void setProperty(byte[] id, String key, V value, VertexProperty.Cardinality cardinality);
 
     void addEdge(byte[] vertexId, Edge edge, Vertex inVertex) throws Exception;
 
     <V> List<VertexProperty<V>> getProperties(RocksElement rocksVertex, List<byte[]> propertyKeys) throws Exception;
 
-    List<byte[]> getEdgeIDs(byte[] id, Direction direction, HashSet<String> edgeLabels);
+    List<byte[]> getEdgeIDs(byte[] id, Direction direction, String[] edgeLabels);
 
     RocksVertex vertex(byte[] id, RocksGraph rocksGraph) throws Exception;
 

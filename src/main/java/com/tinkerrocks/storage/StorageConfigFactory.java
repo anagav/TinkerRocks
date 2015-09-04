@@ -11,7 +11,7 @@ public class StorageConfigFactory {
     private static ColumnFamilyOptions columnFamilyOptions;
     private static WriteOptions writeOptions;
     private static ReadOptions readOptions;
-    private static CompressionType compressionType = CompressionType.LZ4_COMPRESSION;
+    private static CompressionType compressionType = CompressionType.LZ4HC_COMPRESSION;
 
     public static DBOptions getDBOptions() {
         if (dbOptions != null) {
@@ -29,6 +29,7 @@ public class StorageConfigFactory {
                 .setTableCacheNumshardbits(10)
                 .setMaxBackgroundFlushes(10)
                 .setWalTtlSeconds(5 * 60)
+
                         //todo check later for performance
                 .setMaxTotalWalSize(30 * SizeUnit.GB)
                 .setMaxOpenFiles(-1)
@@ -56,11 +57,11 @@ public class StorageConfigFactory {
 
         table_options.setBlockCacheSize(512 * SizeUnit.GB)
                 .setBlockCacheCompressedNumShardBits(8)
-                .setHashIndexAllowCollision(false)
                 .setFilter(bloomFilter)
                 .setBlockSize(4096)
                 .setBlockSizeDeviation(5)
                 .setBlockRestartInterval(10)
+                .setChecksumType(ChecksumType.kNoChecksum)
                 .setBlockCacheCompressedSize(128 * SizeUnit.KB)
                 .setCacheNumShardBits(8);
 
@@ -70,7 +71,7 @@ public class StorageConfigFactory {
                 .setMinWriteBufferNumberToMerge(2)
                 .setMaxWriteBufferNumber(6)
                 .setMaxGrandparentOverlapFactor(10)
-                .setTargetFileSizeBase(128 * SizeUnit.MB)
+                .setTargetFileSizeBase(64 * SizeUnit.MB)
                 .setMaxBytesForLevelBase(512 * SizeUnit.MB)
                 .setCompactionStyle(CompactionStyle.LEVEL)
                 .setMemtablePrefixBloomBits(8 * 1024 * 1024)
