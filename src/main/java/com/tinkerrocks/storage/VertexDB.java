@@ -33,8 +33,8 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
                 put(getColumn(VERTEX_COLUMNS.PROPERTY_TYPE), record_key, StorageConstants.V_PROPERTY_SINGLE_TYPE);
             }
             if (cardinality == VertexProperty.Cardinality.list || cardinality == VertexProperty.Cardinality.set) {
-                byte[] oldData = this.rocksDB.get(getColumn(VERTEX_COLUMNS.PROPERTIES), record_key);
-                byte[] oldType = this.rocksDB.get(getColumn(VERTEX_COLUMNS.PROPERTY_TYPE), record_key);
+                byte[] oldData = get(getColumn(VERTEX_COLUMNS.PROPERTIES), record_key);
+                byte[] oldType = get(getColumn(VERTEX_COLUMNS.PROPERTY_TYPE), record_key);
                 ArrayList<V> results;
                 if (!Utils.compare(oldType, StorageConstants.V_PROPERTY_LIST_TYPE)) {
                     results = new ArrayList<>();
@@ -85,8 +85,8 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
 
         for (byte[] property : propertyKeys) {
             byte[] lookup_key = Utils.merge((byte[]) rocksVertex.id(), StorageConstants.PROPERTY_SEPARATOR, property);
-            byte[] type = rocksDB.get(getColumn(VERTEX_COLUMNS.PROPERTY_TYPE), lookup_key);
-            byte[] value = rocksDB.get(getColumn(VERTEX_COLUMNS.PROPERTIES), lookup_key);
+            byte[] type = get(getColumn(VERTEX_COLUMNS.PROPERTY_TYPE), lookup_key);
+            byte[] value = get(getColumn(VERTEX_COLUMNS.PROPERTIES), lookup_key);
 
             if (Utils.compare(type, StorageConstants.V_PROPERTY_SINGLE_TYPE)) {
                 results.add(new RocksVertexProperty<>(rocksVertex, new String(property), (V) deserialize(value, Object.class)));
@@ -112,19 +112,12 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
             this.rocksDB.put(StorageConfigFactory.getWriteOptions(), key, value);
     }
 
-    private byte[] get(byte[] key) {
-        try {
-            return this.get(null, key);
-        } catch (RocksDBException e) {
-            e.printStackTrace();
-        }
-        return null;
+
+    private byte[] get(byte[] key) throws RocksDBException {
+        return this.get(null, key);
     }
 
     private byte[] get(ColumnFamilyHandle columnFamilyHandle, byte[] key) throws RocksDBException {
-        if (key == null) {
-            return null;
-        }
         if (columnFamilyHandle != null)
             return this.rocksDB.get(columnFamilyHandle, StorageConfigFactory.getReadOptions(), key);
         else
@@ -256,7 +249,7 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
     }
 
     private boolean exists(byte[] idValue) throws RocksDBException {
-        return (this.rocksDB.get(idValue) != null);
+        return (get(idValue) != null);
     }
 
 
@@ -284,7 +277,7 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
 
     public RocksVertex getVertex(byte[] vertexId, RocksGraph rocksGraph) {
         try {
-            if (rocksDB.get(vertexId) == null) {
+            if (get(vertexId) == null) {
                 return null;
             }
             return new RocksVertex(vertexId, getLabel(vertexId), rocksGraph);
@@ -297,7 +290,7 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
 
 
     public String getLabel(byte[] vertexId) throws RocksDBException {
-        byte[] result = this.rocksDB.get(vertexId);
+        byte[] result = get(vertexId);
         if (result == null) {
             throw Graph.Exceptions.elementNotFound(Vertex.class, new String(vertexId));
         }
