@@ -169,8 +169,6 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
         try {
             byte[] in_vertex_id = getVertex(id, Direction.IN);
             byte[] out_vertex_id = getVertex(id, Direction.OUT);
-            //RocksVertex inVertex = rocksGraph.getStorageHandler().getVertexDB().vertex(in_vertex_id, rocksGraph);
-            //RocksVertex outVertex = rocksGraph.getStorageHandler().getVertexDB().vertex(out_vertex_id, rocksGraph);
             return new RocksEdge(id, getLabel(id), rocksGraph, in_vertex_id, out_vertex_id);
         } catch (Exception e) {
             e.printStackTrace();
@@ -191,6 +189,7 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
         final byte[][] returnValue = new byte[1][1];
 
         try {
+
             Utils.RocksIterUtil(iterator, seek_key, (key, value) -> {
                 returnValue[0] = Utils.slice(iterator.key(), seek_key.length);
                 return false;
