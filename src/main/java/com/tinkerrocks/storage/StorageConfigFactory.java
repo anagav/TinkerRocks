@@ -64,7 +64,7 @@ public class StorageConfigFactory {
                 .setCacheNumShardBits(8);
 
         columnFamilyOptions = new ColumnFamilyOptions()
-                .setWriteBufferSize(1 * SizeUnit.GB)
+                .setWriteBufferSize(512 * SizeUnit.MB)
                 .setMaxWriteBufferNumber(20)
                 .setMinWriteBufferNumberToMerge(2)
                 .setMaxWriteBufferNumber(6)
