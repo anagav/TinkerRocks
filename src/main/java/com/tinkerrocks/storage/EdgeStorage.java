@@ -15,7 +15,7 @@ import java.util.Map;
 public interface EdgeStorage extends CommonStorage {
     <V> void setProperty(byte[] id, String key, V value);
 
-    void addEdge(byte[] edge_id, String label, RocksElement inVertex, RocksElement outVertex, Object[] keyValues)
+    void addEdge(byte[] edge_id, String label, byte[] inVertex, byte[] outVertex, Object[] keyValues)
             throws Exception;
 
     List<byte[]> getVertexIDs(byte[] edgeId, Direction direction);

@@ -63,7 +63,7 @@ public class RocksVertex extends RocksElement implements Vertex {
         byte[] edge_id = String.valueOf(ElementHelper
                 .getIdValue(keyValues).orElse(UUID.randomUUID().toString().getBytes())).getBytes();  //UUID.randomUUID().toString().getBytes();
 
-        Edge edge = new RocksEdge(edge_id, label, this.rocksGraph, this, inVertex, keyValues);
+        Edge edge = new RocksEdge(edge_id, label, this.rocksGraph, (byte[]) this.id(), (byte[]) inVertex.id(), keyValues);
 
         try {
             this.rocksGraph.getStorageHandler().getVertexDB().addEdge((byte[]) this.id(), edge, inVertex);

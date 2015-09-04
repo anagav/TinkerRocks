@@ -4,6 +4,7 @@ import org.apache.tinkerpop.gremlin.structure.*;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -12,13 +13,11 @@ import java.util.Map;
  */
 public class RocksEdge extends RocksElement implements Edge {
 
-
-    protected Vertex inVertex;
-    protected Vertex outVertex;
-
+    byte[] inVertex;
+    byte[] outVertex;
 
     public RocksEdge(byte[] id, String label, RocksGraph rocksGraph,
-                     Vertex inVertex, Vertex outVertex) {
+                     byte[] inVertex, byte[] outVertex) {
         super(id, label, rocksGraph);
         this.inVertex = inVertex;
         this.outVertex = outVertex;
@@ -26,12 +25,12 @@ public class RocksEdge extends RocksElement implements Edge {
 
 
     public RocksEdge(byte[] id, String label, RocksGraph rocksGraph,
-                     Vertex inVertex, Vertex outVertex, Object[] keyValues) {
+                     byte[] inVertex, byte[] outVertex, Object[] keyValues) {
         super(id, label, rocksGraph);
         this.inVertex = inVertex;
         this.outVertex = outVertex;
         try {
-            this.rocksGraph.getStorageHandler().getEdgeDB().addEdge(id, label, (RocksElement) inVertex, (RocksElement) outVertex, keyValues);
+            this.rocksGraph.getStorageHandler().getEdgeDB().addEdge(id, label, inVertex, outVertex, keyValues);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -45,10 +44,8 @@ public class RocksEdge extends RocksElement implements Edge {
 
     public RocksEdge(byte[] id, RocksGraph rocksGraph) throws Exception {
         super(id, rocksGraph.getStorageHandler().getEdgeDB().getLabel(id), rocksGraph);
-        byte[] inVertexId = rocksGraph.getStorageHandler().getEdgeDB().getVertexIDs(id, Direction.IN).get(0);
-        byte[] outVertexId = rocksGraph.getStorageHandler().getEdgeDB().getVertexIDs(id, Direction.OUT).get(0);
-        this.inVertex = rocksGraph.getStorageHandler().getVertexDB().getVertex(inVertexId, rocksGraph);
-        this.outVertex = rocksGraph.getStorageHandler().getVertexDB().getVertex(outVertexId, rocksGraph);
+        this.inVertex = rocksGraph.getStorageHandler().getEdgeDB().getVertexIDs(id, Direction.IN).get(0);
+        this.outVertex = rocksGraph.getStorageHandler().getEdgeDB().getVertexIDs(id, Direction.OUT).get(0);
     }
 
 
@@ -62,12 +59,17 @@ public class RocksEdge extends RocksElement implements Edge {
     @Override
     public Iterator<Vertex> vertices(Direction direction) {
         checkRemoved();
-        ArrayList<Vertex> vertices = new ArrayList<>();
-        if (direction.equals(Direction.OUT) || direction.equals(Direction.BOTH))
-            vertices.add(outVertex);
-        if (direction.equals(Direction.IN) || direction.equals(Direction.BOTH))
-            vertices.add(inVertex);
-        return vertices.iterator();
+        try {
+            ArrayList<Vertex> vertices = new ArrayList<>();
+            if (direction.equals(Direction.OUT) || direction.equals(Direction.BOTH))
+                vertices.add(this.rocksGraph.getStorageHandler().getVertex(outVertex, rocksGraph));
+            if (direction.equals(Direction.IN) || direction.equals(Direction.BOTH))
+                vertices.add(this.rocksGraph.getStorageHandler().getVertex(inVertex, rocksGraph));
+            return vertices.iterator();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return Collections.emptyIterator();
 
     }
 

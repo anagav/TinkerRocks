@@ -2,7 +2,10 @@ package com.tinkerrocks.storage;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.tinkerrocks.structure.*;
+import com.tinkerrocks.structure.RocksEdge;
+import com.tinkerrocks.structure.RocksElement;
+import com.tinkerrocks.structure.RocksGraph;
+import com.tinkerrocks.structure.Utils;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
@@ -51,7 +54,7 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
     }
 
 
-    public void addEdge(byte[] edge_id, String label, RocksElement inVertex, RocksElement outVertex, Object[] keyValues)
+    public void addEdge(byte[] edge_id, String label, byte[] inVertex, byte[] outVertex, Object[] keyValues)
             throws RocksDBException {
         //todo temp disable edge check
 //        if (this.rocksDB.get(edge_id) != null) {
@@ -66,10 +69,10 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
         put(edge_id, label.getBytes());
 
         put(getColumn(EDGE_COLUMNS.IN_VERTICES), Utils.merge(edge_id,
-                StorageConstants.PROPERTY_SEPARATOR, (byte[]) inVertex.id()), (byte[]) inVertex.id());
+                StorageConstants.PROPERTY_SEPARATOR, inVertex), inVertex);
 
         put(getColumn(EDGE_COLUMNS.OUT_VERTICES), Utils.merge(edge_id,
-                StorageConstants.PROPERTY_SEPARATOR, (byte[]) outVertex.id()), (byte[]) outVertex.id());
+                StorageConstants.PROPERTY_SEPARATOR, outVertex), outVertex);
 
         Map<String, Object> properties = ElementHelper.asMap(keyValues);
         for (Map.Entry<String, Object> entry : properties.entrySet()) {
@@ -169,9 +172,9 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
         try {
             byte[] in_vertex_id = getVertex(id, Direction.IN);
             byte[] out_vertex_id = getVertex(id, Direction.OUT);
-            RocksVertex inVertex = rocksGraph.getStorageHandler().getVertexDB().vertex(in_vertex_id, rocksGraph);
-            RocksVertex outVertex = rocksGraph.getStorageHandler().getVertexDB().vertex(out_vertex_id, rocksGraph);
-            return new RocksEdge(id, getLabel(id), rocksGraph, inVertex, outVertex);
+            //RocksVertex inVertex = rocksGraph.getStorageHandler().getVertexDB().vertex(in_vertex_id, rocksGraph);
+            //RocksVertex outVertex = rocksGraph.getStorageHandler().getVertexDB().vertex(out_vertex_id, rocksGraph);
+            return new RocksEdge(id, getLabel(id), rocksGraph, in_vertex_id, out_vertex_id);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
