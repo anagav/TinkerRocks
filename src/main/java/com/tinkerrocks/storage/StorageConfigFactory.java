@@ -53,7 +53,7 @@ public class StorageConfigFactory {
 
         Filter bloomFilter = new BloomFilter(10, true);
 
-        table_options.setBlockCacheSize(512 * SizeUnit.GB)
+        table_options.setBlockCacheSize(512 * SizeUnit.MB)
                 .setBlockCacheCompressedNumShardBits(8)
                 .setFilter(bloomFilter)
                 .setBlockSize(4096)
