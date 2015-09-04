@@ -30,7 +30,7 @@ public class StorageConfigFactory {
                 .setMaxBackgroundFlushes(10)
                 .setWalTtlSeconds(5 * 60)
                         //todo check later for performance
-                .setMaxTotalWalSize(30 * SizeUnit.GB)
+                .setMaxTotalWalSize(20 * SizeUnit.GB)
                 .setMaxOpenFiles(-1)
                 .setDisableDataSync(true)
                 .setDeleteObsoleteFilesPeriodMicros(5 * 60 * 1000 * 1000)
@@ -53,18 +53,18 @@ public class StorageConfigFactory {
 
         Filter bloomFilter = new BloomFilter(10, true);
 
-        table_options.setBlockCacheSize(512 * SizeUnit.MB)
+        table_options.setBlockCacheSize(512 * SizeUnit.GB)
                 .setBlockCacheCompressedNumShardBits(8)
                 .setFilter(bloomFilter)
                 .setBlockSize(4096)
                 .setBlockSizeDeviation(5)
                 .setBlockRestartInterval(10)
                 .setChecksumType(ChecksumType.kNoChecksum)
-                .setBlockCacheCompressedSize(512 * SizeUnit.KB)
+                .setBlockCacheCompressedSize(128 * SizeUnit.KB)
                 .setCacheNumShardBits(8);
 
         columnFamilyOptions = new ColumnFamilyOptions()
-                .setWriteBufferSize(512 * SizeUnit.MB)
+                .setWriteBufferSize(1 * SizeUnit.GB)
                 .setMaxWriteBufferNumber(20)
                 .setMinWriteBufferNumberToMerge(2)
                 .setMaxWriteBufferNumber(6)
@@ -95,7 +95,7 @@ public class StorageConfigFactory {
             return writeOptions;
         }
         writeOptions = new WriteOptions();
-        //writeOptions.setSync(false);
+        writeOptions.setSync(false);
         return writeOptions;
     }
 
@@ -105,7 +105,6 @@ public class StorageConfigFactory {
             return readOptions;
         }
         readOptions = new ReadOptions();
-        readOptions.setFillCache(true);
         readOptions.setVerifyChecksums(false);
 
         return readOptions;
