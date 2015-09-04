@@ -2,7 +2,9 @@ package com.tinkerrocks.process.traversal;
 
 import java.util.function.BiPredicate;
 
-/**
+/** <p>
+ *  Class for stringContains Hascontainer support.
+ * </p>
  * Created by ashishn on 9/3/15.
  */
 public enum StringContains implements BiPredicate<String, String> {
