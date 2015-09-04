@@ -75,7 +75,7 @@ public abstract class RocksElement implements Element {
     @SuppressWarnings("unchecked")
     @Override
     public <V> Iterator<? extends Property<V>> properties(String... propertyKeys) {
-        Map<String, Object> properties = new HashMap<>(30);
+        Map<String, Object> properties = new HashMap<>(32);
 
         try {
             if (this instanceof Vertex) {
