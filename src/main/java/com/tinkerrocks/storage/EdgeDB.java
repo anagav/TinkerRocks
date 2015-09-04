@@ -54,6 +54,18 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
     }
 
 
+    private byte[] get(byte[] key) throws RocksDBException {
+        return this.get(null, key);
+    }
+
+    private byte[] get(ColumnFamilyHandle columnFamilyHandle, byte[] key) throws RocksDBException {
+        if (columnFamilyHandle != null)
+            return this.rocksDB.get(columnFamilyHandle, StorageConfigFactory.getReadOptions(), key);
+        else
+            return this.rocksDB.get(StorageConfigFactory.getReadOptions(), key);
+    }
+
+
     public void addEdge(byte[] edge_id, String label, byte[] inVertex, byte[] outVertex, Object[] keyValues)
             throws RocksDBException {
         //todo temp disable edge check
@@ -134,7 +146,7 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
         for (String property : propertyKeys) {
 
 
-            byte[] val = rocksDB.get(getColumn(EDGE_COLUMNS.PROPERTIES),
+            byte[] val = get(getColumn(EDGE_COLUMNS.PROPERTIES),
                     Utils.merge((byte[]) element.id(), StorageConstants.PROPERTY_SEPARATOR,
                             property.getBytes()));
 
@@ -253,7 +265,7 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
 
 
     public String getLabel(byte[] id) throws Exception {
-        return new String(this.rocksDB.get(id));
+        return new String(get(id));
     }
 
 
