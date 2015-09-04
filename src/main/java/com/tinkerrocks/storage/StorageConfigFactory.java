@@ -106,7 +106,6 @@ public class StorageConfigFactory {
         }
         readOptions = new ReadOptions();
         readOptions.setVerifyChecksums(false);
-
         return readOptions;
     }
 
