@@ -30,11 +30,12 @@ public class StorageConfigFactory {
                 .setMaxBackgroundFlushes(10)
                 .setWalTtlSeconds(5 * 60)
                         //todo check later for performance
-                .setMaxTotalWalSize(20 * SizeUnit.GB)
+                .setMaxTotalWalSize(30 * SizeUnit.GB)
                 .setMaxOpenFiles(-1)
                 .setDisableDataSync(true)
                 .setDeleteObsoleteFilesPeriodMicros(5 * 60 * 1000 * 1000)
                 .setAllowOsBuffer(true)
+                .setUseFsync(false)
                 .setBytesPerSync(2 << 20)
                 .setUseAdaptiveMutex(true);
 
@@ -53,18 +54,17 @@ public class StorageConfigFactory {
 
         Filter bloomFilter = new BloomFilter(10, true);
 
-        table_options.setBlockCacheSize(512 * SizeUnit.GB)
+        table_options.setBlockCacheSize(512 * SizeUnit.MB)
                 .setBlockCacheCompressedNumShardBits(8)
                 .setFilter(bloomFilter)
                 .setBlockSize(4096)
                 .setBlockSizeDeviation(5)
                 .setBlockRestartInterval(10)
-                .setChecksumType(ChecksumType.kNoChecksum)
                 .setBlockCacheCompressedSize(128 * SizeUnit.KB)
                 .setCacheNumShardBits(8);
 
         columnFamilyOptions = new ColumnFamilyOptions()
-                .setWriteBufferSize(1 * SizeUnit.GB)
+                .setWriteBufferSize(512 * SizeUnit.MB)
                 .setMaxWriteBufferNumber(20)
                 .setMinWriteBufferNumberToMerge(2)
                 .setMaxWriteBufferNumber(6)
@@ -79,6 +79,7 @@ public class StorageConfigFactory {
                 .setPurgeRedundantKvsWhileFlush(true)
                 .setDisableAutoCompactions(false)
                 .setFilterDeletes(true)
+                .setInplaceUpdateSupport(true)
                 .setLevelCompactionDynamicLevelBytes(true)
                 .setMaxBytesForLevelMultiplier(10)
                 .setLevelZeroFileNumCompactionTrigger(10)
