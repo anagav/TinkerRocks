@@ -239,5 +239,4 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
         return new String(get(id));
     }
 
-
 }
