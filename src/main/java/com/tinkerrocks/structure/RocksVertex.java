@@ -28,7 +28,7 @@ public class RocksVertex extends RocksElement implements Vertex {
     @SuppressWarnings("unchecked")
     @Override
     public <V> Iterator<VertexProperty<V>> properties(String... propertyKeys) {
-        List<byte[]> propKeys = new ArrayList<>();
+        List<byte[]> propKeys = new ArrayList<>(propertyKeys.length);
         for (String propertyKey : propertyKeys) {
             propKeys.add(propertyKey.getBytes());
         }
