@@ -69,12 +69,14 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
         if (propertyKeys.size() == 0) {
             RocksIterator rocksIterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.PROPERTIES));
             byte[] seek_key = Utils.merge((byte[]) rocksVertex.id(), StorageConstants.PROPERTY_SEPARATOR);
-            final List<byte[]> finalPropertyKeys = propertyKeys;
             Utils.RocksIterUtil(rocksIterator, seek_key, (key, value) -> {
-                if (value != null)
-                    finalPropertyKeys.add(Utils.slice(key, seek_key.length, key.length));
+                if (value != null) {
+                    byte[] property = Utils.slice(key, seek_key.length, key.length);
+                    results.add(new RocksVertexProperty<>(rocksVertex, new String(property), (V) deserialize(value, Object.class)));
+                }
                 return true;
             });
+            return results;
         }
 
         for (byte[] property : propertyKeys) {
