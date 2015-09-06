@@ -1,6 +1,5 @@
 package com.tinkerrocks.storage;
 
-import com.google.common.cache.Cache;
 import com.tinkerrocks.structure.RocksEdge;
 import com.tinkerrocks.structure.RocksElement;
 import com.tinkerrocks.structure.RocksGraph;
@@ -106,13 +105,6 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
 
                 return true;
             });
-
-
-//            for (rocksIterator.seek(seek_key); rocksIterator.isValid() && Utils.startsWith(rocksIterator.key(), 0, seek_key);
-//                 rocksIterator.next()) {
-//                results.put(new String(Utils.slice(rocksIterator.key(), seek_key.length, rocksIterator.key().length)),
-//                        deserialize(rocksIterator.value()));
-//            }
             return results;
         }
 
