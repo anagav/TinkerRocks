@@ -21,6 +21,4 @@ public interface IndexStorage extends CommonStorage {
     <T extends Element> void dropIndex(Class<T> indexClass, String key) throws Exception;
 
     <T extends Element> Set<String> getIndexedKeys(Class<T> indexClass);
-
-
 }
