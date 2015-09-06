@@ -94,7 +94,6 @@ public class IndexDB extends StorageAbstractClass implements IndexStorage {
         byte[] key1 = (className +
                 Byte.toString(StorageConstants.PROPERTY_SEPARATOR) + key + StorageConstants.PROPERTY_SEPARATOR + value).getBytes();
 
-        //key1 = ByteUtil.merge(key1, StorageConstants.PROPERTY_SEPARATOR.getBytes(), id);
         HashSet<byte[]> hashSet = (HashSet<byte[]>) deserialize(get(key1), HashSet.class);
         if (hashSet == null) {
             hashSet = new HashSet<>();
