@@ -79,11 +79,6 @@ public class IndexDB extends StorageAbstractClass implements IndexStorage {
         return columnFamilyHandleList.get(edge_column.ordinal() + 1);
     }
 
-    public void close() {
-        this.rocksDB.close();
-    }
-
-
     private String getIndexClass(Class _class) {
         return _class.getSimpleName();
     }

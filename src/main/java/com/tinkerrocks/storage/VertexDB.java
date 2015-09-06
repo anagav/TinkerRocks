@@ -18,12 +18,6 @@ import java.util.stream.Collectors;
 
 public class VertexDB extends StorageAbstractClass implements VertexStorage {
 
-
-    public void close() {
-        if (rocksDB != null)
-            this.rocksDB.close();
-    }
-
     @SuppressWarnings("unchecked")
     public <V> void setProperty(byte[] id, String key, V value, VertexProperty.Cardinality cardinality) {
         byte[] record_key = Utils.merge(id, StorageConstants.PROPERTY_SEPARATOR, key.getBytes());

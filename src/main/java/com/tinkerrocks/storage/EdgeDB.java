@@ -29,10 +29,6 @@ import java.util.stream.Collectors;
 public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
 
 
-    public void close() {
-        this.rocksDB.close();
-    }
-
     public <V> void setProperty(byte[] id, String key, V value) {
         try {
             put(getColumn(EDGE_COLUMNS.PROPERTIES),
