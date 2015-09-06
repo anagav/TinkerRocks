@@ -134,7 +134,7 @@ public class RocksVertex extends RocksElement implements Vertex {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return new ArrayList<Vertex>().iterator();
+        return Collections.emptyIterator();
     }
 
     @Override
