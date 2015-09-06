@@ -101,18 +101,6 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
     }
 
 
-    private void put(byte[] key, byte[] value) throws RocksDBException {
-        this.put(null, key, value);
-    }
-
-    private void put(ColumnFamilyHandle columnFamilyHandle, byte[] key, byte[] value) throws RocksDBException {
-        if (columnFamilyHandle != null)
-            this.rocksDB.put(columnFamilyHandle, StorageConfigFactory.getWriteOptions(), key, value);
-        else
-            this.rocksDB.put(StorageConfigFactory.getWriteOptions(), key, value);
-    }
-
-
     private byte[] get(byte[] key) throws RocksDBException {
         return this.get(null, key);
     }
@@ -206,10 +194,6 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
     }
 
 
-    RocksDB rocksDB;
-    List<ColumnFamilyHandle> columnFamilyHandleList;
-    List<ColumnFamilyDescriptor> columnFamilyDescriptors;
-
     public VertexDB(RocksGraph rocksGraph) throws RocksDBException {
         super(rocksGraph);
         RocksDB.loadLibrary();
@@ -232,7 +216,7 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
         return columnFamilyHandleList.get(vertex_column.ordinal() + 1);
     }
 
-    public void addVertex(byte[] idValue, String label, Object[] keyValues) throws RocksDBException {
+    public void addVertex(byte[] idValue, String label, Object[] keyValues) throws Exception {
         if (exists(idValue)) {
             throw Graph.Exceptions.vertexWithIdAlreadyExists(new String(idValue));
         }

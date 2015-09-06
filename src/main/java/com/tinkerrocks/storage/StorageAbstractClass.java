@@ -6,11 +6,16 @@ import org.apache.tinkerpop.shaded.kryo.io.Input;
 import org.apache.tinkerpop.shaded.kryo.io.Output;
 import org.apache.tinkerpop.shaded.kryo.pool.KryoFactory;
 import org.apache.tinkerpop.shaded.kryo.pool.KryoPool;
+import org.rocksdb.ColumnFamilyDescriptor;
+import org.rocksdb.ColumnFamilyHandle;
+import org.rocksdb.RocksDB;
+import org.rocksdb.RocksDBException;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -21,6 +26,11 @@ public abstract class StorageAbstractClass {
 
     protected KryoPool pool;
     protected RocksGraph rocksGraph;
+    RocksDB rocksDB;
+    List<ColumnFamilyHandle> columnFamilyHandleList;
+    List<ColumnFamilyDescriptor> columnFamilyDescriptors;
+
+
 
     public StorageAbstractClass(RocksGraph rocksGraph) {
         KryoFactory factory = () -> {
@@ -68,6 +78,19 @@ public abstract class StorageAbstractClass {
 
     protected String getDbPath() {
         return rocksGraph.getConfiguration().getString(StorageConstants.STORAGE_DIR_PROPERTY);
+    }
+
+
+
+    protected void put(byte[] key, byte[] value) throws Exception {
+        this.put(null, key, value);
+    }
+
+    protected void put(ColumnFamilyHandle columnFamilyHandle, byte[] key, byte[] value) throws RocksDBException {
+        if (columnFamilyHandle != null)
+            this.rocksDB.put(columnFamilyHandle, StorageConfigFactory.getWriteOptions(), key, value);
+        else
+            this.rocksDB.put(StorageConfigFactory.getWriteOptions(), key, value);
     }
 
 

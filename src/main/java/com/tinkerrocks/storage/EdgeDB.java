@@ -42,18 +42,6 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
         }
     }
 
-    private void put(byte[] key, byte[] value) throws RocksDBException {
-        this.put(null, key, value);
-    }
-
-    private void put(ColumnFamilyHandle columnFamilyHandle, byte[] key, byte[] value) throws RocksDBException {
-        if (columnFamilyHandle != null)
-            this.rocksDB.put(columnFamilyHandle, StorageConfigFactory.getWriteOptions(), key, value);
-        else
-            this.rocksDB.put(StorageConfigFactory.getWriteOptions(), key, value);
-    }
-
-
     private byte[] get(byte[] key) throws RocksDBException {
         return this.get(null, key);
     }
@@ -67,7 +55,7 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
 
 
     public void addEdge(byte[] edge_id, String label, byte[] inVertex, byte[] outVertex, Object[] keyValues)
-            throws RocksDBException {
+            throws Exception {
         //todo temp disable edge check
 //        if (this.rocksDB.get(edge_id) != null) {
 //            throw Graph.Exceptions.edgeWithIdAlreadyExists(edge_id);
@@ -236,9 +224,6 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
     }
 
 
-    RocksDB rocksDB;
-    List<ColumnFamilyHandle> columnFamilyHandleList;
-    List<ColumnFamilyDescriptor> columnFamilyDescriptors;
     Cache<byte[], RocksEdge> edgeCache;
 
 

@@ -66,12 +66,6 @@ public class IndexDB extends StorageAbstractClass implements IndexStorage {
         }
     }
 
-
-    RocksDB rocksDB;
-    List<ColumnFamilyHandle> columnFamilyHandleList;
-    List<ColumnFamilyDescriptor> columnFamilyDescriptors;
-
-
     public IndexDB(RocksGraph rocksGraph) throws RocksDBException {
         super(rocksGraph);
 
@@ -90,16 +84,6 @@ public class IndexDB extends StorageAbstractClass implements IndexStorage {
     }
 
 
-    public void put(byte[] key, byte[] value) throws Exception {
-        this.put(null, key, value);
-    }
-
-    private void put(ColumnFamilyHandle columnFamilyHandle, byte[] key, byte[] value) throws RocksDBException {
-        if (columnFamilyHandle != null)
-            this.rocksDB.put(columnFamilyHandle, StorageConfigFactory.getWriteOptions(), key, value);
-        else
-            this.rocksDB.put(StorageConfigFactory.getWriteOptions(), key, value);
-    }
 
 
     public ColumnFamilyHandle getColumn(INDEX_COLUMNS edge_column) {

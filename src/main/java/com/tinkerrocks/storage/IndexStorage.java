@@ -14,8 +14,6 @@ public interface IndexStorage extends CommonStorage {
 
     void createIndex(Class indexClass, String key);
 
-    void put(byte[] key, byte[] value) throws Exception;
-
     <T extends Element> void putIndex(Class<T> indexClass, String key, Object value, byte[] id) throws Exception;
 
     <T extends Element> List<byte[]> getIndex(Class<T> indexClass, String key, Object value);
