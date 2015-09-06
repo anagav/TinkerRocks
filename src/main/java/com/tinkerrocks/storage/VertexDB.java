@@ -140,8 +140,8 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
 
             }
 
-        } catch (Exception ignored) {
-            ignored.printStackTrace();
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
         return edgeIds;
     }
