@@ -105,8 +105,6 @@ public class RocksVertexProperty<V> implements VertexProperty<V> {
 
     @Override
     public String toString() {
-        if (!this.isPresent()) return StringFactory.propertyString(VertexProperty.empty());
-        final String valueString = String.valueOf(value());
-        return "vp" + "[" + key() + "->" + valueString + "]";
+        return StringFactory.propertyString(this);
     }
 }
