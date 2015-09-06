@@ -127,9 +127,7 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
                 iterator.next();
             }
         }
-
         edges = ids.stream().map(bytes -> getEdge(bytes, rocksGraph)).filter(r -> r != null).collect(Collectors.toList());
-
         return edges;
     }
 
