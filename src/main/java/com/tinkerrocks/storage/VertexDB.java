@@ -185,13 +185,13 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
                     StorageConfigFactory.getColumnFamilyOptions()));
         }
 
-
         this.rocksDB = RocksDB.open(StorageConfigFactory.getDBOptions(), getDbPath() + "/vertices", columnFamilyDescriptors, columnFamilyHandleList);
         this.rocksDB.enableFileDeletions(true);
 
     }
 
     public ColumnFamilyHandle getColumn(VERTEX_COLUMNS vertex_column) {
+        // + 1 bcoz rocksdb requires opening default cf as first in the list.
         return columnFamilyHandleList.get(vertex_column.ordinal() + 1);
     }
 
