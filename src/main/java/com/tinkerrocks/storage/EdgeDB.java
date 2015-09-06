@@ -42,16 +42,6 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
         }
     }
 
-    private byte[] get(byte[] key) throws RocksDBException {
-        return this.get(null, key);
-    }
-
-    private byte[] get(ColumnFamilyHandle columnFamilyHandle, byte[] key) throws RocksDBException {
-        if (columnFamilyHandle != null)
-            return this.rocksDB.get(columnFamilyHandle, StorageConfigFactory.getReadOptions(), key);
-        else
-            return this.rocksDB.get(StorageConfigFactory.getReadOptions(), key);
-    }
 
 
     public void addEdge(byte[] edge_id, String label, byte[] inVertex, byte[] outVertex, Object[] keyValues)

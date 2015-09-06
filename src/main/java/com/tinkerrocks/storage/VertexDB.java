@@ -100,19 +100,6 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
         return results;
     }
 
-
-    private byte[] get(byte[] key) throws RocksDBException {
-        return this.get(null, key);
-    }
-
-    private byte[] get(ColumnFamilyHandle columnFamilyHandle, byte[] key) throws RocksDBException {
-        if (columnFamilyHandle != null)
-            return this.rocksDB.get(columnFamilyHandle, StorageConfigFactory.getReadOptions(), key);
-        else
-            return this.rocksDB.get(StorageConfigFactory.getReadOptions(), key);
-    }
-
-
     public List<byte[]> getEdgeIDs(byte[] id, Direction direction, String[] edgeLabels) {
         List<byte[]> edgeIds = new ArrayList<>();
         RocksIterator iterator;

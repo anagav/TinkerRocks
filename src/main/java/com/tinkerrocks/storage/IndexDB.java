@@ -31,17 +31,6 @@ public class IndexDB extends StorageAbstractClass implements IndexStorage {
     }
 
 
-    private byte[] get(byte[] key) throws RocksDBException {
-        return this.get(null, key);
-    }
-
-    private byte[] get(ColumnFamilyHandle columnFamilyHandle, byte[] key) throws RocksDBException {
-        if (columnFamilyHandle != null)
-            return this.rocksDB.get(columnFamilyHandle, StorageConfigFactory.getReadOptions(), key);
-        else
-            return this.rocksDB.get(StorageConfigFactory.getReadOptions(), key);
-    }
-
     public void createIndex(Class indexClass, String key) {
         try {
             put(getColumn(INDEX_COLUMNS.INDEX_KEYS), (getIndexClass(indexClass) +

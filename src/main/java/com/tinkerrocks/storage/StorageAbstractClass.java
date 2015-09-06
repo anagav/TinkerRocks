@@ -31,7 +31,6 @@ public abstract class StorageAbstractClass {
     List<ColumnFamilyDescriptor> columnFamilyDescriptors;
 
 
-
     public StorageAbstractClass(RocksGraph rocksGraph) {
         KryoFactory factory = () -> {
             Kryo kryo = new Kryo();
@@ -81,7 +80,6 @@ public abstract class StorageAbstractClass {
     }
 
 
-
     protected void put(byte[] key, byte[] value) throws Exception {
         this.put(null, key, value);
     }
@@ -91,6 +89,18 @@ public abstract class StorageAbstractClass {
             this.rocksDB.put(columnFamilyHandle, StorageConfigFactory.getWriteOptions(), key, value);
         else
             this.rocksDB.put(StorageConfigFactory.getWriteOptions(), key, value);
+    }
+
+
+    protected byte[] get(byte[] key) throws RocksDBException {
+        return this.get(null, key);
+    }
+
+    protected byte[] get(ColumnFamilyHandle columnFamilyHandle, byte[] key) throws RocksDBException {
+        if (columnFamilyHandle != null)
+            return this.rocksDB.get(columnFamilyHandle, StorageConfigFactory.getReadOptions(), key);
+        else
+            return this.rocksDB.get(StorageConfigFactory.getReadOptions(), key);
     }
 
 
