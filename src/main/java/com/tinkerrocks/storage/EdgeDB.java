@@ -1,7 +1,6 @@
 package com.tinkerrocks.storage;
 
 import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.tinkerrocks.structure.RocksEdge;
 import com.tinkerrocks.structure.RocksElement;
 import com.tinkerrocks.structure.RocksGraph;
@@ -210,9 +209,6 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
     }
 
 
-    Cache<byte[], RocksEdge> edgeCache;
-
-
     public EdgeDB(RocksGraph rocksGraph) throws RocksDBException {
         super(rocksGraph);
         RocksDB.loadLibrary();
@@ -226,7 +222,6 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
         }
         this.rocksDB = RocksDB.open(StorageConfigFactory.getDBOptions(), getDbPath() + "/edges", columnFamilyDescriptors, columnFamilyHandleList);
         this.rocksDB.enableFileDeletions(true);
-        this.edgeCache = CacheBuilder.newBuilder().maximumSize(1000).concurrencyLevel(1000).build();
     }
 
 
