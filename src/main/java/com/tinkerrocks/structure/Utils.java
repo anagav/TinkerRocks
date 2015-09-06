@@ -1,8 +1,6 @@
 package com.tinkerrocks.structure;
 
 import com.google.common.primitives.Bytes;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.apache.commons.lang.ArrayUtils;
 import org.rocksdb.RocksIterator;
 
@@ -15,8 +13,6 @@ import java.util.Arrays;
  * Created by ashishn on 8/5/15.
  */
 public class Utils {
-
-    static Gson gson = new GsonBuilder().create();
 
     public static boolean startsWith(byte[] source, int offset, byte[] match) {
 
