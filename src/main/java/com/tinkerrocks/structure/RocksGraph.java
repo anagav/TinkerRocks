@@ -192,7 +192,7 @@ public final class RocksGraph implements Graph {
         }
 
         //todo place holder
-        return new ArrayList<Edge>().iterator();
+        return Collections.emptyIterator();
     }
 
     @Override

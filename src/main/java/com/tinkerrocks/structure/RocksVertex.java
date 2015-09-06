@@ -123,8 +123,8 @@ public class RocksVertex extends RocksElement implements Vertex {
         if (edgeIds.size() == 0) {
             return Collections.emptyIterator();
         }
-        List<byte[]> vertexIds = new ArrayList<>();
-
+        //conservative allocations
+        List<byte[]> vertexIds = new ArrayList<>(150);
 
         for (byte[] edgeId : edgeIds) {
             vertexIds.addAll(this.rocksGraph.getStorageHandler().getEdgeDB().getVertexIDs(edgeId, direction));
