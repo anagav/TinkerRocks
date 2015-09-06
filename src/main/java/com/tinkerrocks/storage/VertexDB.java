@@ -105,9 +105,7 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
         RocksIterator iterator;
         byte[] seek_key = Utils.merge(id, StorageConstants.PROPERTY_SEPARATOR);
 
-
         try {
-
             if (edgeLabels.length > 0) {
                 for (String edgeLabel : edgeLabels) {
                     byte[] inner_seek_key = Utils.merge(seek_key, edgeLabel.getBytes(), StorageConstants.PROPERTY_SEPARATOR);
