@@ -103,22 +103,29 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
 
         try {
             if (edgeLabels.length > 0) {
+                RocksIterator inRocksIterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.IN_EDGES));
+                RocksIterator outRocksIterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.OUT_EDGES));
+
                 for (String edgeLabel : edgeLabels) {
                     byte[] inner_seek_key = Utils.merge(seek_key, edgeLabel.getBytes(), StorageConstants.PROPERTY_SEPARATOR);
                     if (direction == Direction.BOTH || direction == Direction.IN) {
-                        iterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.IN_EDGES));
-                        Utils.RocksIterUtil(iterator, inner_seek_key, (key, value) -> {
+                        Utils.RocksIterUtil(inRocksIterator, false, inner_seek_key, (key, value) -> {
                             edgeIds.add(Utils.slice(key, inner_seek_key.length));
                             return true;
                         });
                     }
                     if (direction == Direction.BOTH || direction == Direction.OUT) {
-                        iterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.OUT_EDGES));
-                        Utils.RocksIterUtil(iterator, inner_seek_key, (key, value) -> {
+                        Utils.RocksIterUtil(outRocksIterator, false, inner_seek_key, (key, value) -> {
                             edgeIds.add(Utils.slice(key, inner_seek_key.length));
                             return true;
                         });
                     }
+                }
+                if (inRocksIterator != null) {
+                    inRocksIterator.dispose();
+                }
+                if (outRocksIterator != null) {
+                    outRocksIterator.dispose();
                 }
                 return edgeIds;
             }
