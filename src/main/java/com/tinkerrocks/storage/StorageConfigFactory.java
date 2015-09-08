@@ -11,7 +11,7 @@ public class StorageConfigFactory {
     private static ColumnFamilyOptions columnFamilyOptions;
     private static WriteOptions writeOptions;
     private static ReadOptions readOptions;
-    private static CompressionType compressionType = CompressionType.ZLIB_COMPRESSION;
+    private static CompressionType compressionType = CompressionType.SNAPPY_COMPRESSION;
 
     public static DBOptions getDBOptions() {
         if (dbOptions != null) {

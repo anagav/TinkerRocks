@@ -20,6 +20,9 @@ public interface EdgeStorage extends CommonStorage {
 
     List<byte[]> getVertexIDs(byte[] edgeId, Direction direction);
 
+    List<byte[]> getVertexIDs(List<byte[]> edgeId, Direction direction);
+
+
     Map<String, Object> getProperties(RocksElement element, String[] propertyKeys) throws Exception;
 
     List<Edge> edges(List<byte[]> ids, RocksGraph rocksGraph) throws Exception;

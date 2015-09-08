@@ -124,11 +124,14 @@ public class RocksVertex extends RocksElement implements Vertex {
             return Collections.emptyIterator();
         }
         //conservative allocations
-        List<byte[]> vertexIds = new ArrayList<>(150);
+        List<byte[]> vertexIds = new ArrayList<>(100);
 
-        for (byte[] edgeId : edgeIds) {
-            vertexIds.addAll(this.rocksGraph.getStorageHandler().getEdgeDB().getVertexIDs(edgeId, direction));
-        }
+//        edgeIds.stream().forEach(bytes ->
+//                vertexIds.addAll(this.rocksGraph.getStorageHandler().getEdgeDB().getVertexIDs(bytes, direction)));
+
+        //for (byte[] edgeId : edgeIds) {
+        vertexIds = this.rocksGraph.getStorageHandler().getEdgeDB().getVertexIDs(edgeIds, direction);
+        //}
         try {
             return this.rocksGraph.getStorageHandler().getVertexDB().vertices(vertexIds, this.rocksGraph).iterator();
         } catch (Exception e) {

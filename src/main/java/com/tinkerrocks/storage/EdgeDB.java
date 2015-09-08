@@ -37,7 +37,6 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
     }
 
 
-
     public void addEdge(byte[] edge_id, String label, byte[] inVertex, byte[] outVertex, Object[] keyValues)
             throws Exception {
         //todo temp disable edge check
@@ -88,6 +87,40 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
             }
         } catch (Exception ex) {
             ex.printStackTrace();
+        }
+        return vertexIDs;
+    }
+
+    @Override
+    public List<byte[]> getVertexIDs(List<byte[]> edgeIds, Direction direction) {
+        List<byte[]> vertexIDs = new ArrayList<>(150);
+        RocksIterator inRocksIterator = this.rocksDB.newIterator(getColumn(EDGE_COLUMNS.IN_VERTICES));
+        RocksIterator outRocksIterator = this.rocksDB.newIterator(getColumn(EDGE_COLUMNS.OUT_VERTICES));
+
+        try {
+            for (byte[] edgeId : edgeIds) {
+                byte[] seek_key = Utils.merge(edgeId, StorageConstants.PROPERTY_SEPARATOR);
+
+                if (direction == Direction.BOTH || direction == Direction.IN) {
+                    Utils.RocksIterUtil(inRocksIterator, false, seek_key, (key, value) -> {
+                        vertexIDs.add(Utils.slice(key, seek_key.length));
+                        return true;
+                    });
+                }
+                if (direction == Direction.BOTH || direction == Direction.OUT) {
+                    Utils.RocksIterUtil(outRocksIterator, false, seek_key, (key, value) -> {
+                        vertexIDs.add(Utils.slice(key, seek_key.length));
+                        return true;
+                    });
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            if (inRocksIterator != null)
+                inRocksIterator.dispose();
+            if (outRocksIterator != null)
+                outRocksIterator.dispose();
         }
         return vertexIDs;
     }
