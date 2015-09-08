@@ -16,7 +16,7 @@ public class RocksEdge extends RocksElement implements Edge {
     byte[] inVertex;
     byte[] outVertex;
 
-    public RocksEdge(byte[] id, String label, RocksGraph rocksGraph,
+    public  RocksEdge(byte[] id, String label, RocksGraph rocksGraph,
                      byte[] inVertex, byte[] outVertex) {
         super(id, label, rocksGraph);
         this.inVertex = inVertex;
