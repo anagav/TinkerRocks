@@ -3,9 +3,14 @@ package com.tinkerrocks.storage;
 import com.tinkerrocks.structure.*;
 import org.apache.tinkerpop.gremlin.structure.*;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
-import org.rocksdb.*;
+import org.rocksdb.ColumnFamilyDescriptor;
+import org.rocksdb.ColumnFamilyHandle;
+import org.rocksdb.RocksDB;
+import org.rocksdb.RocksDBException;
+import org.rocksdb.RocksIterator;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -239,6 +244,9 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
             } finally {
                 iterator.dispose();
             }
+        }
+        if (vertexIds.size() == 0) {
+            return Collections.emptyList();
         }
         Map<byte[], byte[]> keys = this.rocksDB.multiGet(vertexIds);
         return keys.entrySet().stream().map(entry -> getVertex(entry.getKey(), entry.getValue(), rocksGraph))
