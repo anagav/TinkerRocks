@@ -220,7 +220,7 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
 
     public List<Vertex> vertices(List<byte[]> vertexIds, RocksGraph rocksGraph) throws RocksDBException {
 
-        if (vertexIds == null) {
+        if (vertexIds == null || vertexIds.size() == 0) {
             RocksIterator iterator = this.rocksDB.newIterator();
             vertexIds = new ArrayList<>();
             iterator.seekToFirst();
@@ -233,18 +233,19 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
                 iterator.dispose();
             }
         }
+        Map<byte[], byte[]> keys = this.rocksDB.multiGet(vertexIds);
+        return keys.entrySet().parallelStream().map(entry -> getVertex(entry.getKey(), entry.getValue(), rocksGraph))
+                .collect(Collectors.toList());
 
+    }
 
-        return vertexIds.stream().map(bytes -> getVertex(bytes, rocksGraph)).
-                filter(rocksVertex -> rocksVertex != null).collect(Collectors.toList());
+    private RocksVertex getVertex(byte[] key, byte[] value, RocksGraph rocksGraph) {
+        return new RocksVertex(key, new String(value), rocksGraph);
     }
 
 
     public RocksVertex getVertex(byte[] vertexId, RocksGraph rocksGraph) {
         try {
-            if (get(vertexId) == null) {
-                return null;
-            }
             return new RocksVertex(vertexId, getLabel(vertexId), rocksGraph);
         } catch (RocksDBException ex) {
             ex.printStackTrace();
