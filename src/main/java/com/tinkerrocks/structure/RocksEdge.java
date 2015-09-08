@@ -13,22 +13,14 @@ import java.util.Map;
  */
 public class RocksEdge extends RocksElement implements Edge {
 
-    byte[] inVertex;
-    byte[] outVertex;
-
-    public  RocksEdge(byte[] id, String label, RocksGraph rocksGraph,
-                     byte[] inVertex, byte[] outVertex) {
+    public RocksEdge(byte[] id, String label, RocksGraph rocksGraph) {
         super(id, label, rocksGraph);
-        this.inVertex = inVertex;
-        this.outVertex = outVertex;
     }
 
 
     public RocksEdge(byte[] id, String label, RocksGraph rocksGraph,
                      byte[] inVertex, byte[] outVertex, Object[] keyValues) {
         super(id, label, rocksGraph);
-        this.inVertex = inVertex;
-        this.outVertex = outVertex;
         try {
             this.rocksGraph.getStorageHandler().getEdgeDB().addEdge(id, label, inVertex, outVertex, keyValues);
         } catch (Exception e) {
@@ -44,8 +36,6 @@ public class RocksEdge extends RocksElement implements Edge {
 
     public RocksEdge(byte[] id, RocksGraph rocksGraph) throws Exception {
         super(id, rocksGraph.getStorageHandler().getEdgeDB().getLabel(id), rocksGraph);
-        this.inVertex = rocksGraph.getStorageHandler().getEdgeDB().getVertexIDs(id, Direction.IN).get(0);
-        this.outVertex = rocksGraph.getStorageHandler().getEdgeDB().getVertexIDs(id, Direction.OUT).get(0);
     }
 
 
@@ -61,10 +51,14 @@ public class RocksEdge extends RocksElement implements Edge {
         checkRemoved();
         try {
             ArrayList<Vertex> vertices = new ArrayList<>();
-            if (direction.equals(Direction.OUT) || direction.equals(Direction.BOTH))
+            if (direction.equals(Direction.OUT) || direction.equals(Direction.BOTH)) {
+                byte[] outVertex = rocksGraph.getStorageHandler().getEdgeDB().getVertexIDs(id, Direction.OUT).get(0);
                 vertices.add(this.rocksGraph.getStorageHandler().getVertex(outVertex, rocksGraph));
-            if (direction.equals(Direction.IN) || direction.equals(Direction.BOTH))
+            }
+            if (direction.equals(Direction.IN) || direction.equals(Direction.BOTH)) {
+                byte[] inVertex = rocksGraph.getStorageHandler().getEdgeDB().getVertexIDs(id, Direction.IN).get(0);
                 vertices.add(this.rocksGraph.getStorageHandler().getVertex(inVertex, rocksGraph));
+            }
             return vertices.iterator();
         } catch (Exception ex) {
             ex.printStackTrace();

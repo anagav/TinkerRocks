@@ -167,9 +167,7 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
     @Override
     public RocksEdge getEdge(byte[] id, RocksGraph rocksGraph) {
         try {
-            byte[] in_vertex_id = getVertex(id, Direction.IN);
-            byte[] out_vertex_id = getVertex(id, Direction.OUT);
-            return new RocksEdge(id, getLabel(id), rocksGraph, in_vertex_id, out_vertex_id);
+            return new RocksEdge(id, getLabel(id), rocksGraph);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
