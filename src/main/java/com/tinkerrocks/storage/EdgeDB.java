@@ -174,32 +174,6 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
         }
     }
 
-    private byte[] getVertex(byte[] id, Direction direction) {
-        RocksIterator iterator;
-        if (direction == Direction.BOTH || direction == Direction.OUT)
-            iterator = this.rocksDB.newIterator(getColumn(EDGE_COLUMNS.OUT_VERTICES));
-        else {
-            iterator = this.rocksDB.newIterator(getColumn(EDGE_COLUMNS.IN_VERTICES));
-        }
-
-        byte[] seek_key = Utils.merge(id, StorageConstants.PROPERTY_SEPARATOR);
-
-        final byte[][] returnValue = new byte[1][1];
-
-        try {
-
-            Utils.RocksIterUtil(iterator, seek_key, (key, value) -> {
-                returnValue[0] = Utils.slice(iterator.key(), seek_key.length);
-                return false;
-            });
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-        return returnValue[0];
-
-    }
-
     public void remove(RocksEdge rocksEdge) throws RocksDBException {
         this.rocksDB.remove((byte[]) rocksEdge.id());
     }
