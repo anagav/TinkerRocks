@@ -103,6 +103,7 @@ public abstract class StorageAbstractClass {
             return this.rocksDB.get(StorageConfigFactory.getReadOptions(), key);
     }
 
+
     public void close() {
         if (rocksDB != null) {
             this.rocksDB.dispose();
