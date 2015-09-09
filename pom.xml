@@ -32,11 +32,11 @@
                                 <id>rocksdb-install</id>
                                 <phase>clean</phase>
                                 <configuration>
-                                    <file>${project.basedir}/lib/rocksdbjni-3.11.2-osx.jar</file>
+                                    <file>${project.basedir}/lib/rocksdbjni-3.13.1-osx.jar</file>
                                     <repositoryLayout>default</repositoryLayout>
                                     <groupId>org.rocksdb</groupId>
                                     <artifactId>rocksdbjni</artifactId>
-                                    <version>3.11.2</version>
+                                    <version>3.13.1</version>
                                     <packaging>jar</packaging>
                                     <generatePom>true</generatePom>
                                 </configuration>
@@ -64,7 +64,7 @@
                 <dependency>
                     <groupId>org.rocksdb</groupId>
                     <artifactId>rocksdbjni</artifactId>
-                    <version>3.11.2</version>
+                    <version>3.13.1</version>
                 </dependency>
             </dependencies>
 
@@ -84,6 +84,7 @@
                     <groupId>org.rocksdb</groupId>
                     <artifactId>rocksdbjni</artifactId>
                     <version>3.10.1</version>
+                    <scope>provided</scope>
                 </dependency>
             </dependencies>
 
