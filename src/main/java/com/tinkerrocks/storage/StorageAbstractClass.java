@@ -58,6 +58,7 @@ public abstract class StorageAbstractClass {
 
 
     private Object deserialize(byte[] inbBytes) {
+
         if (inbBytes == null) {
             return null;
         }
@@ -72,6 +73,7 @@ public abstract class StorageAbstractClass {
         if (data == null) {
             return null;
         }
+
         return _clazz.cast(deserialize(inbBytes));
     }
 

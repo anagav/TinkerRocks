@@ -18,7 +18,7 @@ public interface VertexStorage extends CommonStorage {
 
     void addEdge(byte[] vertexId, Edge edge, Vertex inVertex) throws Exception;
 
-    <V> List<VertexProperty<V>> getProperties(RocksElement rocksVertex, List<byte[]> propertyKeys) throws Exception;
+    <V> List<VertexProperty<V>> getProperties(RocksElement rocksVertex, String[] propertyKeys) throws Exception;
 
     List<byte[]> getEdgeIDs(byte[] id, Direction direction, String[] edgeLabels);
 

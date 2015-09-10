@@ -3,7 +3,10 @@ package com.tinkerrocks.structure;
 import org.apache.tinkerpop.gremlin.structure.*;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by ashishn on 8/5/15.
@@ -28,12 +31,8 @@ public class RocksVertex extends RocksElement implements Vertex {
     @SuppressWarnings("unchecked")
     @Override
     public <V> Iterator<VertexProperty<V>> properties(String... propertyKeys) {
-        List<byte[]> propKeys = new ArrayList<>(propertyKeys.length);
-        for (String propertyKey : propertyKeys) {
-            propKeys.add(propertyKey.getBytes());
-        }
         try {
-            return this.rocksGraph.getStorageHandler().getVertexDB().<V>getProperties(this, propKeys).iterator();
+            return this.rocksGraph.getStorageHandler().getVertexDB().<V>getProperties(this, propertyKeys).iterator();
         } catch (Exception e) {
             e.printStackTrace();
             throw Property.Exceptions.propertyDoesNotExist();

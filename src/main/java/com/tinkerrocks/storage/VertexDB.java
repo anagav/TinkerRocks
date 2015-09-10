@@ -3,17 +3,9 @@ package com.tinkerrocks.storage;
 import com.tinkerrocks.structure.*;
 import org.apache.tinkerpop.gremlin.structure.*;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
-import org.rocksdb.ColumnFamilyDescriptor;
-import org.rocksdb.ColumnFamilyHandle;
-import org.rocksdb.RocksDB;
-import org.rocksdb.RocksDBException;
-import org.rocksdb.RocksIterator;
+import org.rocksdb.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -66,12 +58,10 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
     }
 
     @SuppressWarnings("unchecked")
-    public <V> List<VertexProperty<V>> getProperties(RocksElement rocksVertex, List<byte[]> propertyKeys) throws Exception {
+    public <V> List<VertexProperty<V>> getProperties(RocksElement rocksVertex, String[] propertyKeys) throws Exception {
         List<VertexProperty<V>> results = new LinkedList<>();
-        if (propertyKeys == null) {
-            propertyKeys = new ArrayList<>();
-        }
-        if (propertyKeys.size() == 0) {
+
+        if (propertyKeys.length == 0) {
             RocksIterator rocksIterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.PROPERTIES));
             byte[] seek_key = Utils.merge((byte[]) rocksVertex.id(), StorageConstants.PROPERTY_SEPARATOR);
             Utils.RocksIterUtil(rocksIterator, seek_key, (key, value) -> {
@@ -83,19 +73,18 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
             });
             return results;
         }
-
-        for (byte[] property : propertyKeys) {
-            byte[] lookup_key = Utils.merge((byte[]) rocksVertex.id(), StorageConstants.PROPERTY_SEPARATOR, property);
+        for (String property : propertyKeys) {
+            byte[] lookup_key = Utils.merge((byte[]) rocksVertex.id(), StorageConstants.PROPERTY_SEPARATOR, property.getBytes());
             byte[] type = get(getColumn(VERTEX_COLUMNS.PROPERTY_TYPE), lookup_key);
             byte[] value = get(getColumn(VERTEX_COLUMNS.PROPERTIES), lookup_key);
 
             if (Utils.compare(type, StorageConstants.V_PROPERTY_SINGLE_TYPE)) {
-                results.add(new RocksVertexProperty<>(rocksVertex, new String(property), (V) deserialize(value, Object.class)));
+                results.add(new RocksVertexProperty<>(rocksVertex, property, (V) deserialize(value, Object.class)));
             }
             if (Utils.compare(type, StorageConstants.V_PROPERTY_LIST_TYPE)) {
                 List<V> values = deserialize(value, List.class);
                 results.addAll(values.stream().map(inner_value ->
-                        new RocksVertexProperty<>(rocksVertex, new String(property), inner_value)).collect(Collectors.toList()));
+                        new RocksVertexProperty<>(rocksVertex, property, inner_value)).collect(Collectors.toList()));
             }
         }
         return results;
@@ -324,7 +313,6 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
             ex.printStackTrace();
         }
         return vertexIds;
-
 
 
     }
