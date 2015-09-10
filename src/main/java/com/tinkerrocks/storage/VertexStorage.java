@@ -36,4 +36,6 @@ public interface VertexStorage extends CommonStorage {
 
     @Override
     void close();
+
+    List<byte[]> getEdgeVertexIDs(byte[] id, Direction direction, String[] edgeLabels);
 }

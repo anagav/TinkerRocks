@@ -278,5 +278,68 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
         return new String(result);
     }
 
+    @Override
+    public List<byte[]> getEdgeVertexIDs(byte[] id, Direction direction, String[] edgeLabels) {
+        List<byte[]> vertexIds = new ArrayList<>();
+        RocksIterator iterator;
+        byte[] seek_key = Utils.merge(id, StorageConstants.PROPERTY_SEPARATOR);
+
+        try {
+            if (edgeLabels.length > 0) {
+                RocksIterator inRocksIterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.IN_EDGES));
+                RocksIterator outRocksIterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.OUT_EDGES));
+
+                for (String edgeLabel : edgeLabels) {
+                    byte[] inner_seek_key = Utils.merge(seek_key, edgeLabel.getBytes(), StorageConstants.PROPERTY_SEPARATOR);
+                    if (direction == Direction.BOTH || direction == Direction.IN) {
+                        Utils.RocksIterUtil(inRocksIterator, false, inner_seek_key, (key, value) -> {
+                                vertexIds.add(value);
+                            return true;
+                        });
+                    }
+                    if (direction == Direction.BOTH || direction == Direction.OUT) {
+                        Utils.RocksIterUtil(outRocksIterator, false, inner_seek_key, (key, value) -> {
+                            vertexIds.add(value);
+                            return true;
+                        });
+                    }
+                }
+                if (inRocksIterator != null) {
+                    inRocksIterator.dispose();
+                }
+                if (outRocksIterator != null) {
+                    outRocksIterator.dispose();
+                }
+                return vertexIds;
+            }
+
+
+            if (direction == Direction.BOTH || direction == Direction.IN) {
+                iterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.IN_EDGES));
+                Utils.RocksIterUtil(iterator, seek_key, (key, value) -> {
+                    //byte[] edgeId = Utils.slice(key, Utils.findLastInArray(key, StorageConstants.PROPERTY_SEPARATOR));
+                    vertexIds.add(value);
+                    return true;
+                });
+            }
+            if (direction == Direction.BOTH || direction == Direction.OUT) {
+                iterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.OUT_EDGES));
+                Utils.RocksIterUtil(iterator, seek_key, (key, value) -> {
+                    //byte[] edgeId = Utils.slice(key, Utils.findLastInArray(key, StorageConstants.PROPERTY_SEPARATOR));
+                    vertexIds.add(value);
+                    return true;
+                });
+
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return vertexIds;
+
+
+
+    }
+
 
 }
