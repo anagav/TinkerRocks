@@ -94,8 +94,8 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
     @Override
     public List<byte[]> getVertexIDs(List<byte[]> edgeIds, Direction direction) {
         List<byte[]> vertexIDs = new ArrayList<>(150);
-        RocksIterator inRocksIterator = this.rocksDB.newIterator(getColumn(EDGE_COLUMNS.IN_VERTICES));
-        RocksIterator outRocksIterator = this.rocksDB.newIterator(getColumn(EDGE_COLUMNS.OUT_VERTICES));
+        RocksIterator inRocksIterator = this.rocksDB.newIterator(getColumn(EDGE_COLUMNS.IN_VERTICES), StorageConfigFactory.getReadOptions());
+        RocksIterator outRocksIterator = this.rocksDB.newIterator(getColumn(EDGE_COLUMNS.OUT_VERTICES), StorageConfigFactory.getReadOptions());
 
         try {
             for (byte[] edgeId : edgeIds) {
