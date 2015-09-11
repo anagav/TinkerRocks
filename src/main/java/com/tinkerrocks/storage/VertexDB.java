@@ -150,7 +150,6 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
                 });
 
             }
-
         } catch (Exception ex) {
             ex.printStackTrace();
         }
