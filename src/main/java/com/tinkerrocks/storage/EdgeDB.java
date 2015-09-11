@@ -144,8 +144,7 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
             byte[] val = get(getColumn(EDGE_COLUMNS.PROPERTIES),
                     Utils.merge((byte[]) element.id(), StorageConstants.PROPERTY_SEPARATOR,
                             property.getBytes()));
-            if (val != null)
-                results.put(property, deserialize(val, Object.class));
+            results.put(property, deserialize(val, Object.class));
         }
         return results;
     }
