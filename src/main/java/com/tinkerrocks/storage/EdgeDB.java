@@ -160,7 +160,7 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
             }
             return edges;
         }
-        Map<byte[], byte[]> results = this.rocksDB.multiGet(ids);
+        Map<byte[], byte[]> results = multiGet(ids);
         return results.entrySet().stream().map(result -> new RocksEdge(result.getKey(),
                 new String(result.getValue()), rocksGraph)).filter(rocksEdge -> rocksEdge != null).collect(Collectors.toList());
     }

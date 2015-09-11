@@ -232,7 +232,7 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
             return Collections.emptyList();
         }
 
-        Map<byte[], byte[]> keys = this.rocksDB.multiGet(vertexIds);
+        Map<byte[], byte[]> keys = multiGet(vertexIds);
         return keys.entrySet().stream().map(entry -> getVertex(entry.getKey(), entry.getValue(), rocksGraph))
                 .collect(Collectors.toList());
 

@@ -96,7 +96,7 @@ public class RocksVertex extends RocksElement implements Vertex {
         List<byte[]> edgeIds = this.rocksGraph.getStorageHandler().getVertexDB().getEdgeIDs((byte[]) this.id(),
                 direction, edgeLabels);
 
-        if (edgeIds.size() == 0) {
+        if (edgeIds.isEmpty()) {
             return Collections.emptyListIterator();
         }
 

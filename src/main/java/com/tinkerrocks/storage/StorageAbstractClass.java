@@ -13,10 +13,7 @@ import org.rocksdb.RocksDBException;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Created by ashishn on 8/13/15.
@@ -103,6 +100,11 @@ public abstract class StorageAbstractClass {
             return this.rocksDB.get(columnFamilyHandle, StorageConfigFactory.getReadOptions(), key);
         else
             return this.rocksDB.get(StorageConfigFactory.getReadOptions(), key);
+    }
+
+
+    protected Map<byte[], byte[]> multiGet(List<byte[]> key) throws RocksDBException {
+        return this.rocksDB.multiGet(StorageConfigFactory.getReadOptions(), key);
     }
 
 
