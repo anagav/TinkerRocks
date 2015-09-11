@@ -311,8 +311,6 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
             ex.printStackTrace();
         }
         return vertexIds;
-
-
     }
 
 
