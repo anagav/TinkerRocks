@@ -294,7 +294,6 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
             if (direction == Direction.BOTH || direction == Direction.IN) {
                 iterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.IN_EDGES));
                 Utils.RocksIterUtil(iterator, seek_key, (key, value) -> {
-                    //byte[] edgeId = Utils.slice(key, Utils.findLastInArray(key, StorageConstants.PROPERTY_SEPARATOR));
                     vertexIds.add(value);
                     return true;
                 });
@@ -302,7 +301,6 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
             if (direction == Direction.BOTH || direction == Direction.OUT) {
                 iterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.OUT_EDGES));
                 Utils.RocksIterUtil(iterator, seek_key, (key, value) -> {
-                    //byte[] edgeId = Utils.slice(key, Utils.findLastInArray(key, StorageConstants.PROPERTY_SEPARATOR));
                     vertexIds.add(value);
                     return true;
                 });
