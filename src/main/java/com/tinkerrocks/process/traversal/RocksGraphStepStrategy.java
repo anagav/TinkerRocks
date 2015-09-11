@@ -8,7 +8,9 @@ import org.apache.tinkerpop.gremlin.process.traversal.step.sideEffect.GraphStep;
 import org.apache.tinkerpop.gremlin.process.traversal.strategy.AbstractTraversalStrategy;
 import org.apache.tinkerpop.gremlin.process.traversal.util.TraversalHelper;
 
-/**
+/** <p>
+ *  Graph Step strategy.
+ * </p>
  * Created by ashishn on 8/15/15.
  */
 public class RocksGraphStepStrategy extends AbstractTraversalStrategy<TraversalStrategy.VendorOptimizationStrategy>
