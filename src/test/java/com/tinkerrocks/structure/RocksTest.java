@@ -4,6 +4,7 @@ import com.tinkerrocks.storage.StorageConstants;
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.io.FileUtils;
+import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.engine.StandardTraversalEngine;
 import org.apache.tinkerpop.gremlin.structure.*;
@@ -53,7 +54,7 @@ public class RocksTest {
         marko.property(VertexProperty.Cardinality.set, "country", "uk");
         marko.property(VertexProperty.Cardinality.list, "country", "japan");
         GraphTraversalSource g = graph.traversal(GraphTraversalSource.build().engine(StandardTraversalEngine.build()));
-        System.out.println(g.V("jumbaho").has("country", "japan").properties().toList());
+        System.out.println(g.V("jumbaho").has("country", P.within("usa1","usa2","uk")).properties().toList());
     }
 
 
