@@ -7,5 +7,4 @@ public class StorageConstants {
     public static byte PROPERTY_SEPARATOR = '\006';
     public static final String TEST_DATABASE_PREFIX = "/tmp/databases";
     public static final String STORAGE_DIR_PROPERTY = "com.tinkerrocks.storage.dir";
-
 }
