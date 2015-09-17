@@ -9,6 +9,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
+ * <p>
+ * Class that handles all vertex storage and query.
+ * </p>
  * Created by ashishn on 8/5/15.
  */
 
