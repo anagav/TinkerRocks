@@ -9,7 +9,7 @@
     <version>1.0.0</version>
 
     <properties>
-        <apache.tinkerpop.gremlin.core.version>3.0.0-incubating</apache.tinkerpop.gremlin.core.version>
+        <apache.tinkerpop.gremlin.core.version>3.0.1-incubating</apache.tinkerpop.gremlin.core.version>
     </properties>
 
 
