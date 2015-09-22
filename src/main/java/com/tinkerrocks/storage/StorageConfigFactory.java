@@ -84,6 +84,7 @@ public class StorageConfigFactory {
                 .setMaxBytesForLevelMultiplier(10)
                 .setLevelZeroFileNumCompactionTrigger(10)
                 .setHardRateLimit(2)
+                .useCappedPrefixExtractor(36)
                 .setCompressionType(compressionType)
                 .setMemTableConfig(new SkipListMemTableConfig())
                 .setTableFormatConfig(table_options);
