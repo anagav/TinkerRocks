@@ -234,14 +234,8 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
     }
 
 
-    public RocksVertex getVertex(byte[] vertexId, RocksGraph rocksGraph) {
-        try {
-            return new RocksVertex(vertexId, getLabel(vertexId), rocksGraph);
-        } catch (RocksDBException ex) {
-            ex.printStackTrace();
-        }
-
-        return null;
+    public RocksVertex getVertex(byte[] vertexId, RocksGraph rocksGraph) throws RocksDBException {
+        return new RocksVertex(vertexId, getLabel(vertexId), rocksGraph);
     }
 
 
