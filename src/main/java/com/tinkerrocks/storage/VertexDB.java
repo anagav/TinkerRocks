@@ -304,4 +304,8 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
     }
 
 
+    @Override
+    public void close() {
+        super.close();
+    }
 }
