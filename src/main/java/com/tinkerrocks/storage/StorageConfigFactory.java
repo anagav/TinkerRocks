@@ -75,6 +75,7 @@ public class StorageConfigFactory {
                 .setMemtablePrefixBloomBits(8 * 1024 * 1024)
                 .setMemtablePrefixBloomProbes(6)
                 .setBloomLocality(1)
+                .useCappedPrefixExtractor(36)
                 .setInplaceUpdateSupport(true)
                 .setPurgeRedundantKvsWhileFlush(true)
                 .setDisableAutoCompactions(false)
