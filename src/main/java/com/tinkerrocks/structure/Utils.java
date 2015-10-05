@@ -77,16 +77,15 @@ public class Utils {
     }
 
 
-    public static void RocksIterUtil(RocksIterator rocksIterator, boolean dispose, byte[] seek_key, RocksIteratorCallback rocksIteratorCallback) throws Exception {
+    public static void RocksIterUtil(RocksIterator rocksIterator, boolean disposeIterator, byte[] seek_key, RocksIteratorCallback rocksIteratorCallback) throws Exception {
         boolean returnValue = true;
         try {
-            //rocksIterator.seekToFirst();
             for (rocksIterator.seek(seek_key); returnValue && rocksIterator.isValid() &&
                     startsWith(rocksIterator.key(), 0, seek_key); rocksIterator.next()) {
                 returnValue = rocksIteratorCallback.process(rocksIterator.key(), rocksIterator.value());
             }
         } finally {
-            if (dispose)
+            if (disposeIterator)
                 rocksIterator.dispose();
         }
     }
