@@ -78,12 +78,14 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
         for (String property : propertyKeys) {
             byte[] lookup_key = Utils.merge((byte[]) rocksVertex.id(), StorageConstants.PROPERTY_SEPARATOR, property.getBytes());
             byte[] value = get(getColumn(VERTEX_COLUMNS.PROPERTIES), lookup_key);
+
             V deserializedValue = (V) deserialize(value, Object.class);
             if (deserializedValue instanceof List) {
                 results.addAll(((List<V>) deserializedValue).stream().map(inner_value ->
                         new RocksVertexProperty<>(rocksVertex, property, inner_value)).collect(Collectors.toList()));
             } else {
-                results.add(new RocksVertexProperty<>(rocksVertex, property, deserializedValue));
+                if (value != null)
+                    results.add(new RocksVertexProperty<>(rocksVertex, property, deserializedValue));
             }
         }
         return results;
