@@ -69,7 +69,6 @@ public class IndexDB extends StorageAbstractClass implements IndexStorage {
         }
         rocksDB = RocksDB.open(StorageConfigFactory.getDBOptions(), getDbPath() + "/indexes", columnFamilyDescriptors, columnFamilyHandleList);
         this.rocksDB.enableFileDeletions(true);
-
     }
 
 
