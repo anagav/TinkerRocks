@@ -134,8 +134,10 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
             byte[] seek_key = Utils.merge((byte[]) element.id(), StorageConstants.PROPERTY_SEPARATOR);
 
             Utils.RocksIterUtil(rocksIterator, seek_key, (key, value) -> {
-                results.put(new String(Utils.slice(key, seek_key.length, key.length)),
-                        deserialize(value, Object.class));
+                if (value != null) {
+                    results.put(new String(Utils.slice(key, seek_key.length, key.length)),
+                            deserialize(value, Object.class));
+                }
                 return true;
             });
             return results;
