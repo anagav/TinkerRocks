@@ -249,6 +249,12 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
         return new String(result);
     }
 
+    /**
+     * @param id         vertex id
+     * @param direction  direction to get vertices from
+     * @param edgeLabels filter on edge labels, if empty get all
+     * @return vertices in the direction
+     */
     @Override
     public List<byte[]> getEdgeVertexIDs(byte[] id, Direction direction, String[] edgeLabels) {
         List<byte[]> vertexIds = new ArrayList<>();
@@ -257,30 +263,37 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
 
         try {
             if (edgeLabels.length > 0) {
-                RocksIterator inRocksIterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.IN_EDGES));
-                RocksIterator outRocksIterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.OUT_EDGES));
+                RocksIterator inRocksIterator = null;
+                RocksIterator outRocksIterator = null;
 
-                for (String edgeLabel : edgeLabels) {
-                    byte[] inner_seek_key = Utils.merge(seek_key, edgeLabel.getBytes(), StorageConstants.PROPERTY_SEPARATOR);
-                    if (direction == Direction.BOTH || direction == Direction.IN) {
-                        Utils.RocksIterUtil(inRocksIterator, false, inner_seek_key, (key, value) -> {
-                            vertexIds.add(value);
-                            return true;
-                        });
+                try {
+                    inRocksIterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.IN_EDGES));
+                    outRocksIterator = this.rocksDB.newIterator(getColumn(VERTEX_COLUMNS.OUT_EDGES));
+
+                    for (String edgeLabel : edgeLabels) {
+                        byte[] inner_seek_key = Utils.merge(seek_key, edgeLabel.getBytes(), StorageConstants.PROPERTY_SEPARATOR);
+                        if (direction == Direction.BOTH || direction == Direction.IN) {
+                            Utils.RocksIterUtil(inRocksIterator, false, inner_seek_key, (key, value) -> {
+                                vertexIds.add(value);
+                                return true;
+                            });
+                        }
+                        if (direction == Direction.BOTH || direction == Direction.OUT) {
+                            Utils.RocksIterUtil(outRocksIterator, false, inner_seek_key, (key, value) -> {
+                                vertexIds.add(value);
+                                return true;
+                            });
+                        }
                     }
-                    if (direction == Direction.BOTH || direction == Direction.OUT) {
-                        Utils.RocksIterUtil(outRocksIterator, false, inner_seek_key, (key, value) -> {
-                            vertexIds.add(value);
-                            return true;
-                        });
+                } finally {
+                    if (inRocksIterator != null) {
+                        inRocksIterator.dispose();
+                    }
+                    if (outRocksIterator != null) {
+                        outRocksIterator.dispose();
                     }
                 }
-                if (inRocksIterator != null) {
-                    inRocksIterator.dispose();
-                }
-                if (outRocksIterator != null) {
-                    outRocksIterator.dispose();
-                }
+
                 return vertexIds;
             }
 
@@ -302,6 +315,7 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+
         return vertexIds;
     }
 
