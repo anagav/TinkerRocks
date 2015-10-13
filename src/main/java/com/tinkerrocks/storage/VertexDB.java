@@ -293,7 +293,6 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
                         outRocksIterator.dispose();
                     }
                 }
-
                 return vertexIds;
             }
 
