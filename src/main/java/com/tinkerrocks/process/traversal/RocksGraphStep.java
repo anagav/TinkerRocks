@@ -57,7 +57,6 @@ public class RocksGraphStep<S extends Element> extends GraphStep<S> implements H
                             .stream().filter(vertex -> HasContainer.testAll(vertex, this.hasContainers))
                             .collect(Collectors.<Vertex>toList()).iterator();
         }
-
     }
 
 
