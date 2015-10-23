@@ -153,7 +153,7 @@ public class IndexDB extends StorageAbstractClass implements IndexStorage {
                         return true;
                     });
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                    throw new ExecutionException(ex);
                 }
 
                 return indexes;
