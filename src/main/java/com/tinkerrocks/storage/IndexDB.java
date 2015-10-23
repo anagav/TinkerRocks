@@ -1,15 +1,23 @@
 package com.tinkerrocks.storage;
 
 import com.google.common.base.Preconditions;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.tinkerrocks.structure.RocksGraph;
 import com.tinkerrocks.structure.Utils;
 import org.apache.tinkerpop.gremlin.structure.Element;
-import org.rocksdb.*;
+import org.rocksdb.ColumnFamilyDescriptor;
+import org.rocksdb.ColumnFamilyHandle;
+import org.rocksdb.RocksDB;
+import org.rocksdb.RocksDBException;
+import org.rocksdb.RocksIterator;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 /**
@@ -32,6 +40,7 @@ public class IndexDB extends StorageAbstractClass implements IndexStorage {
 
 
     public void createIndex(Class indexClass, String key) {
+        cache.invalidate(indexClass);
         try {
             put(getColumn(INDEX_COLUMNS.INDEX_KEYS), (getIndexClass(indexClass) +
                     Byte.toString(StorageConstants.PROPERTY_SEPARATOR) + key).getBytes(), "".getBytes());
@@ -55,6 +64,8 @@ public class IndexDB extends StorageAbstractClass implements IndexStorage {
         }
     }
 
+    Cache<Class, Set<String>> cache;
+
     public IndexDB(RocksGraph rocksGraph) throws RocksDBException {
         super(rocksGraph);
 
@@ -69,9 +80,12 @@ public class IndexDB extends StorageAbstractClass implements IndexStorage {
         }
         rocksDB = RocksDB.open(StorageConfigFactory.getDBOptions(), getDbPath() + "/indexes", columnFamilyDescriptors, columnFamilyHandleList);
         this.rocksDB.enableFileDeletions(true);
+
+        cache = CacheBuilder.newBuilder()
+                .maximumSize(1000)
+                .concurrencyLevel(1000)
+                .build();
     }
-
-
 
 
     public ColumnFamilyHandle getColumn(INDEX_COLUMNS edge_column) {
@@ -127,18 +141,26 @@ public class IndexDB extends StorageAbstractClass implements IndexStorage {
 
 
     public <T extends Element> Set<String> getIndexedKeys(Class<T> indexClass) {
-        Set<String> indexes = new HashSet<>();
-        RocksIterator iterator = this.rocksDB.newIterator(getColumn(INDEX_COLUMNS.INDEX_KEYS));
-        byte[] seek_key = (getIndexClass(indexClass) + Byte.toString(StorageConstants.PROPERTY_SEPARATOR)).getBytes();
-        try {
-            Utils.RocksIterUtil(iterator, seek_key, (key, value) -> {
-                indexes.add(new String(Utils.slice(key, seek_key.length)));
-                return true;
-            });
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
 
-        return indexes;
+        try {
+            return cache.get(indexClass, () -> {
+                Set<String> indexes = new HashSet<>();
+                RocksIterator iterator = rocksDB.newIterator(getColumn(INDEX_COLUMNS.INDEX_KEYS));
+                byte[] seek_key = (getIndexClass(indexClass) + Byte.toString(StorageConstants.PROPERTY_SEPARATOR)).getBytes();
+                try {
+                    Utils.RocksIterUtil(iterator, seek_key, (key, value) -> {
+                        indexes.add(new String(Utils.slice(key, seek_key.length)));
+                        return true;
+                    });
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+
+                return indexes;
+            });
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        return Collections.emptySet();
     }
 }
