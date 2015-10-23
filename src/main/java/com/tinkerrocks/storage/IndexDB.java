@@ -160,6 +160,8 @@ public class IndexDB extends StorageAbstractClass implements IndexStorage {
             });
         } catch (ExecutionException e) {
             e.printStackTrace();
+        } finally {
+            cache.invalidate(indexClass);
         }
         return Collections.emptySet();
     }
