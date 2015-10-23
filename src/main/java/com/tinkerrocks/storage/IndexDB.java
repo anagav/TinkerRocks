@@ -83,7 +83,6 @@ public class IndexDB extends StorageAbstractClass implements IndexStorage {
 
         cache = CacheBuilder.newBuilder()
                 .maximumSize(1000)
-                .concurrencyLevel(1000)
                 .build();
     }
 

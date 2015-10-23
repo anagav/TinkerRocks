@@ -6,9 +6,12 @@ import com.tinkerrocks.structure.RocksGraph;
 import com.tinkerrocks.structure.Utils;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Edge;
-import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
-import org.rocksdb.*;
+import org.rocksdb.ColumnFamilyDescriptor;
+import org.rocksdb.ColumnFamilyHandle;
+import org.rocksdb.RocksDB;
+import org.rocksdb.RocksDBException;
+import org.rocksdb.RocksIterator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,9 +44,9 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
     public void addEdge(byte[] edge_id, String label, byte[] inVertex, byte[] outVertex, Object[] keyValues)
             throws Exception {
         //todo temp disable edge check
-        if (this.rocksDB.get(edge_id) != null) {
-            throw Graph.Exceptions.edgeWithIdAlreadyExists(edge_id);
-        }
+//        if (this.rocksDB.get(edge_id) != null) {
+//            throw Graph.Exceptions.edgeWithIdAlreadyExists(edge_id);
+//        }
         if (label == null) {
             throw Edge.Exceptions.labelCanNotBeNull();
         }
