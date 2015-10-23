@@ -75,7 +75,6 @@ public class StorageConfigFactory {
                 .setMemtablePrefixBloomBits(8 * 1024 * 1024)
                 .setMemtablePrefixBloomProbes(6)
                 .setBloomLocality(1)
-                .useCappedPrefixExtractor(36)
                 .setInplaceUpdateSupport(true)
                 .setPurgeRedundantKvsWhileFlush(true)
                 .setDisableAutoCompactions(false)
@@ -85,7 +84,6 @@ public class StorageConfigFactory {
                 .setMaxBytesForLevelMultiplier(10)
                 .setLevelZeroFileNumCompactionTrigger(10)
                 .setHardRateLimit(2)
-                .useCappedPrefixExtractor(36)
                 .setCompressionType(compressionType)
                 .setMemTableConfig(new SkipListMemTableConfig())
                 .setTableFormatConfig(table_options);
