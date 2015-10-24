@@ -99,9 +99,7 @@ public final class RocksGraph implements Graph {
             e.printStackTrace();
             throw Exceptions.vertexAdditionsNotSupported();
         }
-
         return vertex;
-
     }
 
     @Override
