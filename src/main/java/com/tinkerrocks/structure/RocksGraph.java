@@ -92,7 +92,6 @@ public final class RocksGraph implements Graph {
         try {
             storageHandler.getVertexDB().addVertex(idValue, label, null);
             Map<String, Object> properties = ElementHelper.asMap(keyValues);
-
             for (Map.Entry<String, Object> property : properties.entrySet()) {
                 vertex.property(property.getKey(), property.getValue());
             }

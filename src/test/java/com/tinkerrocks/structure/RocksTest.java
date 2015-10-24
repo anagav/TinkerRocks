@@ -206,6 +206,8 @@ public class RocksTest {
         graph.addVertex(T.label, "personal", T.id, ++i, "name", "marko", "age", 30);
 
         graph.addVertex(T.label, "personal", T.id, ++i, "name", "marko", "age", 31);
+        graph.addVertex(T.label, "personal", T.id, ++i, "name", "marko", "age", 31);
+
 
         long endw = System.currentTimeMillis();
         System.out.println("time taken to write:" + (endw - startw));
