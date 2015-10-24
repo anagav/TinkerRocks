@@ -56,7 +56,7 @@ public class CustomRocksIterator<T extends Element> implements Iterator<T> {
                 element = new RocksEdge(iterator.key(), new String(iterator.value()), rocksGraph);
             }
             iterator.next();
-            return (T) element;
+            return elementClass.cast(element);
         } catch (Exception e) {
             e.printStackTrace();
             this.close();
