@@ -82,7 +82,7 @@ public final class RocksGraph implements Graph {
         ElementHelper.legalPropertyKeyValueArray(keyValues);
         Object id = String.valueOf(ElementHelper.getIdValue(keyValues).orElse(null));
         if (id == null) {
-            throw Vertex.Exceptions.userSuppliedIdsOfThisTypeNotSupported();
+            throw Exceptions.idArgsMustBeEitherIdOrElement();
         }
         byte[] idValue = String.valueOf(id).getBytes();
         final String label = ElementHelper.getLabelValue(keyValues).orElse(Vertex.DEFAULT_LABEL);
