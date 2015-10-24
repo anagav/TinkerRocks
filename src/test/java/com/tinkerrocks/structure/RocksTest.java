@@ -7,7 +7,12 @@ import org.apache.commons.io.FileUtils;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.engine.StandardTraversalEngine;
-import org.apache.tinkerpop.gremlin.structure.*;
+import org.apache.tinkerpop.gremlin.structure.Direction;
+import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.Property;
+import org.apache.tinkerpop.gremlin.structure.T;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import org.apache.tinkerpop.gremlin.util.iterator.IteratorUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -54,7 +59,7 @@ public class RocksTest {
         marko.property(VertexProperty.Cardinality.set, "country", "uk");
         marko.property(VertexProperty.Cardinality.list, "country", "japan");
         GraphTraversalSource g = graph.traversal(GraphTraversalSource.build().engine(StandardTraversalEngine.build()));
-        System.out.println(g.V("jumbaho").has("country", P.within("usa1","usa2","uk")).properties().toList());
+        System.out.println(g.V("jumbaho").has("country", P.within("usa1", "usa2", "uk")).properties().toList());
     }
 
 
@@ -180,7 +185,10 @@ public class RocksTest {
     public void IndexTest() {
 
         graph.createIndex("age", Vertex.class);
+        System.out.println("started writing...");
         int i = 0;
+        long startw = System.currentTimeMillis();
+
         while (i < 5000) {
             graph.addVertex(T.label, "person", T.id, "index" + i, "name", "marko", "age", 29);
             i++;
@@ -199,11 +207,14 @@ public class RocksTest {
 
         graph.addVertex(T.label, "personal", T.id, ++i, "name", "marko", "age", 31);
 
+        long endw = System.currentTimeMillis();
+        System.out.println("time taken to write:" + (endw - startw));
+
 
         GraphTraversalSource g = graph.traversal(GraphTraversalSource.build().engine(StandardTraversalEngine.build()));
-
+        System.out.println("starting search....");
         long start = System.currentTimeMillis();
-        System.out.println(g.V().has("age", 31).toList().size());
+        System.out.println(g.V().has("age", 31).toList());
         long end = System.currentTimeMillis();
         System.out.println("time taken to search:" + (end - start));
     }
@@ -264,10 +275,7 @@ public class RocksTest {
         System.out.println("time taken:" + end);
 
 
-
     }
-
-
 
 
     @After

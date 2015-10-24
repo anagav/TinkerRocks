@@ -1,11 +1,28 @@
 package com.tinkerrocks.storage;
 
-import com.tinkerrocks.structure.*;
-import org.apache.tinkerpop.gremlin.structure.*;
+import com.tinkerrocks.structure.RocksElement;
+import com.tinkerrocks.structure.RocksGraph;
+import com.tinkerrocks.structure.RocksVertex;
+import com.tinkerrocks.structure.RocksVertexProperty;
+import com.tinkerrocks.structure.Utils;
+import org.apache.tinkerpop.gremlin.structure.Direction;
+import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.Graph;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
-import org.rocksdb.*;
+import org.rocksdb.ColumnFamilyDescriptor;
+import org.rocksdb.ColumnFamilyHandle;
+import org.rocksdb.RocksDB;
+import org.rocksdb.RocksDBException;
+import org.rocksdb.RocksIterator;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -218,10 +235,20 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
         return (get(idValue) != null);
     }
 
+    private Iterator<Vertex> getAllVertices() {
+        RocksIterator iterator = rocksDB.newIterator();
+        return new CustomRocksIterator<>(iterator, rocksGraph, Vertex.class);
+    }
+
+
+    public Iterator<Vertex> getVertices() {
+        return getAllVertices();
+    }
+
 
     public List<Vertex> vertices(List<byte[]> vertexIds, RocksGraph rocksGraph) throws RocksDBException {
 
-        if (vertexIds == null || vertexIds.size() == 0) {
+        if (vertexIds.size() == 0) {
             return Collections.emptyList();
         }
 

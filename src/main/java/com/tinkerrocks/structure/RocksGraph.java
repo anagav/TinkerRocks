@@ -94,7 +94,6 @@ public final class RocksGraph implements Graph {
             Map<String, Object> properties = ElementHelper.asMap(keyValues);
 
             for (Map.Entry<String, Object> property : properties.entrySet()) {
-                vertexIndex.autoUpdate(property.getKey(), property.getValue(), null, vertex);
                 vertex.property(property.getKey(), property.getValue());
             }
         } catch (Exception e) {
@@ -131,9 +130,10 @@ public final class RocksGraph implements Graph {
 
     @Override
     public Iterator<Vertex> vertices(Object... vertexIds) {
-        if (vertexIds == null || vertexIds.length == 0) {
+
+        if (vertexIds.length == 0) {
             try {
-                return storageHandler.getVertexDB().vertices(null, this).iterator();
+                return storageHandler.getVertexDB().getVertices();
             } catch (Exception e) {
                 e.printStackTrace();
                 throw Exceptions.elementNotFound(Vertex.class, "all ids");

@@ -9,6 +9,7 @@ import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import org.rocksdb.RocksDBException;
 
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -34,6 +35,8 @@ public interface VertexStorage extends CommonStorage {
     RocksVertex getVertex(byte[] vertexId, RocksGraph rocksGraph) throws RocksDBException;
 
     String getLabel(byte[] id) throws Exception;
+
+    Iterator<Vertex> getVertices();
 
     @Override
     void close();

@@ -5,7 +5,9 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.tinkerrocks.structure.RocksGraph;
 import com.tinkerrocks.structure.Utils;
+import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Element;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.rocksdb.ColumnFamilyDescriptor;
 import org.rocksdb.ColumnFamilyHandle;
 import org.rocksdb.RocksDB;
@@ -38,9 +40,20 @@ public class IndexDB extends StorageAbstractClass implements IndexStorage {
         }
     }
 
+    public ColumnFamilyHandle getColumnForClass(Class indexClass) {
+        if (Vertex.class.isAssignableFrom(indexClass)) {
+            return getColumn(INDEX_COLUMNS.VERTEX_INDEX);
+        }
+        if (Edge.class.isAssignableFrom(indexClass)) {
+            return getColumn(INDEX_COLUMNS.EDGE_INDEX);
+        }
+        throw new RuntimeException("indexing not supported for class of type:" + indexClass.getCanonicalName());
+    }
+
 
     public void createIndex(Class indexClass, String key) {
         cache.invalidate(indexClass);
+
         try {
             put(getColumn(INDEX_COLUMNS.INDEX_KEYS), (getIndexClass(indexClass) +
                     Byte.toString(StorageConstants.PROPERTY_SEPARATOR) + key).getBytes(), "".getBytes());
@@ -51,7 +64,9 @@ public class IndexDB extends StorageAbstractClass implements IndexStorage {
     }
 
     public enum INDEX_COLUMNS {
-        INDEX_KEYS("INDEX_KEYS");
+        INDEX_KEYS("INDEX_KEYS"),
+        VERTEX_INDEX("VERTEX_INDEX"),
+        EDGE_INDEX("VERTEX_INDEX");
 
         String value;
 
@@ -102,16 +117,15 @@ public class IndexDB extends StorageAbstractClass implements IndexStorage {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(key);
 
-        String className = getIndexClass(indexClass);
-        byte[] key1 = (className +
-                Byte.toString(StorageConstants.PROPERTY_SEPARATOR) + key + StorageConstants.PROPERTY_SEPARATOR + value).getBytes();
+        //String className = getIndexClass(indexClass);
+        byte[] key1 = (key + StorageConstants.PROPERTY_SEPARATOR + value).getBytes();
 
-        HashSet<byte[]> hashSet = (HashSet<byte[]>) deserialize(get(key1), HashSet.class);
+        HashSet<byte[]> hashSet = (HashSet<byte[]>) deserialize(get(getColumnForClass(indexClass), key1), HashSet.class);
         if (hashSet == null) {
             hashSet = new HashSet<>();
         }
         hashSet.add(id);
-        put(key1, serialize(hashSet));
+        put(getColumnForClass(indexClass), key1, serialize(hashSet));
     }
 
 
@@ -119,9 +133,8 @@ public class IndexDB extends StorageAbstractClass implements IndexStorage {
     public <T extends Element> List<byte[]> getIndex(Class<T> indexClass, String key, Object value) {
         List<byte[]> results = new ArrayList<>();
         try {
-            byte[] key1 = (getIndexClass(indexClass) +
-                    Byte.toString(StorageConstants.PROPERTY_SEPARATOR) + key + StorageConstants.PROPERTY_SEPARATOR + value).getBytes();
-            HashSet<byte[]> hashSet = (HashSet<byte[]>) deserialize(get(key1), HashSet.class);
+            byte[] key1 = (key + StorageConstants.PROPERTY_SEPARATOR + value).getBytes();
+            HashSet<byte[]> hashSet = (HashSet<byte[]>) deserialize(get(getColumnForClass(indexClass), key1), HashSet.class);
             if (hashSet == null) {
                 hashSet = new HashSet<>();
             }
@@ -154,12 +167,10 @@ public class IndexDB extends StorageAbstractClass implements IndexStorage {
                 } catch (Exception ex) {
                     throw new ExecutionException(ex);
                 }
-
                 return indexes;
             });
         } catch (ExecutionException e) {
             e.printStackTrace();
-        } finally {
             cache.invalidate(indexClass);
         }
         return Collections.emptySet();
