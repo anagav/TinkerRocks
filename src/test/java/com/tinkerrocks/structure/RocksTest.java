@@ -189,12 +189,12 @@ public class RocksTest {
         int i = 0;
         long startw = System.currentTimeMillis();
 
-        while (i < 50000) {
+        while (i < 500) {
             graph.addVertex(T.label, "person", T.id, "index" + i, "name", "marko", "age", 29);
             i++;
         }
 
-        while (i < 50000) {
+        while (i < 500) {
             graph.addVertex(T.label, "personal", T.id, "index" + (5000 + i), "name", "marko", "age", 29);
             i++;
         }
