@@ -21,6 +21,11 @@ public class CustomRocksIterator<T extends Element> implements Iterator<T> {
     boolean isFirst = true;
 
 
+    /**
+     * @param iterator
+     * @param rocksGraph
+     * @param elementClass
+     */
     public CustomRocksIterator(RocksIterator iterator, RocksGraph rocksGraph, Class<T> elementClass) {
         this.iterator = iterator;
         this.rocksGraph = rocksGraph;
@@ -28,6 +33,9 @@ public class CustomRocksIterator<T extends Element> implements Iterator<T> {
     }
 
 
+    /**
+     * @return
+     */
     @Override
     public boolean hasNext() {
         if (isFirst) {
@@ -60,7 +68,7 @@ public class CustomRocksIterator<T extends Element> implements Iterator<T> {
         } catch (Exception e) {
             e.printStackTrace();
             this.close();
-            return null;
+            throw new RuntimeException(e);
         }
     }
 
