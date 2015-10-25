@@ -92,6 +92,7 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
             });
             return results;
         }
+
         for (String property : propertyKeys) {
             byte[] lookup_key = Utils.merge((byte[]) rocksVertex.id(), StorageConstants.PROPERTY_SEPARATOR, property.getBytes());
             byte[] value = get(getColumn(VERTEX_COLUMNS.PROPERTIES), lookup_key);
