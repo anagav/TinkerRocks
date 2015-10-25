@@ -1,6 +1,15 @@
 package com.tinkerrocks.storage;
 
-import org.rocksdb.*;
+import org.rocksdb.BlockBasedTableConfig;
+import org.rocksdb.BloomFilter;
+import org.rocksdb.ColumnFamilyOptions;
+import org.rocksdb.CompactionStyle;
+import org.rocksdb.CompressionType;
+import org.rocksdb.DBOptions;
+import org.rocksdb.Filter;
+import org.rocksdb.ReadOptions;
+import org.rocksdb.SkipListMemTableConfig;
+import org.rocksdb.WriteOptions;
 import org.rocksdb.util.SizeUnit;
 
 /**
@@ -29,7 +38,6 @@ public class StorageConfigFactory {
                 .setTableCacheNumshardbits(10)
                 .setMaxBackgroundFlushes(10)
                 .setWalTtlSeconds(5 * 60)
-                        //todo check later for performance
                 .setMaxTotalWalSize(30 * SizeUnit.GB)
                 .setMaxOpenFiles(-1)
                 .setDisableDataSync(true)
@@ -67,7 +75,6 @@ public class StorageConfigFactory {
                 .setWriteBufferSize(512 * SizeUnit.MB)
                 .setMaxWriteBufferNumber(20)
                 .setMinWriteBufferNumberToMerge(2)
-                .setMaxWriteBufferNumber(6)
                 .setMaxGrandparentOverlapFactor(10)
                 .setTargetFileSizeBase(128 * SizeUnit.MB)
                 .setMaxBytesForLevelBase(512 * SizeUnit.MB)
@@ -79,7 +86,6 @@ public class StorageConfigFactory {
                 .setPurgeRedundantKvsWhileFlush(true)
                 .setDisableAutoCompactions(false)
                 .setFilterDeletes(true)
-                .setInplaceUpdateSupport(true)
                 .setLevelCompactionDynamicLevelBytes(true)
                 .setMaxBytesForLevelMultiplier(10)
                 .setLevelZeroFileNumCompactionTrigger(10)
