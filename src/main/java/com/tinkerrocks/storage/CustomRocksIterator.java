@@ -55,6 +55,10 @@ public class CustomRocksIterator<T extends Element> implements Iterator<T> {
 
     @Override
     public T next() {
+        if (!iterator.isValid()) {
+            this.close();
+            throw new RuntimeException("iterator not valid");
+        }
         try {
             RocksElement element = null;
             if (Vertex.class.isAssignableFrom(elementClass)) {
