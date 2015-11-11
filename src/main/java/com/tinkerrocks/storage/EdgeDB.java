@@ -77,14 +77,14 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
             if (direction == Direction.BOTH || direction == Direction.IN) {
                 rocksIterator = this.rocksDB.newIterator(getColumn(EDGE_COLUMNS.IN_VERTICES));
 
-                Utils.RocksIterUtil(rocksIterator, seek_key, (key, value) -> {
+                Utils.rocksIterUtil(rocksIterator, seek_key, (key, value) -> {
                     vertexIDs.add(Utils.slice(key, seek_key.length));
                     return true;
                 });
             }
             if (direction == Direction.BOTH || direction == Direction.OUT) {
                 rocksIterator = this.rocksDB.newIterator(getColumn(EDGE_COLUMNS.OUT_VERTICES));
-                Utils.RocksIterUtil(rocksIterator, seek_key, (key, value) -> {
+                Utils.rocksIterUtil(rocksIterator, seek_key, (key, value) -> {
                     vertexIDs.add(Utils.slice(key, seek_key.length));
                     return true;
                 });
@@ -106,13 +106,13 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
                 byte[] seek_key = Utils.merge(edgeId, StorageConstants.PROPERTY_SEPARATOR);
 
                 if (direction == Direction.BOTH || direction == Direction.IN) {
-                    Utils.RocksIterUtil(inRocksIterator, false, seek_key, (key, value) -> {
+                    Utils.rocksIterUtil(inRocksIterator, false, seek_key, (key, value) -> {
                         vertexIDs.add(Utils.slice(key, seek_key.length));
                         return true;
                     });
                 }
                 if (direction == Direction.BOTH || direction == Direction.OUT) {
-                    Utils.RocksIterUtil(outRocksIterator, false, seek_key, (key, value) -> {
+                    Utils.rocksIterUtil(outRocksIterator, false, seek_key, (key, value) -> {
                         vertexIDs.add(Utils.slice(key, seek_key.length));
                         return true;
                     });
@@ -136,7 +136,7 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
             RocksIterator rocksIterator = this.rocksDB.newIterator(getColumn(EDGE_COLUMNS.PROPERTIES));
             byte[] seek_key = Utils.merge((byte[]) element.id(), StorageConstants.PROPERTY_SEPARATOR);
 
-            Utils.RocksIterUtil(rocksIterator, seek_key, (key, value) -> {
+            Utils.rocksIterUtil(rocksIterator, seek_key, (key, value) -> {
                 if (value != null) {
                     results.put(new String(Utils.slice(key, seek_key.length, key.length)),
                             deserialize(value, Object.class));

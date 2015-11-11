@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class RocksGraphProvider extends AbstractGraphProvider {
-    static RocksGraph rocksGraph = RocksGraph.open();
+    private static RocksGraph rocksGraph = RocksGraph.open();
 
 
     @Override

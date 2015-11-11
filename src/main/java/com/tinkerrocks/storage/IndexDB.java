@@ -79,7 +79,7 @@ public class IndexDB extends StorageAbstractClass implements IndexStorage {
         }
     }
 
-    Cache<Class, Set<String>> cache;
+    private Cache<Class, Set<String>> cache;
 
     public IndexDB(RocksGraph rocksGraph) throws RocksDBException {
         super(rocksGraph);
@@ -160,7 +160,7 @@ public class IndexDB extends StorageAbstractClass implements IndexStorage {
                 RocksIterator iterator = rocksDB.newIterator(getColumn(INDEX_COLUMNS.INDEX_KEYS));
                 byte[] seek_key = (getIndexClass(indexClass) + Byte.toString(StorageConstants.PROPERTY_SEPARATOR)).getBytes();
                 try {
-                    Utils.RocksIterUtil(iterator, seek_key, (key, value) -> {
+                    Utils.rocksIterUtil(iterator, seek_key, (key, value) -> {
                         indexes.add(new String(Utils.slice(key, seek_key.length)));
                         return true;
                     });

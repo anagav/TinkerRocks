@@ -14,7 +14,7 @@ import java.util.*;
  */
 public class RocksIndex<T extends Element> {
     protected final Class<T> indexClass;
-    RocksGraph rocksGraph;
+    private RocksGraph rocksGraph;
 
 
     public RocksIndex(RocksGraph rocksGraph, final Class<T> indexClass) {

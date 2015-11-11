@@ -31,7 +31,7 @@ import java.util.stream.IntStream;
  * Created by ashishn on 8/11/15.
  */
 public class RocksTest {
-    RocksGraph graph;
+    private RocksGraph graph;
 
     @Before
     public void setup() throws IOException, InstantiationException {

@@ -72,12 +72,12 @@ public class Utils {
     }
 
 
-    public static void RocksIterUtil(RocksIterator rocksIterator, byte[] seek_key, RocksIteratorCallback rocksIteratorCallback) throws Exception {
-        RocksIterUtil(rocksIterator, true, seek_key, rocksIteratorCallback);
+    public static void rocksIterUtil(RocksIterator rocksIterator, byte[] seek_key, RocksIteratorCallback rocksIteratorCallback) throws Exception {
+        rocksIterUtil(rocksIterator, true, seek_key, rocksIteratorCallback);
     }
 
 
-    public static void RocksIterUtil(RocksIterator rocksIterator, boolean disposeIterator, byte[] seek_key, RocksIteratorCallback rocksIteratorCallback) throws Exception {
+    public static void rocksIterUtil(RocksIterator rocksIterator, boolean disposeIterator, byte[] seek_key, RocksIteratorCallback rocksIteratorCallback) throws Exception {
         boolean returnValue = true;
         try {
             for (rocksIterator.seek(seek_key); returnValue && rocksIterator.isValid() &&
