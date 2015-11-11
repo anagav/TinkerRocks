@@ -23,9 +23,9 @@ public abstract class StorageAbstractClass {
 
     protected KryoPool pool;
     protected RocksGraph rocksGraph;
-    RocksDB rocksDB;
-    List<ColumnFamilyHandle> columnFamilyHandleList;
-    List<ColumnFamilyDescriptor> columnFamilyDescriptors;
+    protected RocksDB rocksDB;
+    protected List<ColumnFamilyHandle> columnFamilyHandleList;
+    protected List<ColumnFamilyDescriptor> columnFamilyDescriptors;
 
 
     public StorageAbstractClass(RocksGraph rocksGraph) {

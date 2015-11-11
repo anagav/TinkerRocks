@@ -122,8 +122,9 @@ public class RocksVertex extends RocksElement implements Vertex {
             return this.rocksGraph.getStorageHandler().getVertexDB().vertices(vertexIds, this.rocksGraph).iterator();
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException(e);
+            //throw new RuntimeException(e);
         }
+        return Collections.emptyIterator();
     }
 
     @Override

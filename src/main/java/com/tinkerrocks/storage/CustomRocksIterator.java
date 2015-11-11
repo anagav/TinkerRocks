@@ -15,10 +15,10 @@ import java.util.Iterator;
  * Created by ashishn on 10/23/15.
  */
 public class CustomRocksIterator<T extends Element> implements Iterator<T> {
-    RocksIterator iterator;
-    RocksGraph rocksGraph;
-    Class<T> elementClass;
-    boolean isFirst = true;
+    private RocksIterator iterator;
+    private RocksGraph rocksGraph;
+    private Class<T> elementClass;
+    private boolean isFirst = true;
 
 
     /**
