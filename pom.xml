@@ -11,7 +11,7 @@
 
 
     <properties>
-        <apache.tinkerpop.gremlin.core.version>3.0.1-incubating</apache.tinkerpop.gremlin.core.version>
+        <apache.tinkerpop.gremlin.core.version>3.0.2-incubating</apache.tinkerpop.gremlin.core.version>
     </properties>
 
 
