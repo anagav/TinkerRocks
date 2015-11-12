@@ -59,13 +59,17 @@
                         <configuration>
                             <rules>
                                 <banCircularDependencies/>
-                                <dependencyConvergence/>
+                                <dependencyConvergence>
+                                    <uniqueVersions>true</uniqueVersions>
+                                </dependencyConvergence>
+                                <requireUpperBoundDeps/>
                             </rules>
                             <fail>true</fail>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
