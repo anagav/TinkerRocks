@@ -9,12 +9,9 @@
     <version>1.0.0</version>
 
 
-
     <properties>
         <apache.tinkerpop.gremlin.core.version>3.0.2-incubating</apache.tinkerpop.gremlin.core.version>
     </properties>
-
-
 
     <build>
         <plugins>
@@ -49,28 +46,33 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>1.0</version>
-                <configuration>
-                    <rules>
-                        <banDuplicateClasses>
-                            <findAllDuplicates>true</findAllDuplicates>
-                        </banDuplicateClasses>
-                    </rules>
-                    <fail>true</fail>
-                </configuration>
+                <version>1.4.1</version>
+                <executions>
+                    <execution>
+                        <id>enforce-ban-duplicate-classes</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <banCircularDependencies/>
+                                <dependencyConvergence/>
+                            </rules>
+                            <fail>true</fail>
+                        </configuration>
+                    </execution>
+                </executions>
                 <dependencies>
                     <dependency>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>extra-enforcer-rules</artifactId>
-                        <version>1.0-beta-3</version>
+                        <version>1.0-beta-4</version>
                     </dependency>
                 </dependencies>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -117,26 +119,28 @@
             <artifactId>gremlin-test</artifactId>
             <version>${apache.tinkerpop.gremlin.core.version}</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.tinkerpop</groupId>
+                    <artifactId>gremlin-core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.tinkerpop</groupId>
             <artifactId>gremlin-groovy-test</artifactId>
             <version>3.0.0-incubating</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.tinkerpop</groupId>
+                    <artifactId>gremlin-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.tinkerpop</groupId>
+                    <artifactId>gremlin-test</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
-
-
-        <dependency>
-            <groupId>org.apache.tinkerpop</groupId>
-            <artifactId>gremlin-groovy</artifactId>
-            <version>3.0.0.M9-incubating</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.11</version>
-        </dependency>
-
 
         <dependency>
             <groupId>com.google.guava</groupId>
