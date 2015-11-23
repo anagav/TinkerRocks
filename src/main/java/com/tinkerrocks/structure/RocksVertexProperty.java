@@ -90,7 +90,8 @@ public class RocksVertexProperty<V> implements VertexProperty<V> {
      */
     @Override
     public <V> Property<V> property(String key, V value) {
-        return null;
+        this.element.property(key, value);
+        return new RocksProperty<>(this.element, key, value);
     }
 
     /**
@@ -98,9 +99,10 @@ public class RocksVertexProperty<V> implements VertexProperty<V> {
      *
      * @param propertyKeys
      */
+    @SuppressWarnings("unchecked")
     @Override
     public <U> Iterator<Property<U>> properties(String... propertyKeys) {
-        return null;
+        return (Iterator) this.element.properties(propertyKeys);
     }
 
     @Override

@@ -35,8 +35,9 @@ public class RocksVertex extends RocksElement implements Vertex {
             return this.rocksGraph.getStorageHandler().getVertexDB().<V>getProperties(this, propertyKeys).iterator();
         } catch (Exception e) {
             e.printStackTrace();
-            throw Property.Exceptions.propertyDoesNotExist();
+            //throw Property.Exceptions.propertyDoesNotExist();
         }
+        return Collections.emptyIterator();
     }
 
     @Override
@@ -146,6 +147,9 @@ public class RocksVertex extends RocksElement implements Vertex {
 
     @Override
     public String toString() {
-        return "V" + "[" + new String((byte[]) id()) + "]";
+        return "v" + "[" + new String((byte[]) id()) + "] ";
     }
+
+
+
 }

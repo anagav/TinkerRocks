@@ -107,7 +107,6 @@
             <groupId>org.apache.tinkerpop</groupId>
             <artifactId>gremlin-core</artifactId>
             <version>${apache.tinkerpop.gremlin.core.version}</version>
-            <scope>provided</scope>
         </dependency>
 
 

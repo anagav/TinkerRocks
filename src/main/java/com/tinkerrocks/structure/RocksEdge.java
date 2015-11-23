@@ -1,7 +1,14 @@
 package com.tinkerrocks.structure;
 
-import org.apache.tinkerpop.gremlin.structure.*;
+import org.apache.tinkerpop.gremlin.structure.Direction;
+import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.Element;
+import org.apache.tinkerpop.gremlin.structure.Graph;
+import org.apache.tinkerpop.gremlin.structure.Property;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,6 +19,7 @@ import java.util.Map;
  * Created by ashishn on 8/5/15.
  */
 public class RocksEdge extends RocksElement implements Edge {
+    private final transient static Logger LOGGER = LoggerFactory.getLogger(RocksEdge.class);
 
     public RocksEdge(byte[] id, String label, RocksGraph rocksGraph) {
         super(id, label, rocksGraph);
@@ -61,6 +69,7 @@ public class RocksEdge extends RocksElement implements Edge {
             }
             return vertices.iterator();
         } catch (Exception ex) {
+            LOGGER.error("Exception in edge vertices iterator:", ex);
             ex.printStackTrace();
         }
         return Collections.emptyIterator();

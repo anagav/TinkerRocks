@@ -248,11 +248,9 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
 
 
     public List<Vertex> vertices(List<byte[]> vertexIds, RocksGraph rocksGraph) throws RocksDBException {
-
         if (vertexIds.size() == 0) {
             return Collections.emptyList();
         }
-
         Map<byte[], byte[]> keys = multiGet(vertexIds);
         return keys.entrySet().stream().map(entry -> getVertex(entry.getKey(), entry.getValue(), rocksGraph))
                 .collect(Collectors.toList());
@@ -346,4 +344,8 @@ public class VertexDB extends StorageAbstractClass implements VertexStorage {
         return vertexIds;
     }
 
+    @Override
+    public void close() {
+        super.close();
+    }
 }

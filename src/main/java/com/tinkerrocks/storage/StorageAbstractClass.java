@@ -10,16 +10,22 @@ import org.rocksdb.ColumnFamilyDescriptor;
 import org.rocksdb.ColumnFamilyHandle;
 import org.rocksdb.RocksDB;
 import org.rocksdb.RocksDBException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created by ashishn on 8/13/15.
  */
 public abstract class StorageAbstractClass {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(StorageAbstractClass.class);
 
     protected KryoPool pool;
     protected RocksGraph rocksGraph;
@@ -33,6 +39,7 @@ public abstract class StorageAbstractClass {
             Kryo kryo = new Kryo();
             kryo.register(Integer.class);
             kryo.register(HashSet.class);
+            kryo.register(Boolean.class);
             kryo.register(UUID.class);
             kryo.register(String.class);
             kryo.register(ArrayList.class);
@@ -110,8 +117,12 @@ public abstract class StorageAbstractClass {
 
     public void close() {
         if (rocksDB != null) {
-            this.rocksDB.dispose();
-            this.rocksDB.close();
+            LOGGER.debug("closing the db......");
+            if (columnFamilyHandleList != null)
+                columnFamilyHandleList.forEach(ColumnFamilyHandle::dispose);
+            LOGGER.debug("closed column family handles");
+//            this.rocksDB.close();
+//            LOGGER.debug("closed rocksdb");
         }
     }
 

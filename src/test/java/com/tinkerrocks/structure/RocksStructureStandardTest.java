@@ -6,7 +6,7 @@ package com.tinkerrocks.structure;
 
 import org.apache.tinkerpop.gremlin.GraphProviderClass;
 
-//@RunWith(ProcessStandardSuite.class)
+//@RunWith(StructureStandardSuite.class)
 @GraphProviderClass(provider = RocksGraphProvider.class, graph = RocksGraph.class)
-public class RocksGraphProcessStandardTest {
+public class RocksStructureStandardTest {
 }

@@ -12,6 +12,8 @@ import org.rocksdb.ColumnFamilyHandle;
 import org.rocksdb.RocksDB;
 import org.rocksdb.RocksDBException;
 import org.rocksdb.RocksIterator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,7 +31,7 @@ import java.util.stream.Collectors;
 
 
 public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(EdgeDB.class);
 
     public <V> void setProperty(byte[] id, String key, V value) {
         try {
@@ -72,11 +74,11 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
         RocksIterator rocksIterator;
 
         byte[] seek_key = Utils.merge(edgeId, StorageConstants.PROPERTY_SEPARATOR);
+        LOGGER.debug("seek key:" + new String(seek_key));
 
         try {
             if (direction == Direction.BOTH || direction == Direction.IN) {
                 rocksIterator = this.rocksDB.newIterator(getColumn(EDGE_COLUMNS.IN_VERTICES));
-
                 Utils.rocksIterUtil(rocksIterator, seek_key, (key, value) -> {
                     vertexIDs.add(Utils.slice(key, seek_key.length));
                     return true;
@@ -90,7 +92,7 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
                 });
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            LOGGER.error("failed to fetch vertexIds",ex);
         }
         return vertexIDs;
     }
@@ -107,12 +109,14 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
 
                 if (direction == Direction.BOTH || direction == Direction.IN) {
                     Utils.rocksIterUtil(inRocksIterator, false, seek_key, (key, value) -> {
+                        LOGGER.debug("seek returned:" + new String(seek_key));
                         vertexIDs.add(Utils.slice(key, seek_key.length));
                         return true;
                     });
                 }
                 if (direction == Direction.BOTH || direction == Direction.OUT) {
                     Utils.rocksIterUtil(outRocksIterator, false, seek_key, (key, value) -> {
+                        LOGGER.debug("out seek returned:" + new String(seek_key));
                         vertexIDs.add(Utils.slice(key, seek_key.length));
                         return true;
                     });
@@ -157,14 +161,21 @@ public class EdgeDB extends StorageAbstractClass implements EdgeStorage {
 
     public List<Edge> edges(List<byte[]> ids, RocksGraph rocksGraph) throws Exception {
         List<Edge> edges = new ArrayList<>();
-        if (ids.size() == 0) {
-            RocksIterator iterator = this.rocksDB.newIterator();
-            iterator.seekToFirst();
-            while (iterator.isValid()) {
-                edges.add(getEdge(iterator.key(), rocksGraph));
-                iterator.next();
+        RocksIterator iterator = null;
+        try {
+            if (ids.size() == 0) {
+                iterator = this.rocksDB.newIterator();
+                iterator.seekToFirst();
+                while (iterator.isValid()) {
+                    edges.add(getEdge(iterator.key(), rocksGraph));
+                    iterator.next();
+                }
+                return edges;
             }
-            return edges;
+        } finally {
+            if (iterator != null) {
+                iterator.dispose();
+            }
         }
         Map<byte[], byte[]> results = multiGet(ids);
         return results.entrySet().stream().map(result -> new RocksEdge(result.getKey(),

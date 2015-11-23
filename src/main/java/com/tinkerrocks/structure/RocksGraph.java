@@ -8,23 +8,34 @@ import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.process.computer.GraphComputer;
 import org.apache.tinkerpop.gremlin.process.traversal.TraversalStrategies;
-import org.apache.tinkerpop.gremlin.structure.*;
+import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.Element;
+import org.apache.tinkerpop.gremlin.structure.Graph;
+import org.apache.tinkerpop.gremlin.structure.Transaction;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 import org.rocksdb.RocksDBException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Created by ashishn on 8/4/15.
  */
 
+//@Graph.OptOut(test = "org.apache.tinkerpop.gremlin.structure", method = "*", reason = "serialization not supported")
 @Graph.OptIn(Graph.OptIn.SUITE_STRUCTURE_STANDARD)
-@Graph.OptIn(Graph.OptIn.SUITE_PROCESS_STANDARD)
-@Graph.OptIn(Graph.OptIn.SUITE_STRUCTURE_PERFORMANCE)
-
-
 public final class RocksGraph implements Graph {
+    private final static Logger LOGGER = LoggerFactory.getLogger(RocksGraph.class);
 
 
     static {
@@ -67,7 +78,7 @@ public final class RocksGraph implements Graph {
             this.storageHandler = new StorageHandler(this);
         } catch (RocksDBException e) {
             e.printStackTrace();
-            throw Exceptions.idArgsMustBeEitherIdOrElement();
+            throw new RuntimeException(e);
         }
         this.vertexIndex = new RocksIndex<>(this, Vertex.class);
         this.edgeIndex = new RocksIndex<>(this, Edge.class);
@@ -80,10 +91,12 @@ public final class RocksGraph implements Graph {
     @Override
     public Vertex addVertex(Object... keyValues) {
         ElementHelper.legalPropertyKeyValueArray(keyValues);
-        Object id = String.valueOf(ElementHelper.getIdValue(keyValues).orElse(null));
+        Object id = ElementHelper.getIdValue(keyValues).orElse(null);
         if (id == null) {
-            throw Exceptions.idArgsMustBeEitherIdOrElement();
+            id = UUID.randomUUID().toString();
+            //throw Exceptions.idArgsMustBeEitherIdOrElement();
         }
+        id = String.valueOf(id);
         byte[] idValue = String.valueOf(id).getBytes();
         final String label = ElementHelper.getLabelValue(keyValues).orElse(Vertex.DEFAULT_LABEL);
 
@@ -96,8 +109,8 @@ public final class RocksGraph implements Graph {
                 vertex.property(property.getKey(), property.getValue());
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            throw Exceptions.vertexAdditionsNotSupported();
+            LOGGER.error("FAILED TO ADD VERTEX:", e);
+            //throw Exceptions.vertexAdditionsNotSupported();
         }
         return vertex;
     }
@@ -128,7 +141,6 @@ public final class RocksGraph implements Graph {
 
     @Override
     public Iterator<Vertex> vertices(Object... vertexIds) {
-
         if (vertexIds.length == 0) {
             try {
                 return storageHandler.getVertexDB().getVertices();
@@ -184,9 +196,11 @@ public final class RocksGraph implements Graph {
             ids.add(String.valueOf(vertexId).getBytes());
         }
         try {
-            return storageHandler.getEdgeDB().edges(ids, this).iterator();
+            Iterator<Edge> iterator = storageHandler.getEdgeDB().edges(ids, this).iterator();
+            LOGGER.debug("edge iterator valid:" + iterator.hasNext());
+            return iterator;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("FAILED TO GET EDGE: {}", Arrays.toString(ids.toArray()), e);
         }
 
         //todo place holder
@@ -273,31 +287,6 @@ public final class RocksGraph implements Graph {
      */
     @Override
     public Features features() {
-        return new Features() {
-            @Override
-            public GraphFeatures graph() {
-                return new GraphFeatures() {
-                    @Override
-                    public boolean supportsComputer() {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean supportsTransactions() {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean supportsThreadedTransactions() {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean supportsPersistence() {
-                        return true;
-                    }
-                };
-            }
-        };
+        return new RocksGraphFeatures();
     }
 }
