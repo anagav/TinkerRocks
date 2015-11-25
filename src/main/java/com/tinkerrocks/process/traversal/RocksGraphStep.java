@@ -4,26 +4,30 @@ import com.tinkerrocks.index.RocksIndex;
 import com.tinkerrocks.structure.RocksGraph;
 import org.apache.tinkerpop.gremlin.process.traversal.Compare;
 import org.apache.tinkerpop.gremlin.process.traversal.step.HasContainerHolder;
-import org.apache.tinkerpop.gremlin.process.traversal.step.sideEffect.GraphStep;
+import org.apache.tinkerpop.gremlin.process.traversal.step.map.GraphStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.util.StringFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
  * Created by ashishn on 8/15/15.
  */
-public class RocksGraphStep<S extends Element> extends GraphStep<S> implements HasContainerHolder {
+public class RocksGraphStep<S, E extends Element> extends GraphStep<S, E> implements HasContainerHolder {
 
     public final List<HasContainer> hasContainers = new ArrayList<>();
 
 
-    public RocksGraphStep(final GraphStep<S> originalGraphStep) {
-        super(originalGraphStep.getTraversal(), originalGraphStep.getReturnClass(), originalGraphStep.getIds());
+    public RocksGraphStep(final GraphStep<S, E> originalGraphStep) {
+        super(originalGraphStep.getTraversal(), originalGraphStep.getReturnClass(), originalGraphStep.isStartStep(), originalGraphStep.getIds());
         originalGraphStep.getLabels().forEach(this::addLabel);
         if ((this.ids.length == 0 || !(this.ids[0] instanceof Element))) {
             this.setIteratorSupplier(() -> Vertex.class.isAssignableFrom(this.returnClass) ?
