@@ -121,8 +121,8 @@ public abstract class StorageAbstractClass {
             if (columnFamilyHandleList != null)
                 columnFamilyHandleList.forEach(ColumnFamilyHandle::dispose);
             LOGGER.debug("closed column family handles");
-//            this.rocksDB.close();
-//            LOGGER.debug("closed rocksdb");
+            this.rocksDB.close();
+            LOGGER.debug("closed rocksdb");
         }
     }
 
